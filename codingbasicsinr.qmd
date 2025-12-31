@@ -1,0 +1,183 @@
+# Coding it up in R
+
+```{r}
+library(MASS,quietly=TRUE)
+library(tseries,quietly=TRUE,warn.conflicts=FALSE)
+library(forecast,quietly=TRUE)
+```
+
+## Time series functions used in this document
+
+In the table below, packages with *italicized* names will need to be installed, while the package names in a standard font face can be found in most base R distributions (though they may need to be loaded into your workspace).
+
+|Package   |Function name|Purpose                          |
+|:---------|:------------|:--------------------------------|
+|stats     |ts           |Define a time series             |
+|stats     |time         |Extract the time indices of a ts |
+|stats     |start        |Extract the first time index     |
+|stats     |end          |Extract the last time index      |
+|stats     |window       |Extract the last time index      |
+|stats     |arima.sim    |Simulate ARIMA data (including random walks)|
+|*tseries* |adf.test     |ADF stationarity test            |
+|*tseries* |kpss.test    |KPSS stationarity test           |
+|*MASS*    |boxcox       |Suggest Box-Cox parameters       |
+|stats     |acf          |Compute and plot autocorrelation |
+|stats     |monthplot    |Plot annual change across seasons|
+|*forecast*|seasonplot   |Plot annual change across seasons|
+
+: Time series functions used in the code below
+
+## Creating and storing time series data
+
+Different packages have different standards for defining a time series. In many cases, you can pass a simple numeric vector to a time series function: the function will typecast the vector into a time series object and proceed as intended. In other cases, you need to make sure that you have typed the vector as a time series.
+
+Two common standards for representing time series are `stats::ts` from base R and `tsibble::tsibble` from the tidyverse constellation of packages. This document will use base R conventions and functions.
+
+```{r}
+#define a time series
+sample_ts <- ts(1:18, frequency=4, start=c(1999,2))
+
+#print some basic information and the series values
+print(sample_ts, calendar=FALSE)
+
+#alternate print view (still treated as a vector, not a matrix)
+print(sample_ts, calendar=TRUE)
+
+#recover the time index values for each obseration
+time(sample_ts)
+
+#recover the first and last time indices
+start(sample_ts)
+end(sample_ts)
+
+#subset the series and optionally downsample to yearly
+window(sample_ts,start=2000,end=2002)
+window(sample_ts,start=2000,end=2002,frequency=1)
+```
+
+## Creating a random walk in R
+
+Although random walks are defined recursively, "for loops" are almost always the *wrong* way to accomplish any task in R. Instead, we can rely on R's native vectorization and parallelization to quickly create a one-dimensional gaussian random walk:
+
+```{r}
+#simulate a gaussian random walk 'manually'
+set.seed(1044)
+rw_a <- cumsum(rnorm(20))
+round(rw_a,2)
+plot(rw_a,type='b',ylab='Values',main='Gaussian random walk')
+
+#simulate through a dedicated time series function
+#note result is offset by one observation from above 
+set.seed(1044)
+rw_b <- arima.sim(model=list(order=c(0,1,0)),n=20)
+round(rw_b,2)
+
+#recover the white noise innovations (multiple options)
+round(diff(rw_b),2)
+
+set.seed(1044)
+round(rnorm(20),2)
+```
+
+Of course there are more random walks... we could create Gaussian random walks in two dimensions, or random walks with non-Gaussian innovations.
+
+```{r}
+set.seed(1415)
+rw_c <- apply(mvrnorm(n=20,mu=c(0,0),Sigma=diag(2)),2,cumsum)
+plot(rw_c,type='b',pch=NA,xlab='Y (d1)',ylab='Y (d2)',main='2D random walk')
+text(x=rw_c,labels=1:20)
+```
+
+## Assessing stationarity
+
+Let's examine some real data. Johnson & Johnson ("J&J") is a Fortune 500 company which focuses on medical technology and biotech products. Market analysts often describe the performance of publicly traded companies like J&J using the metric of *earnings per share (EPS).* 
+
+```{r}
+plot(JohnsonJohnson,ylab='EPS ($)',main='Quarterly EPS for Johnson & Johnson')
+```
+
+We see strong visual evidence that the series is not stationary: the mean changes over time and so does the variance. Because the variance changes, we can rule out trend-stationarity (and besides, we see that any trend would be non-linear.) Still, we can confirm this visual impression through two quick tests:^[Note that both test outputs include an error message --- because the *p*-values are interpolated from tables found in textbooks, and the test statistics for our data are outside of the table ranges, the 'true' *p*-value for the AFD test is more than 0.99 and the 'true' *p*-value for the KPSS test is less than 0.01. Nothing here has actually gone wrong.]
+
+```{r}
+adf.test(JohnsonJohnson)
+kpss.test(JohnsonJohnson,null='Trend')
+```
+
+Although the J&J EPS data is nonstationary, neither is it a true Gaussian random walk, since it it very steadily increases and the variance seems to increase over time. This is probably a good candidate for a Box-Cox transformation. Note that the `MASS::boxcox` function requires a model or formula as its input, and not the raw time series vector. We can create a simple "intercept only" model for the J&J EPS data.
+
+```{r}
+boxcox(JohnsonJohnson~1)
+```
+
+The plot above shows the likelihood function associated with a stationarity test at different choices for the Box-Cox parameter $\lambda$. It looks like the a range of values from about -0.2 to +0.2 would be acceptable, but since $\lambda=0$ is so nearly the MLE choice, and since logarithmic transformations are common in econometric analyses, we may adopt $\lambda=0$ for now, meaning that $Y_t^{(\lambda)} = \log Y_t$.
+
+```{r}
+plot(log(JohnsonJohnson),ylab='Log EPS ($)',main='Box-Cox transform of J&J EPS')
+adf.test(log(JohnsonJohnson))
+kpss.test(log(JohnsonJohnson),null='Trend')
+```
+
+What gives?! The Box-Cox transformed EPS data *seem* to be trend-stationary, but both the ADF test and the KPSS test confirm that the data are not yet stationary. To solve the riddle, we will need to examine the autocorrelation function.
+
+## Measuring and plotting autocorrelation
+
+```{r}
+par(mfcol=c(1,2))
+plot(JohnsonJohnson,main='Original data',ylab='EPS ($)')
+acf(JohnsonJohnson,main='ACF of original data',xlab='Lag (in years)')
+```
+
+The plots above show the original J&J EPS data alongside a plot of the *autocorrelation function*, which pairs each lag $k = 1, 2, \ldots,$ with the estimated autocorrelation $\hat{\rho}_k = r_k$. Note that the autocorrelation of any series with itself is of course 1, and so the peak at $k=0$ extends all the way to 1.
+
+The remaining peaks show the autocorrelation of this EPS data with its own past values. Because the data have been structured with frequency 4 (appropriate for quarterly data), it takes four lags to reach "1" (year) on the x-axis, but I shall call each past quarter the first lag, second lag, *etc.* and ignore the x-axis values.
+
+The autocorrelation function at the first lag is quite high too -- visually about 0.92:
+
+```{r}
+acf(JohnsonJohnson,plot=FALSE)$acf[1:5]
+```
+
+(Okay, about 0.925.) The location of the current quarter's EPS is *highly correlated* with the previous quarter's EPS. Even though EPS is not a cumulated measure, this makes sense: the fortunes of huge companies do not often change overnight, and if a company is profitable in one quarter, it will likely be similarly profitable in the next quarter.
+
+The autocorrelations with further lags are also quite high. We should expect this behavior: if this quarter's EPS is highly correlated with last quarter's EPS, then last quarter's EPS is highly correlated with the EPS from two quarters ago, and so this quarter's EPS is also at least moderately correlated with the EPS from two quarters ago!
+
+Let's try examining the ACF plot for the de-trended, Box-Cox transformed EPS data:
+
+```{r}
+eps_boxcox_detrend <- ts(lm(log(JohnsonJohnson)~time(JohnsonJohnson))$residuals,
+                         start=1960,frequency=4)
+par(mfcol=c(1,2))
+plot(eps_boxcox_detrend,main='De-trended, transformed data',ylab='Transformed EPS ($)')
+acf(eps_boxcox_detrend,main='ACF of de-trended, transformed data',xlab='Lag (in years)')
+```
+
+The Box-Cox transformation and de-trending successfully removed a lot of the nonstationary behavior, but the remaining autocorrelation is highly *seasonal* --- each transformed EPS observation is very similar to the EPS from four quarters ago (and thus eight, and twelve...). If we plot the quarterly earnings by year (or each year's earnings by quarter), we can see this pattern more plainly, where Q3 usually brings very strong earnings for J&J, while Q4 brings weaker earnings:
+
+```{r}
+monthplot(eps_boxcox_detrend,ylab='Transformed EPS')
+seasonplot(eps_boxcox_detrend,year.labels.left=TRUE,type='l',ylab='Transformed EPS',
+           col=colorRampPalette(c('#ff0000','#bbbbbb','#0000ff'))(21))
+```
+
+We see now why the data failed our stationarity tests: the strong seasonal effects lead the mean of the serties to shift predictably in different quarters.  If not every observation has the same predicted mean, then the data cannot be weakly stationary.
+
+We will learn more elegant ways of modeling seasonality, but for now we could fall back on a tool we already know: linear regression. Rather than simply de-trending over time, we can add a linear time trend as well as quarterly effect dummies. The residuals from this OLS regression *should* be more stationary:
+
+```{r}
+eps_boxcox_detrend_deseason <- ts(
+  lm(log(JohnsonJohnson) ~ time(JohnsonJohnson) + factor(cycle(JohnsonJohnson)))$residuals,
+  start=1960,frequency=4)
+
+adf.test(eps_boxcox_detrend_deseason)
+kpss.test(eps_boxcox_detrend_deseason,null='Trend')
+
+par(mfrow=c(1,2))
+plot(eps_boxcox_detrend_deseason,
+     main='De-trended and de-seasoned data',ylab='Transformed EPS ($)')
+acf(eps_boxcox_detrend_deseason,
+    main='ACF of de-trended and de-seasoned data',xlab='Lag (in years)')
+```
+
+Although the de-seasoned data are more stationary than ever, ADF and KPSS tests agree that the remaining stochastic signal is not yet fully stationary.  We see from a simple plot of the series that there were good years (1960, the early 1970s) and bad years (the mid 1960s, 1980), patterns which were previously hidden from us.
+
+Until we learn better tools, we will not be able to fully decompose this EPS series into a deterministic model and random error. However, even this stumbling block represents progress, because we are starting to see signal through the noise.

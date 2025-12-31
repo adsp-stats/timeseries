@@ -1,0 +1,63 @@
+# Autocovariance and autocorrelation
+
+## Review: covariance and correlation
+
+In previous courses, you would probably have learned about *covariance* and *correlation*. The covariance of two random variables measures the raw amount by which they move together or separately. 
+
+$$\textrm{Cov}(Y,X) = \mathbb{E}[(Y - \mu_Y)(X - \mu_X)]$$
+
+Covariance is an important metric for a lot of theoretical calculations, but it's difficult for humans to work with because it's very sensitive to the units in which $X$ and $Y$ are measured. For this reason, we often prefer to summarize the relation between two random variables with the *Pearson correlation coefficient*,^[There are other named correlation coefficients, but Pearson's is so widely used that if someone says 'correlation', you can assume they mean Pearson's correlation.] which normalizes the covariance by the respective standard deviations of $X$ and $Y$.
+
+$$\mathrm{Cor}(Y,X) = \rho_{YX} = \frac{\textrm{Cov}(Y,X)}{\sigma_Y \cdot \sigma_X}$$
+
+Correlation is very convenient to work with, because it's a unitless measure which is always bounded between -1 and +1. We can easily describe the strength of the linear relationship between two variables in ways which are directly comparable to other pairs of variables.
+
+## Review: Estimating covariance and correlation from a sample
+
+Covariance and correlation are two properties that describe the *theoretical* relationship between two random variables. When we work from samples of data, we don't always know the true covariance or correlation, and we need to estimate these metrics from our samples. Unbiased estimators for both metrics can be found below:
+
+$$\textrm{Sample covariance:} \quad S_\boldsymbol{yx} = \frac{1}{n-1} \sum_i (y_i - \bar{y})(x_i - \bar{x})$$
+
+$$\textrm{Sample correlation:} \quad r_\boldsymbol{yx} = \frac{\sum_i (y_i - \bar{y})(x_i - \bar{x})}{\sqrt{\sum_i (y_i - \bar{y})^2} \sqrt{\sum_i (x_i - \bar{x})^2}}$$
+
+## Autocovariance and autocorrelation
+
+These two measures have very close counterparts in time series analysis.
+
+::: {.callout-note}
+Let $\boldsymbol{Y}$ be a time series observed at regular time periods $T = \{1,2,\ldots,n\}$ and denote the mean and variance of the random variable at each time index $t$ as $\mathbb{E}[Y_t] = \mu_t$ and $\mathbb{V}(Y_t) = \sigma^2_t$. Then, for any two time indices $s,t \in T$, the **autocovariance** between $Y_s$ and $Y_t$ is defined as:
+
+$$\textrm{Cov}(Y_s,Y_t) = \gamma_{s,t}  = \mathbb{E}[(Y_s - \mu_s)(Y_t - \mu_t)]$$
+
+And the **autocorrelation** between $Y_s$ and $Y_t$ is defined as:
+
+$$\textrm{Cor}(Y_s,Y_t) = \rho_{s,t}  = \frac{\textrm{Cov}(Y_s,Y_t)}{\sigma_s \cdot \sigma_t}$$
+
+:::
+
+If a time series is *weakly stationary*, then its mean and standard deviation are the same at every time period, and the autocovariance (and autocorrelation) will only depend on the lag between the two time periods:
+
+::: {.callout-warning}
+## Only when Y is weakly stationary
+
+Let $\boldsymbol{Y}$ be a weakly stationary time series observed at regular time periods $T = \{1,2,\ldots,n\}$ with mean $\mathbb{E}[Y_t] = \mu$ and variance $\mathbb{V}[Y_t] = \sigma^2$ for all $t \in T$. Then, the **autocovariance** between any two observations of the series $Y_t$ and $Y_{t+k}$ (a second random variable observed $k$ periods later) is defined as:
+
+$$\begin{aligned} \textrm{Cov}(Y_t,Y_{t+k}) = \gamma_{k}  &= \mathbb{E}[(Y_t - \mu)(Y_{t+k} - \mu)] \\ &= \mathbb{E}[Y_t \cdot Y_{t+k}] - \mu^2 \end{aligned}$$
+
+Note that each covariance between $Y_t$ and $Y_{t+k}$ will be equal to $\gamma_k$ *regardless of the time index* t. And the **autocorrelation** between $Y_t$ and $Y_{t+k}$ is defined as:
+
+$$\textrm{Cor}(Y_t,Y_{t+k}) = \rho_k = \frac{\gamma_k}{\gamma_0} = \frac{\textrm{Cov}(Y_t,Y_{t+k})}{\sigma^2}$$
+
+:::
+
+## Estimating autocovariance and autocorrelation from a sample
+
+If our time series is not stationary, then we cannot really estimate the autocovariance $\gamma_{s,t}$ or the autocorrelation $\rho_{s,t}$ from a sample, because there will only be *one pair of values* to observe at those time periods. However, if our time series *is* stationary, then we can estimate $\gamma_k$ and $\rho_k$ from all the pairs of observations which are $k$ time periods apart.
+
+The exact calculation method for estimating autocovariance varies from source to source. All of the popular methods involve bias-variance compromises. The R software environment *generally* uses the following definition for autocorrelation:^[Notice that the covariance estimator uses a denominator of $n$ instead ofg $n-k$, which will introduce bias but generally lower MSE.]
+
+$$r_k = \hat{\rho}_k = \frac{c_k}{c_0}$$
+
+$$c_k = \hat{\gamma}_k = \frac{1}{n} \sum_{t=1}^{n-k}(y_t - \bar{y})(y_{t+k} - \bar{y})$$
+
+In some sources the terms *autocovariance* and *autocorrelation* are used synonymously, while in other sources those words are used for the two quantities $\gamma$ and $\rho$ respectively, where $\rho$ is normalized to bounds between -1 and +1. In this course, we will always observe the difference between the two terms.

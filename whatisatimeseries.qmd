@@ -1,0 +1,87 @@
+# What is a time series?
+
+Data frequently comes to us in a *pile*, an unordered heap of observations:
+
+ * Your final grades at the end of this quarter
+
+ * Petal and sepal measurements of 150 iris flowers of three different species
+
+ * Sentencing outcomes from criminal defendants in Cook County found guilty of felony crimes
+
+All of these observations can be matched to a specific date and time:
+
+ * The order in which I enter the student grades
+ 
+ * The times that the irises were collected, or measured
+ 
+ * The date and time that each sentence was pronounced 
+ 
+Time-based information might be helpful in understanding these data:
+
+ * I might be harsher (or more lenient!) with grades I enter late at night, or there may be consequences to being the first student I grade, since I might lack a good benchmark.
+ 
+ * The iris specimens might have been gathered from one end of the field to the other, in a manner which correlates with the sunlight they received, or they might have been stored in boxes macthing their size, so that large irises tend to share similar measurement times.
+ 
+ * Sentencing guidelines will change year-over-year with new legislation, and the weekly schedules or decades-long careers of individual judges will account for some sentencing variation.
+
+And yet, these orders and timestamps are not required for an understanding of the data. We are not observing one process over time, we are observing many different processes which happen to be "sampled" in a particular order. In a different world, they could easily have been placed in a different order.
+
+Contrast this to a different set of data series:
+
+ * Monthly U.S. unemployment rate
+ 
+ * Real-time temperature readings from a sensor inside a nuclear reactor
+ 
+ * Weekly sales data from a music artist's best-selling album
+ 
+The order of observations within each of these datasets *matters*. They would tell very different stories if presented out of order. Knowing one observation (one month's unemployment, one split second's temperature, one week's album sales) severely constrains the likely or possible values for the next observation. In linear regression we would view the flow of information across observations as an undesired *bug*; in these datasets, serial correlation is a *feature*.
+
+Data scientists do not have a standard definition for time series data. I will attempt a working definition, useful for our purposes but not meant to invalidate other definitions:
+
+::: {.callout-note}
+
+**Time series data** records the outcomes of one or more data generating processes which possess two properties:
+
+ 1. Each observation is associated with an order relative to all other observations. In some cases this is simply an ordinal rank; in other cases the order is inferred from a time index.
+ 
+ 2. At least some of the observations provide predictive information about some of the other observations *and this information depends on the time indices or relative order of the observations*.
+
+:::
+
+In this definition I have avoided any reference to statistical inference such as expectation, probability, distributions of random variables, etc. Of course we can use statistical models to study time series data, but we can also use machine learning models or naive models which make no assumptions about the data generating process.
+
+This definition is very broad, but we only have ten weeks together, and we will need to define what is in-scope and out-of-scope for this course:
+
+ * Time series data and time series models can be **discrete-time** when data is sampled periodically, or **continuous-time** when data is either continuously observed or when events can happen at any point along a continuous interval.
+ 
+   * *We will only be studying discrete-time models.*
+   
+ * Discrete-time data can be **regularly sampled** when the observation windows are equally-spaced through time,^[At least conceptually --- *e.g.* while some years are 365 days and others are 366 days, yearly data is still considered regular.] or **irregularly sampled** when observations are either inconsistently spaced or when some regularly-spaced observations are missing.
+ 
+   * *We will only be studying regularly sampled data.*
+   
+ * Time series data can be **univariate** when the time-varying process we study forms only a single vector of observations (potentially predicted by other vectors, similar to a regression), or **multivariate** when many time-varying series are observed at each observation period.
+ 
+   * *We will* mostly *be studying univariate models, though we will include some multivariate models (VARs, hierarchical models) which help us to understand one series in particular.*
+   
+## Notation
+
+Because we will be focusing on a narrow subset of time series processes, we can afford to be a little loose with our notation. In other textbooks you may see more complex representations, meant to flexibly extend to irregularly-observed or continuous time series. Instead, we will adopt the following conventions:
+
+* $T$ is the time index. All observations of all time series will happen at times $T \in \mathbb{N} = \{0, 1, 2, \ldots\}$. Most samples will start with $T=1$, but we sometimes have a use for the zero-period $T=0$ (*e.g.* to initialize a series). Arbitrary time indices will generally be represented by $T=t$, and a pair of time indices will generally be represented by $T=s$ and $T=t$.
+
+ * $\boldsymbol{Y}$ is a time series process, a theoretical number-generating sequence observed at regular intervals. It is *an ordered collection of random variables*.
+
+ * $Y_1, Y_2, \ldots, Y_n$ are the random variables formed by the observation of $\boldsymbol{Y}$ at time index $T = 1, 2, \ldots, n$. Each $Y_t$ is itself *a random variable*.
+
+ * $\boldsymbol{y}$ is a finite sample taken from the process $\boldsymbol{Y}$. Frequently, $\boldsymbol{y}$ is *the dataset in front of us*.
+
+ * $y_1, y_2, \ldots, y_n$ are the specific observations from the sample $\boldsymbol{y}$ at time index $T = 1, 2, \ldots, n$.
+
+ * If we need another time series, we can use X: $\boldsymbol{X} = X_1, X_2, \ldots, X_n$ is the generating process and its random variables, while $\boldsymbol{x} = x_1, x_2, \ldots, x_n$ is the sample.
+
+ * If we are comparing two different time periods, you might see $t$ and $s$ used as index values.
+
+ * When referencing a single random variable with no time-varying component, we will use unbolded uppercase letters without a subscript: $Z \sim \textrm{Normal}(\mu, \sigma^2)$, $U \sim \textrm{Uniform}(0,1)$, etc.
+
+ * Lowercase omega will *always* be reserved for a white noise process: $\boldsymbol{\omega} = \omega_1, \omega_2, \ldots \omega_n$. These processes are usually unobserved but if we do need to describe a sample (*e.g.* for a simulation), we may use $\boldsymbol{w} = w_1, w_2, \ldots, w_n$.^[Similar to how the OLS residuals $\boldsymbol{e} = e_1, e_2, \ldots, e_n$ are estimated realizations of the theoretical error process $\boldsymbol{\varepsilon} = \varepsilon_1, \varepsilon_2, \ldots, \varepsilon_n$.]

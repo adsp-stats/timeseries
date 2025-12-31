@@ -1,0 +1,26 @@
+project:
+  type: book
+
+book:
+  title: "Forecasting Essentials and Notes: Online Resource"
+  chapters:
+    - index.qmd
+    - part: "1. Time series basics"
+      chapters:
+        - whatisatimeseries.qmd
+        - autocovariance.qmd
+        - whitenoise.qmd
+        - randomwalk.qmd
+        - stationarity.qmd
+        - codingbasicsinr.qmd
+ 
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: false
+    code-copy: true
+    code-overflow: wrap
+    page-layout: full
+    smooth-scroll: true
+    code-annotations: hover

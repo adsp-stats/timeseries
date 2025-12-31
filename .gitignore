@@ -1,0 +1,10 @@
+# Quarto build outputs
+_book/
+docs/
+_site/
+.quarto/
+.Rproj.user/
+.Rhistory
+.RData
+/.quarto/
+**/*.quarto_ipynb
