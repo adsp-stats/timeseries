@@ -8,3 +8,4 @@ _site/
 .RData
 /.quarto/
 **/*.quarto_ipynb_site/
+_site/
