@@ -23,8 +23,8 @@ Random walks refer to memoryless time series processes which "drift" randomly ac
 set.seed(1999)
 w2 <- rbind(cbind(w,w,w,w,w),matrix(rnorm(500),ncol=5))
 rw2 <- apply(w2,2,cumsum)
-plot(rw,type='b',pch=20,xlab='Index',xlim=c(1,200),ylab='Measurement')
-matplot(x=101:200,y=rw2[101;200],type='b',pch=20,add=TRUE,
+plot(rw,type='l',lwd=2,xlab='Index',xlim=c(1,200),ylab='Measurement',ylim=c(-5,25))
+matplot(x=101:200,y=rw2[101:200,],type='l',lwd=2,pch=20,add=TRUE,lty=1
         col=colorRampPalette(c('#0000ff','#bbbbbb','#ff0000'))(5))
 ```
 
