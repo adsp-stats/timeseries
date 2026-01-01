@@ -234,7 +234,7 @@ window.Quarto = {
   <ul>
   <li><a href="#motivation" id="toc-motivation" class="nav-link active" data-scroll-target="#motivation">Motivation</a></li>
   <li><a href="#definition" id="toc-definition" class="nav-link" data-scroll-target="#definition">Definition</a></li>
-  <li><a href="#properties" id="toc-properties" class="nav-link" data-scroll-target="#properties">{Properties}</a></li>
+  <li><a href="#properties" id="toc-properties" class="nav-link" data-scroll-target="#properties">Properties</a></li>
   </ul>
 </nav>
     </div>
@@ -288,8 +288,9 @@ window.Quarto = {
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1999</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>w2 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">cbind</span>(w,w,w,w,w),<span class="fu">matrix</span>(<span class="fu">rnorm</span>(<span class="dv">500</span>),<span class="at">ncol=</span><span class="dv">5</span>))</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>rw2 <span class="ot">&lt;-</span> <span class="fu">apply</span>(w2,<span class="dv">2</span>,cumsum)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(rw,<span class="at">type=</span><span class="st">'b'</span>,<span class="at">pch=</span><span class="dv">20</span>,<span class="at">xlab=</span><span class="st">'Index'</span>,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">200</span>),<span class="at">ylab=</span><span class="st">'Measurement'</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">matplot</span>(rw2,<span class="at">type=</span><span class="st">'b'</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">pch=</span><span class="dv">20</span>,<span class="at">add=</span><span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(rw,<span class="at">type=</span><span class="st">'l'</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">xlab=</span><span class="st">'Index'</span>,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">200</span>),<span class="at">ylab=</span><span class="st">'Measurement'</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">5</span>,<span class="dv">25</span>))</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">matplot</span>(<span class="at">x=</span><span class="dv">101</span><span class="sc">:</span><span class="dv">200</span>,<span class="at">y=</span>rw2[<span class="dv">101</span><span class="sc">:</span><span class="dv">200</span>,],<span class="at">type=</span><span class="st">'l'</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">pch=</span><span class="dv">20</span>,<span class="at">add=</span><span class="cn">TRUE</span>,<span class="at">lty=</span><span class="dv">1</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">col=</span><span class="fu">colorRampPalette</span>(<span class="fu">c</span>(<span class="st">'#0000ff'</span>,<span class="st">'#bbbbbb'</span>,<span class="st">'#ff0000'</span>))(<span class="dv">5</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -340,14 +341,14 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Let <span class="math inline">\(\boldsymbol{omega}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>, where the distribution of each random observation <span class="math inline">\(\omega_t\)</span> is independently and identically distributed with mean 0 and finite variance <span class="math inline">\(\sigma^2\)</span> for all <span class="math inline">\(t \in T\)</span>. Define a new time series random variable <span class="math inline">\(\boldsymbol{Y} = Y_1, Y_2, \ldots, Y_n\)</span> as follows:</p>
+<p>Let <span class="math inline">\(\boldsymbol{\omega}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>, where the distribution of each random observation <span class="math inline">\(\omega_t\)</span> is independently and identically distributed with mean 0 and finite variance <span class="math inline">\(\sigma^2\)</span> for all <span class="math inline">\(t \in T\)</span>. Define a new time series random variable <span class="math inline">\(\boldsymbol{Y} = Y_1, Y_2, \ldots, Y_n\)</span> as follows:</p>
 <p><span class="math display">\[\begin{aligned} Y_1 &amp;= \omega_1 \\ Y_t &amp;= Y_{t-1} + \omega_t \quad \forall t&gt;1\end{aligned}\]</span></p>
-<p>Then <span class="math inline">\(\boldsymbol{Y}\)</span> is a <strong>random walk</strong>, specifically a homogenous discrete-time random walk in one dimension. If <span class="math inline">\(\omega_t \stackrel{iid}{\sim} \textrm{Normal}(0,\sigma^2) \; \forall t \in T\)</span>, then we say that <span class="math inline">\(Y(T)\)</span> is a <em>Gaussian</em> random walk.</p>
+<p>Then <span class="math inline">\(\boldsymbol{Y}\)</span> is a <strong>random walk</strong>, specifically a homogenous discrete-time random walk in one dimension. If <span class="math inline">\(\omega_t \stackrel{iid}{\sim} \textrm{Normal}(0,\sigma^2) \; \forall t \in T\)</span>, then we say that <span class="math inline">\(Y(T)\)</span> is a <em>Gaussian random walk.</em></p>
 </div>
 </div>
 </section>
 <section id="properties" class="level2">
-<h2 class="anchored" data-anchor-id="properties">{Properties}</h2>
+<h2 class="anchored" data-anchor-id="properties">Properties</h2>
 <p>Note that a Gaussian random walk is equivalent to the cumulative sum of a Gaussian white noise process, and that more generally any the cumulative sum of <em>any</em> IID white noise process is some type of random walk.</p>
 <p>Consider the implications of these two calculations:</p>
 <p><span class="math display">\[\mathbb{E}[Y_t] = \mathbb{E}[\sum_{i=1}^t \omega_i] = \sum_{i=1}^t \mathbb{E}[\omega_i] = \sum_{i=1}^t 0 = 0\]</span></p>
