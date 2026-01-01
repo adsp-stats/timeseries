@@ -24,8 +24,8 @@ set.seed(1999)
 w2 <- rbind(cbind(w,w,w,w,w),matrix(rnorm(500),ncol=5))
 rw2 <- apply(w2,2,cumsum)
 plot(rw,type='b',pch=20,xlab='Index',xlim=c(1,200),ylab='Measurement')
-matplot(rw2,type='b',col='#0000ff',pch=20,add=TRUE)
-
+matplot(x=101:200,y=rw2[101;200],type='b',pch=20,add=TRUE,
+        col=colorRampPalette(c('#0000ff','#bbbbbb','#ff0000'))(5))
 ```
 
 Random walks can be one-dimensional, like the example above, or multidimensional. The time between steps can be regular, irregular, or even continuous. The step sizes themselves can be equal, discrete, or continuous. (Random walks are, for example, closely tied to the idea of 'Brownian motion', which is the drift through space and time of tiny particles suspended in air or fluid, such as smoke, or dust in a sunbeam.) 
@@ -54,15 +54,15 @@ Although random walks appear in many forms, we will mostly concern ourselves in 
 
 ::: {.callout-note}
 
-Let $\boldsymbol{omega}$ be a time series random variable observed at regular time periods $T = \{1, 2, \ldots, n\}$, where the distribution of each random observation $\omega_t$ is independently and identically distributed with mean 0 and finite variance $\sigma^2$ for all $t \in T$. Define a new time series random variable $\boldsymbol{Y} = Y_1, Y_2, \ldots, Y_n$ as follows:
+Let $\boldsymbol{\omega}$ be a time series random variable observed at regular time periods $T = \{1, 2, \ldots, n\}$, where the distribution of each random observation $\omega_t$ is independently and identically distributed with mean 0 and finite variance $\sigma^2$ for all $t \in T$. Define a new time series random variable $\boldsymbol{Y} = Y_1, Y_2, \ldots, Y_n$ as follows:
 
 $$\begin{aligned} Y_1 &= \omega_1 \\ Y_t &= Y_{t-1} + \omega_t \quad \forall t>1\end{aligned}$$
 
-Then $\boldsymbol{Y}$ is a **random walk**, specifically a homogenous discrete-time random walk in one dimension.  If $\omega_t \stackrel{iid}{\sim} \textrm{Normal}(0,\sigma^2) \; \forall t \in T$, then we say that $Y(T)$ is a *Gaussian* random walk.
+Then $\boldsymbol{Y}$ is a **random walk**, specifically a homogenous discrete-time random walk in one dimension.  If $\omega_t \stackrel{iid}{\sim} \textrm{Normal}(0,\sigma^2) \; \forall t \in T$, then we say that $Y(T)$ is a *Gaussian random walk.*
 
 :::
 
-## {Properties}
+## Properties
 
 Note that a Gaussian random walk is equivalent to the cumulative sum of a Gaussian white noise process, and that more generally any the cumulative sum of *any* IID white noise process is some type of random walk.
 

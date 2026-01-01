@@ -20,7 +20,7 @@ Time-based information might be helpful in understanding these data:
 
  * I might be harsher (or more lenient!) with grades I enter late at night, or there may be consequences to being the first student I grade, since I might lack a good benchmark.
  
- * The iris specimens might have been gathered from one end of the field to the other, in a manner which correlates with the sunlight they received, or they might have been stored in boxes macthing their size, so that large irises tend to share similar measurement times.
+ * The iris specimens might have been gathered from one end of the field to the other, in a manner which correlates with the sunlight they received, or they might have been stored in boxes matching their size, so that large irises tend to share similar measurement times.
  
  * Sentencing guidelines will change year-over-year with new legislation, and the weekly schedules or decades-long careers of individual judges will account for some sentencing variation.
 
@@ -79,8 +79,6 @@ Because we will be focusing on a narrow subset of time series processes, we can 
  * $y_1, y_2, \ldots, y_n$ are the specific observations from the sample $\boldsymbol{y}$ at time index $T = 1, 2, \ldots, n$.
 
  * If we need another time series, we can use X: $\boldsymbol{X} = X_1, X_2, \ldots, X_n$ is the generating process and its random variables, while $\boldsymbol{x} = x_1, x_2, \ldots, x_n$ is the sample.
-
- * If we are comparing two different time periods, you might see $t$ and $s$ used as index values.
 
  * When referencing a single random variable with no time-varying component, we will use unbolded uppercase letters without a subscript: $Z \sim \textrm{Normal}(\mu, \sigma^2)$, $U \sim \textrm{Uniform}(0,1)$, etc.
 

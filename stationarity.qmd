@@ -78,17 +78,16 @@ Then $\boldsymbol{Y}$ is a **trend-stationary** time series, and if $X_t = Y_t -
 
 The intuition here is quite simple: if we know or can estimate a non-random component of our time series which moves the mean (destroying stationary), then we can simply remove it when we want to study the random time series behavior and add it back in when we need to perform prediction.
 
-::: {layout-ncol=2}
 ```{r}
 #| code-fold: true
 #| fig-cap: 'Trend-stationary process with and without detrending'
+par(mfrow=c(1,2),mar=c(4, 4, 3, 1))
 set.seed(1229)
 tsts <- 70 + 3*arima.sim(list(ar=c(0.5,0.25)),n=100) - 0.4*(1:100)
 plot(tsts,ylab='Y_t',main='Original data series')
 abline(70,-0.4,col='#bbbbbb')
 plot(tsts +  0.4*(1:100),ylab='Y_t - 0.4t',main='Detrended data series')
 ```
-:::
 
 Although the deterministic trend described here is additive, this concept generalizes to multiplicative trends or other situations, such as a variance which shrinks or grows at a steady rate over time.
 
@@ -116,10 +115,10 @@ Many real-life processes are essentially random walks and their levels are diffi
 
 Knowing when to de-trend and when to difference is important. A random walk may appear to have a roughly linear trend, but the de-trended series will still be nonstationary:
 
-::: {layout-ncol=2}
 ```{r}
 #| code-fold: true
 #| fig-cap: 'Random walks de-trended (top) and differenced (bottom)'
+par(mfrow=c(1,2),mar=c(4, 4, 3, 1))
 n <- 200
 set.seed(1230)
 rw <- cumsum(rnorm(n))
@@ -131,7 +130,6 @@ plot(rw,ylab='Y_t',main='Original data series',type='l')
 segments(x0=2:n,x1=2:n,y0=0,y1=diff(rw),col='#bbbbbb')
 plot(diff(rw),ylab='First difference of Y_t',main='Differenced data series',type='l')
 ```
-:::
 
 ### The Box-Cox transformation
 
@@ -147,16 +145,15 @@ $$Y_t^{(\lambda)} = \left\{\begin{array}{ll} \log Y_t & \textrm{if}\; \lambda = 
 
 The exact parameter $\lambda$ which brings a nonstationary series closest to stationarity must be estimated through algorithmic means, including (but not limited to) maximum likelihood estimation. As an example below, a Box-Cox transformation with a parameter of 0.1 takes this highly nonstationary airline data and transforms it into something much closer to trend-stationarity.^[The seasonal peaks are nonstationary behavior, but we will learn to model these too in future lesson.]
 
-::: {layout-ncol=2}
 ```{r}
 #| code-fold: true
 #| fig-cap: 'Box-Cox transformation of monthly airline passengers'
+par(mfrow=c(1,2),mar=c(4, 4, 3, 1))
 library(fabletools,quietly=TRUE)
 plot(AirPassengers,ylab='Monthly Air Passengers (1000s)',main='Original nonstationary series')
 plot(box_cox(AirPassengers,0.1),ylab='Transformed series',main='Box-Cox transformation with lambda=0.1')
 abline(reg=lm(box_cox(AirPassengers,0.1)~time(AirPassengers)),col='#bbbbbb')
 ```
-:::
 
 ## Tests for stationarity
 

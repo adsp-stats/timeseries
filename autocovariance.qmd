@@ -16,9 +16,9 @@ Correlation is very convenient to work with, because it's a unitless measure whi
 
 Covariance and correlation are two properties that describe the *theoretical* relationship between two random variables. When we work from samples of data, we don't always know the true covariance or correlation, and we need to estimate these metrics from our samples. Unbiased estimators for both metrics can be found below:
 
-$$\textrm{Sample covariance:} \quad S_\boldsymbol{yx} = \frac{1}{n-1} \sum_i (y_i - \bar{y})(x_i - \bar{x})$$
+$$\textrm{Sample covariance:} \quad S_{\boldsymbol{yx}} = \frac{1}{n-1} \sum_i (y_i - \bar{y})(x_i - \bar{x})$$
 
-$$\textrm{Sample correlation:} \quad r_\boldsymbol{yx} = \frac{\sum_i (y_i - \bar{y})(x_i - \bar{x})}{\sqrt{\sum_i (y_i - \bar{y})^2} \sqrt{\sum_i (x_i - \bar{x})^2}}$$
+$$\textrm{Sample correlation:} \quad r_{\boldsymbol{yx}} = \frac{\sum_i (y_i - \bar{y})(x_i - \bar{x})}{\sqrt{\sum_i (y_i - \bar{y})^2} \sqrt{\sum_i (x_i - \bar{x})^2}}$$
 
 ## Autocovariance and autocorrelation
 

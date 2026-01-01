@@ -4,7 +4,7 @@ Hello! I'm Jonathan, and I want to teach you time series analysis I have designe
 
 ## Recommended textbooks {#sec-referencetexts}
 
-Unlike [my statistics course website](https://adsp-stats.github.io), I do *not* intend that this course website be considered the principle text for the class. We will have two primary textbooks (described below), and the notes in these pages *supplement* the readings without *replacing* the readings.
+Unlike [my statistics course website](https://adsp-stats.github.io/statisticalmodels), I do *not* intend that this course website be considered the principle text for the class. We will have two primary textbooks (described below), and the notes in these pages *supplement* the readings without *replacing* the readings.
 
  *  *Forecasting: Principles and Practice* 3rd edition, by Rob Hyndman and George Athanasopoulos
 
