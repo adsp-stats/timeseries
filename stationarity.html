@@ -275,6 +275,11 @@ window.Quarto = {
 </header>
 
 
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fable)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fabletools)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tseries)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 <section id="motivation" class="level2">
 <h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
 <p>We can’t perfectly forecast everything (or anything!), but perhaps we can draw a meaningful distinction between two different scenarios:</p>
@@ -363,17 +368,17 @@ Note
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">1</span>))</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1229</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>tsts <span class="ot">&lt;-</span> <span class="dv">70</span> <span class="sc">+</span> <span class="dv">3</span><span class="sc">*</span><span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ar=</span><span class="fu">c</span>(<span class="fl">0.5</span>,<span class="fl">0.25</span>)),<span class="at">n=</span><span class="dv">100</span>) <span class="sc">-</span> <span class="fl">0.4</span><span class="sc">*</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tsts,<span class="at">ylab=</span><span class="st">'Y_t'</span>,<span class="at">main=</span><span class="st">'Original data series'</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">70</span>,<span class="sc">-</span><span class="fl">0.4</span>,<span class="at">col=</span><span class="st">'#bbbbbb'</span>)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tsts <span class="sc">+</span>  <span class="fl">0.4</span><span class="sc">*</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>),<span class="at">ylab=</span><span class="st">'Y_t - 0.4t'</span>,<span class="at">main=</span><span class="st">'Detrended data series'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">1</span>))</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1229</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>tsts <span class="ot">&lt;-</span> <span class="dv">70</span> <span class="sc">+</span> <span class="dv">3</span><span class="sc">*</span><span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ar=</span><span class="fu">c</span>(<span class="fl">0.5</span>,<span class="fl">0.25</span>)),<span class="at">n=</span><span class="dv">100</span>) <span class="sc">-</span> <span class="fl">0.4</span><span class="sc">*</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tsts,<span class="at">ylab=</span><span class="st">'Y_t'</span>,<span class="at">main=</span><span class="st">'Original data series'</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">70</span>,<span class="sc">-</span><span class="fl">0.4</span>,<span class="at">col=</span><span class="st">'#bbbbbb'</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tsts <span class="sc">+</span>  <span class="fl">0.4</span><span class="sc">*</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>),<span class="at">ylab=</span><span class="st">'Y_t - 0.4t'</span>,<span class="at">main=</span><span class="st">'Detrended data series'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stationarity_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stationarity_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
 <figcaption>Trend-stationary process with and without detrending</figcaption>
 </figure>
 </div>
@@ -407,32 +412,32 @@ Note
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">1</span>))</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">200</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1230</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>rw <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(<span class="fu">rnorm</span>(n))</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(rw,<span class="at">ylab=</span><span class="st">'Y_t'</span>,<span class="at">main=</span><span class="st">'Original data series'</span>,<span class="at">type=</span><span class="st">'l'</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">1</span>,n),<span class="at">y=</span><span class="fu">c</span>(rw[<span class="dv">1</span>],rw[n]),<span class="at">col=</span><span class="st">'#bbbbbb'</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(rw<span class="sc">-</span>(<span class="dv">1</span><span class="sc">:</span>n)<span class="sc">*</span>(rw[n]<span class="sc">-</span>rw[<span class="dv">1</span>])<span class="sc">/</span>(n<span class="dv">-1</span>),<span class="at">ylab=</span><span class="st">'Y_t - Avg Drift'</span>,<span class="at">main=</span><span class="st">'Detrended data series'</span>,<span class="at">type=</span><span class="st">'l'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">1</span>))</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">200</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1230</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>rw <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(<span class="fu">rnorm</span>(n))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(rw,<span class="at">ylab=</span><span class="st">'Y_t'</span>,<span class="at">main=</span><span class="st">'Original data series'</span>,<span class="at">type=</span><span class="st">'l'</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">1</span>,n),<span class="at">y=</span><span class="fu">c</span>(rw[<span class="dv">1</span>],rw[n]),<span class="at">col=</span><span class="st">'#bbbbbb'</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(rw<span class="sc">-</span>(<span class="dv">1</span><span class="sc">:</span>n)<span class="sc">*</span>(rw[n]<span class="sc">-</span>rw[<span class="dv">1</span>])<span class="sc">/</span>(n<span class="dv">-1</span>),<span class="at">ylab=</span><span class="st">'Y_t - Avg Drift'</span>,<span class="at">main=</span><span class="st">'Detrended data series'</span>,<span class="at">type=</span><span class="st">'l'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stationarity_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stationarity_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
 <figcaption>Random walks de-trended (top) and differenced (bottom)</figcaption>
 </figure>
 </div>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(rw,<span class="at">ylab=</span><span class="st">'Y_t'</span>,<span class="at">main=</span><span class="st">'Original data series'</span>,<span class="at">type=</span><span class="st">'l'</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">segments</span>(<span class="at">x0=</span><span class="dv">2</span><span class="sc">:</span>n,<span class="at">x1=</span><span class="dv">2</span><span class="sc">:</span>n,<span class="at">y0=</span><span class="dv">0</span>,<span class="at">y1=</span><span class="fu">diff</span>(rw),<span class="at">col=</span><span class="st">'#bbbbbb'</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">diff</span>(rw),<span class="at">ylab=</span><span class="st">'First difference of Y_t'</span>,<span class="at">main=</span><span class="st">'Differenced data series'</span>,<span class="at">type=</span><span class="st">'l'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(rw,<span class="at">ylab=</span><span class="st">'Y_t'</span>,<span class="at">main=</span><span class="st">'Original data series'</span>,<span class="at">type=</span><span class="st">'l'</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">segments</span>(<span class="at">x0=</span><span class="dv">2</span><span class="sc">:</span>n,<span class="at">x1=</span><span class="dv">2</span><span class="sc">:</span>n,<span class="at">y0=</span><span class="dv">0</span>,<span class="at">y1=</span><span class="fu">diff</span>(rw),<span class="at">col=</span><span class="st">'#bbbbbb'</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">diff</span>(rw),<span class="at">ylab=</span><span class="st">'First difference of Y_t'</span>,<span class="at">main=</span><span class="st">'Differenced data series'</span>,<span class="at">type=</span><span class="st">'l'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stationarity_files/figure-html/unnamed-chunk-2-2.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stationarity_files/figure-html/unnamed-chunk-3-2.png" class="img-fluid figure-img" width="672"></p>
 <figcaption>Random walks de-trended (top) and differenced (bottom)</figcaption>
 </figure>
 </div>
@@ -460,24 +465,15 @@ Note
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">1</span>))</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fabletools,<span class="at">quietly=</span><span class="cn">TRUE</span>,<span class="at">warn.conflicts=</span><span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Registered S3 method overwritten by 'tsibble':
-  method               from 
-  as_tibble.grouped_df dplyr</code></pre>
-</div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(AirPassengers,<span class="at">ylab=</span><span class="st">'Monthly Air Passengers (1000s)'</span>,<span class="at">main=</span><span class="st">'Original nonstationary series'</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">box_cox</span>(AirPassengers,<span class="fl">0.1</span>),<span class="at">ylab=</span><span class="st">'Transformed series'</span>,<span class="at">main=</span><span class="st">'Box-Cox transformation with lambda=0.1'</span>)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">reg=</span><span class="fu">lm</span>(<span class="fu">box_cox</span>(AirPassengers,<span class="fl">0.1</span>)<span class="sc">~</span><span class="fu">time</span>(AirPassengers)),<span class="at">col=</span><span class="st">'#bbbbbb'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">1</span>))</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(AirPassengers,<span class="at">ylab=</span><span class="st">'Monthly Air Passengers (1000s)'</span>,<span class="at">main=</span><span class="st">'Original nonstationary series'</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">box_cox</span>(AirPassengers,<span class="fl">0.1</span>),<span class="at">ylab=</span><span class="st">'Transformed series'</span>,<span class="at">main=</span><span class="st">'Box-Cox transformation with lambda=0.1'</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">reg=</span><span class="fu">lm</span>(<span class="fu">box_cox</span>(AirPassengers,<span class="fl">0.1</span>)<span class="sc">~</span><span class="fu">time</span>(AirPassengers)),<span class="at">col=</span><span class="st">'#bbbbbb'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="stationarity_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="stationarity_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
 <figcaption>Box-Cox transformation of monthly airline passengers</figcaption>
 </figure>
 </div>
@@ -502,13 +498,7 @@ Note
 <p>The <strong>augmented Dickey-Fuller (ADF) test</strong> extends this concept to control for complex autocorrelations in the original data series which might obscure the presence of a random walk. While the ADF test is slightly less powerful than the original Dickey-Fuller test, it’s more widely used today and considered an improvement upon the original.</p>
 <p>We see that the original air passenger data series shown above fails to display stationarity, while the Box-Cox transformation does show stationarity using an ADF test:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tseries,<span class="at">quietly=</span><span class="cn">TRUE</span>,<span class="at">warn.conflict=</span><span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Registered S3 method overwritten by 'quantmod':
-  method            from
-  as.zoo.data.frame zoo </code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">adf.test</span>(AirPassengers)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">adf.test</span>(AirPassengers)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in adf.test(AirPassengers): p-value smaller than printed p-value</code></pre>
 </div>
@@ -520,7 +510,7 @@ data:  AirPassengers
 Dickey-Fuller = -7.3186, Lag order = 5, p-value = 0.01
 alternative hypothesis: stationary</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">adf.test</span>(<span class="fu">box_cox</span>(AirPassengers,<span class="at">lambda=</span><span class="fl">0.1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">adf.test</span>(<span class="fu">box_cox</span>(AirPassengers,<span class="at">lambda=</span><span class="fl">0.1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in adf.test(box_cox(AirPassengers, lambda = 0.1)): p-value smaller than
 printed p-value</code></pre>
@@ -544,7 +534,7 @@ alternative hypothesis: stationary</code></pre>
 <p>The KPSS test examines whether the random walk variance could be 0 (in which case it is not really present at all). By testing <span class="math inline">\(\sigma^2 = 0\)</span>, it creates <em>a null hypothesis of stationarity</em> and a one-sided alternative hypothesis that <span class="math inline">\(\boldsymbol{Y}\)</span> is a random walk.</p>
 <p>We see that the original air passenger data series shown above fails to display stationarity, while the Box-Cox transformation does show stationarity using a KPSS test:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kpss.test</span>(AirPassengers,<span class="at">null=</span><span class="st">'Trend'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kpss.test</span>(AirPassengers,<span class="at">null=</span><span class="st">'Trend'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in kpss.test(AirPassengers, null = "Trend"): p-value greater than
 printed p-value</code></pre>
@@ -556,7 +546,7 @@ printed p-value</code></pre>
 data:  AirPassengers
 KPSS Trend = 0.09615, Truncation lag parameter = 4, p-value = 0.1</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kpss.test</span>(<span class="fu">box_cox</span>(AirPassengers,<span class="at">lambda=</span><span class="fl">0.1</span>),<span class="at">null=</span><span class="st">'Trend'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kpss.test</span>(<span class="fu">box_cox</span>(AirPassengers,<span class="at">lambda=</span><span class="fl">0.1</span>),<span class="at">null=</span><span class="st">'Trend'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in kpss.test(box_cox(AirPassengers, lambda = 0.1), null = "Trend"):
 p-value greater than printed p-value</code></pre>

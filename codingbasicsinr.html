@@ -262,14 +262,9 @@ window.Quarto = {
 
 
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS,<span class="at">quietly=</span><span class="cn">TRUE</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tseries,<span class="at">quietly=</span><span class="cn">TRUE</span>,<span class="at">warn.conflicts=</span><span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Registered S3 method overwritten by 'quantmod':
-  method            from
-  as.zoo.data.frame zoo </code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forecast,<span class="at">quietly=</span><span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tseries)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forecast)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <section id="time-series-functions-used-in-this-document" class="level2">
 <h2 class="anchored" data-anchor-id="time-series-functions-used-in-this-document">Time series functions used in this document</h2>
@@ -352,11 +347,11 @@ window.Quarto = {
 <p>Different packages have different standards for defining a time series. In many cases, you can pass a simple numeric vector to a time series function: the function will typecast the vector into a time series object and proceed as intended. In other cases, you need to make sure that you have typed the vector as a time series.</p>
 <p>Two common standards for representing time series are <code>stats::ts</code> from base R and <code>tsibble::tsibble</code> from the tidyverse constellation of packages. This document will use base R conventions and functions.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#define a time series</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>sample_ts <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">18</span>, <span class="at">frequency=</span><span class="dv">4</span>, <span class="at">start=</span><span class="fu">c</span>(<span class="dv">1999</span>,<span class="dv">2</span>))</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">#print some basic information and the series values</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(sample_ts, <span class="at">calendar=</span><span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#define a time series</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>sample_ts <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">18</span>, <span class="at">frequency=</span><span class="dv">4</span>, <span class="at">start=</span><span class="fu">c</span>(<span class="dv">1999</span>,<span class="dv">2</span>))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#print some basic information and the series values</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(sample_ts, <span class="at">calendar=</span><span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Time Series:
 Start = c(1999, 2) 
@@ -364,8 +359,8 @@ End = c(2003, 3)
 Frequency = 4 
  [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#alternate print view (still treated as a vector, not a matrix)</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(sample_ts, <span class="at">calendar=</span><span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#alternate print view (still treated as a vector, not a matrix)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(sample_ts, <span class="at">calendar=</span><span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     Qtr1 Qtr2 Qtr3 Qtr4
 1999         1    2    3
@@ -374,8 +369,8 @@ Frequency = 4
 2002   12   13   14   15
 2003   16   17   18     </code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#recover the time index values for each obseration</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">time</span>(sample_ts)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#recover the time index values for each obseration</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">time</span>(sample_ts)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        Qtr1    Qtr2    Qtr3    Qtr4
 1999         1999.25 1999.50 1999.75
@@ -384,24 +379,24 @@ Frequency = 4
 2002 2002.00 2002.25 2002.50 2002.75
 2003 2003.00 2003.25 2003.50        </code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#recover the first and last time indices</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">start</span>(sample_ts)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#recover the first and last time indices</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">start</span>(sample_ts)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1999    2</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">end</span>(sample_ts)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">end</span>(sample_ts)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 2003    3</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">#subset the series and optionally downsample to yearly</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">window</span>(sample_ts,<span class="at">start=</span><span class="dv">2000</span>,<span class="at">end=</span><span class="dv">2002</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">#subset the series and optionally downsample to yearly</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">window</span>(sample_ts,<span class="at">start=</span><span class="dv">2000</span>,<span class="at">end=</span><span class="dv">2002</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     Qtr1 Qtr2 Qtr3 Qtr4
 2000    4    5    6    7
 2001    8    9   10   11
 2002   12               </code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">window</span>(sample_ts,<span class="at">start=</span><span class="dv">2000</span>,<span class="at">end=</span><span class="dv">2002</span>,<span class="at">frequency=</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">window</span>(sample_ts,<span class="at">start=</span><span class="dv">2000</span>,<span class="at">end=</span><span class="dv">2002</span>,<span class="at">frequency=</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Time Series:
 Start = 2000 
@@ -415,15 +410,15 @@ Frequency = 1
 <h2 class="anchored" data-anchor-id="creating-a-random-walk-in-r">Creating a random walk in R</h2>
 <p>Although random walks are defined recursively, “for loops” are almost always the <em>wrong</em> way to accomplish any task in R. Instead, we can rely on R’s native vectorization and parallelization to quickly create a one-dimensional gaussian random walk:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co">#simulate a gaussian random walk 'manually'</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1044</span>)</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>rw_a <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(<span class="fu">rnorm</span>(<span class="dv">20</span>))</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(rw_a,<span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">#simulate a gaussian random walk 'manually'</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1044</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>rw_a <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(<span class="fu">rnorm</span>(<span class="dv">20</span>))</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(rw_a,<span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] -0.05  1.26  2.67  3.47  2.86  2.23  0.94  0.36 -0.26  0.02 -0.65 -0.38
 [13] -0.38 -0.15  0.85  1.60  1.07 -0.73 -0.15 -0.88</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(rw_a,<span class="at">type=</span><span class="st">'b'</span>,<span class="at">ylab=</span><span class="st">'Values'</span>,<span class="at">main=</span><span class="st">'Gaussian random walk'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(rw_a,<span class="at">type=</span><span class="st">'b'</span>,<span class="at">ylab=</span><span class="st">'Values'</span>,<span class="at">main=</span><span class="st">'Gaussian random walk'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -431,11 +426,11 @@ Frequency = 1
 </figure>
 </div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">#simulate through a dedicated time series function</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="co">#note result is offset by one observation from above </span></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1044</span>)</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>rw_b <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="at">model=</span><span class="fu">list</span>(<span class="at">order=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>)),<span class="at">n=</span><span class="dv">20</span>)</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(rw_b,<span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">#simulate through a dedicated time series function</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co">#note result is offset by one observation from above </span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1044</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>rw_b <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="at">model=</span><span class="fu">list</span>(<span class="at">order=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>)),<span class="at">n=</span><span class="dv">20</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(rw_b,<span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Time Series:
 Start = 0 
@@ -444,8 +439,8 @@ Frequency = 1
  [1]  0.00 -0.05  1.26  2.67  3.47  2.86  2.23  0.94  0.36 -0.26  0.02 -0.65
 [13] -0.38 -0.38 -0.15  0.85  1.60  1.07 -0.73 -0.15 -0.88</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">#recover the white noise innovations (multiple options)</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">diff</span>(rw_b),<span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">#recover the white noise innovations (multiple options)</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">diff</span>(rw_b),<span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Time Series:
 Start = 1 
@@ -454,8 +449,8 @@ Frequency = 1
  [1] -0.05  1.31  1.41  0.80 -0.61 -0.63 -1.28 -0.59 -0.61  0.27 -0.66  0.27
 [13]  0.00  0.23  1.00  0.75 -0.53 -1.80  0.58 -0.74</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1044</span>)</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">rnorm</span>(<span class="dv">20</span>),<span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1044</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">rnorm</span>(<span class="dv">20</span>),<span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] -0.05  1.31  1.41  0.80 -0.61 -0.63 -1.28 -0.59 -0.61  0.27 -0.66  0.27
 [13]  0.00  0.23  1.00  0.75 -0.53 -1.80  0.58 -0.74</code></pre>
@@ -463,10 +458,10 @@ Frequency = 1
 </div>
 <p>Of course there are more random walks… we could create Gaussian random walks in two dimensions, or random walks with non-Gaussian innovations.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1415</span>)</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>rw_c <span class="ot">&lt;-</span> <span class="fu">apply</span>(<span class="fu">mvrnorm</span>(<span class="at">n=</span><span class="dv">20</span>,<span class="at">mu=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>),<span class="at">Sigma=</span><span class="fu">diag</span>(<span class="dv">2</span>)),<span class="dv">2</span>,cumsum)</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(rw_c,<span class="at">type=</span><span class="st">'b'</span>,<span class="at">pch=</span><span class="cn">NA</span>,<span class="at">xlab=</span><span class="st">'Y (d1)'</span>,<span class="at">ylab=</span><span class="st">'Y (d2)'</span>,<span class="at">main=</span><span class="st">'2D random walk'</span>)</span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span>rw_c,<span class="at">labels=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1415</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>rw_c <span class="ot">&lt;-</span> <span class="fu">apply</span>(<span class="fu">mvrnorm</span>(<span class="at">n=</span><span class="dv">20</span>,<span class="at">mu=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>),<span class="at">Sigma=</span><span class="fu">diag</span>(<span class="dv">2</span>)),<span class="dv">2</span>,cumsum)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(rw_c,<span class="at">type=</span><span class="st">'b'</span>,<span class="at">pch=</span><span class="cn">NA</span>,<span class="at">xlab=</span><span class="st">'Y (d1)'</span>,<span class="at">ylab=</span><span class="st">'Y (d2)'</span>,<span class="at">main=</span><span class="st">'2D random walk'</span>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span>rw_c,<span class="at">labels=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -480,7 +475,7 @@ Frequency = 1
 <h2 class="anchored" data-anchor-id="assessing-stationarity">Assessing stationarity</h2>
 <p>Let’s examine some real data. Johnson &amp; Johnson (“J&amp;J”) is a Fortune 500 company which focuses on medical technology and biotech products. Market analysts often describe the performance of publicly traded companies like J&amp;J using the metric of <em>earnings per share (EPS).</em></p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(JohnsonJohnson,<span class="at">ylab=</span><span class="st">'EPS ($)'</span>,<span class="at">main=</span><span class="st">'Quarterly EPS for Johnson &amp; Johnson'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(JohnsonJohnson,<span class="at">ylab=</span><span class="st">'EPS ($)'</span>,<span class="at">main=</span><span class="st">'Quarterly EPS for Johnson &amp; Johnson'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -491,7 +486,7 @@ Frequency = 1
 </div>
 <p>We see strong visual evidence that the series is not stationary: the mean changes over time and so does the variance. Because the variance changes, we can rule out trend-stationarity (and besides, we see that any trend would be non-linear.) Still, we can confirm this visual impression through two quick tests:<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">adf.test</span>(JohnsonJohnson)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">adf.test</span>(JohnsonJohnson)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in adf.test(JohnsonJohnson): p-value greater than printed p-value</code></pre>
 </div>
@@ -503,7 +498,7 @@ data:  JohnsonJohnson
 Dickey-Fuller = 1.9321, Lag order = 4, p-value = 0.99
 alternative hypothesis: stationary</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kpss.test</span>(JohnsonJohnson,<span class="at">null=</span><span class="st">'Trend'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kpss.test</span>(JohnsonJohnson,<span class="at">null=</span><span class="st">'Trend'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in kpss.test(JohnsonJohnson, null = "Trend"): p-value smaller than
 printed p-value</code></pre>
@@ -518,7 +513,7 @@ KPSS Trend = 0.50099, Truncation lag parameter = 3, p-value = 0.01</code></pre>
 </div>
 <p>Although the J&amp;J EPS data is nonstationary, neither is it a true Gaussian random walk, since it it very steadily increases and the variance seems to increase over time. This is probably a good candidate for a Box-Cox transformation. Note that the <code>MASS::boxcox</code> function requires a model or formula as its input, and not the raw time series vector. We can create a simple “intercept only” model for the J&amp;J EPS data.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxcox</span>(JohnsonJohnson<span class="sc">~</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxcox</span>(JohnsonJohnson<span class="sc">~</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -529,7 +524,7 @@ KPSS Trend = 0.50099, Truncation lag parameter = 3, p-value = 0.01</code></pre>
 </div>
 <p>The plot above shows the likelihood function associated with a stationarity test at different choices for the Box-Cox parameter <span class="math inline">\(\lambda\)</span>. It looks like the a range of values from about -0.2 to +0.2 would be acceptable, but since <span class="math inline">\(\lambda=0\)</span> is so nearly the MLE choice, and since logarithmic transformations are common in econometric analyses, we may adopt <span class="math inline">\(\lambda=0\)</span> for now, meaning that <span class="math inline">\(Y_t^{(\lambda)} = \log Y_t\)</span>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">log</span>(JohnsonJohnson),<span class="at">ylab=</span><span class="st">'Log EPS ($)'</span>,<span class="at">main=</span><span class="st">'Box-Cox transform of J&amp;J EPS'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">log</span>(JohnsonJohnson),<span class="at">ylab=</span><span class="st">'Log EPS ($)'</span>,<span class="at">main=</span><span class="st">'Box-Cox transform of J&amp;J EPS'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -537,7 +532,7 @@ KPSS Trend = 0.50099, Truncation lag parameter = 3, p-value = 0.01</code></pre>
 </figure>
 </div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">adf.test</span>(<span class="fu">log</span>(JohnsonJohnson))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">adf.test</span>(<span class="fu">log</span>(JohnsonJohnson))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Augmented Dickey-Fuller Test
@@ -546,7 +541,7 @@ data:  log(JohnsonJohnson)
 Dickey-Fuller = -1.1543, Lag order = 4, p-value = 0.9087
 alternative hypothesis: stationary</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kpss.test</span>(<span class="fu">log</span>(JohnsonJohnson),<span class="at">null=</span><span class="st">'Trend'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kpss.test</span>(<span class="fu">log</span>(JohnsonJohnson),<span class="at">null=</span><span class="st">'Trend'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in kpss.test(log(JohnsonJohnson), null = "Trend"): p-value smaller than
 printed p-value</code></pre>
@@ -564,9 +559,9 @@ KPSS Trend = 0.25322, Truncation lag parameter = 3, p-value = 0.01</code></pre>
 <section id="measuring-and-plotting-autocorrelation" class="level2">
 <h2 class="anchored" data-anchor-id="measuring-and-plotting-autocorrelation">Measuring and plotting autocorrelation</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfcol=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(JohnsonJohnson,<span class="at">main=</span><span class="st">'Original data'</span>,<span class="at">ylab=</span><span class="st">'EPS ($)'</span>)</span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(JohnsonJohnson,<span class="at">main=</span><span class="st">'ACF of original data'</span>,<span class="at">xlab=</span><span class="st">'Lag (in years)'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfcol=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(JohnsonJohnson,<span class="at">main=</span><span class="st">'Original data'</span>,<span class="at">ylab=</span><span class="st">'EPS ($)'</span>)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(JohnsonJohnson,<span class="at">main=</span><span class="st">'ACF of original data'</span>,<span class="at">xlab=</span><span class="st">'Lag (in years)'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -579,7 +574,7 @@ KPSS Trend = 0.25322, Truncation lag parameter = 3, p-value = 0.01</code></pre>
 <p>The remaining peaks show the autocorrelation of this EPS data with its own past values. Because the data have been structured with frequency 4 (appropriate for quarterly data), it takes four lags to reach “1” (year) on the x-axis, but I shall call each past quarter the first lag, second lag, <em>etc.</em> and ignore the x-axis values.</p>
 <p>The autocorrelation function at the first lag is quite high too – visually about 0.92:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(JohnsonJohnson,<span class="at">plot=</span><span class="cn">FALSE</span>)<span class="sc">$</span>acf[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(JohnsonJohnson,<span class="at">plot=</span><span class="cn">FALSE</span>)<span class="sc">$</span>acf[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1.0000000 0.9251021 0.8882631 0.8328480 0.8240770</code></pre>
 </div>
@@ -588,11 +583,11 @@ KPSS Trend = 0.25322, Truncation lag parameter = 3, p-value = 0.01</code></pre>
 <p>The autocorrelations with further lags are also quite high. We should expect this behavior: if this quarter’s EPS is highly correlated with last quarter’s EPS, then last quarter’s EPS is highly correlated with the EPS from two quarters ago, and so this quarter’s EPS is also at least moderately correlated with the EPS from two quarters ago!</p>
 <p>Let’s try examining the ACF plot for the de-trended, Box-Cox transformed EPS data:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>eps_boxcox_detrend <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="fu">lm</span>(<span class="fu">log</span>(JohnsonJohnson)<span class="sc">~</span><span class="fu">time</span>(JohnsonJohnson))<span class="sc">$</span>residuals,</span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">start=</span><span class="dv">1960</span>,<span class="at">frequency=</span><span class="dv">4</span>)</span>
-<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfcol=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
-<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(eps_boxcox_detrend,<span class="at">main=</span><span class="st">'De-trended, transformed data'</span>,<span class="at">ylab=</span><span class="st">'Transformed EPS ($)'</span>)</span>
-<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(eps_boxcox_detrend,<span class="at">main=</span><span class="st">'ACF of de-trended, transformed data'</span>,<span class="at">xlab=</span><span class="st">'Lag (in years)'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>eps_boxcox_detrend <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="fu">lm</span>(<span class="fu">log</span>(JohnsonJohnson)<span class="sc">~</span><span class="fu">time</span>(JohnsonJohnson))<span class="sc">$</span>residuals,</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">start=</span><span class="dv">1960</span>,<span class="at">frequency=</span><span class="dv">4</span>)</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfcol=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(eps_boxcox_detrend,<span class="at">main=</span><span class="st">'De-trended, transformed data'</span>,<span class="at">ylab=</span><span class="st">'Transformed EPS ($)'</span>)</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(eps_boxcox_detrend,<span class="at">main=</span><span class="st">'ACF of de-trended, transformed data'</span>,<span class="at">xlab=</span><span class="st">'Lag (in years)'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -603,7 +598,7 @@ KPSS Trend = 0.25322, Truncation lag parameter = 3, p-value = 0.01</code></pre>
 </div>
 <p>The Box-Cox transformation and de-trending successfully removed a lot of the nonstationary behavior, but the remaining autocorrelation is highly <em>seasonal</em> — each transformed EPS observation is very similar to the EPS from four quarters ago (and thus eight, and twelve…). If we plot the quarterly earnings by year (or each year’s earnings by quarter), we can see this pattern more plainly, where Q3 usually brings very strong earnings for J&amp;J, while Q4 brings weaker earnings:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">monthplot</span>(eps_boxcox_detrend,<span class="at">ylab=</span><span class="st">'Transformed EPS'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">monthplot</span>(eps_boxcox_detrend,<span class="at">ylab=</span><span class="st">'Transformed EPS'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -611,8 +606,8 @@ KPSS Trend = 0.25322, Truncation lag parameter = 3, p-value = 0.01</code></pre>
 </figure>
 </div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">seasonplot</span>(eps_boxcox_detrend,<span class="at">year.labels.left=</span><span class="cn">TRUE</span>,<span class="at">type=</span><span class="st">'l'</span>,<span class="at">ylab=</span><span class="st">'Transformed EPS'</span>,</span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">col=</span><span class="fu">colorRampPalette</span>(<span class="fu">c</span>(<span class="st">'#ff0000'</span>,<span class="st">'#bbbbbb'</span>,<span class="st">'#0000ff'</span>))(<span class="dv">21</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">seasonplot</span>(eps_boxcox_detrend,<span class="at">year.labels.left=</span><span class="cn">TRUE</span>,<span class="at">type=</span><span class="st">'l'</span>,<span class="at">ylab=</span><span class="st">'Transformed EPS'</span>,</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">col=</span><span class="fu">colorRampPalette</span>(<span class="fu">c</span>(<span class="st">'#ff0000'</span>,<span class="st">'#bbbbbb'</span>,<span class="st">'#0000ff'</span>))(<span class="dv">21</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -624,11 +619,11 @@ KPSS Trend = 0.25322, Truncation lag parameter = 3, p-value = 0.01</code></pre>
 <p>We see now why the data failed our stationarity tests: the strong seasonal effects lead the mean of the serties to shift predictably in different quarters. If not every observation has the same predicted mean, then the data cannot be weakly stationary.</p>
 <p>We will learn more elegant ways of modeling seasonality, but for now we could fall back on a tool we already know: linear regression. Rather than simply de-trending over time, we can add a linear time trend as well as quarterly effect dummies. The residuals from this OLS regression <em>should</em> be more stationary:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>eps_boxcox_detrend_deseason <span class="ot">&lt;-</span> <span class="fu">ts</span>(</span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lm</span>(<span class="fu">log</span>(JohnsonJohnson) <span class="sc">~</span> <span class="fu">time</span>(JohnsonJohnson) <span class="sc">+</span> <span class="fu">factor</span>(<span class="fu">cycle</span>(JohnsonJohnson)))<span class="sc">$</span>residuals,</span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">start=</span><span class="dv">1960</span>,<span class="at">frequency=</span><span class="dv">4</span>)</span>
-<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a><span class="fu">adf.test</span>(eps_boxcox_detrend_deseason)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>eps_boxcox_detrend_deseason <span class="ot">&lt;-</span> <span class="fu">ts</span>(</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lm</span>(<span class="fu">log</span>(JohnsonJohnson) <span class="sc">~</span> <span class="fu">time</span>(JohnsonJohnson) <span class="sc">+</span> <span class="fu">factor</span>(<span class="fu">cycle</span>(JohnsonJohnson)))<span class="sc">$</span>residuals,</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">start=</span><span class="dv">1960</span>,<span class="at">frequency=</span><span class="dv">4</span>)</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a><span class="fu">adf.test</span>(eps_boxcox_detrend_deseason)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Augmented Dickey-Fuller Test
@@ -637,7 +632,7 @@ data:  eps_boxcox_detrend_deseason
 Dickey-Fuller = -1.1176, Lag order = 4, p-value = 0.9144
 alternative hypothesis: stationary</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kpss.test</span>(eps_boxcox_detrend_deseason,<span class="at">null=</span><span class="st">'Trend'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kpss.test</span>(eps_boxcox_detrend_deseason,<span class="at">null=</span><span class="st">'Trend'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in kpss.test(eps_boxcox_detrend_deseason, null = "Trend"): p-value
 smaller than printed p-value</code></pre>
@@ -649,11 +644,11 @@ smaller than printed p-value</code></pre>
 data:  eps_boxcox_detrend_deseason
 KPSS Trend = 0.25394, Truncation lag parameter = 3, p-value = 0.01</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
-<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(eps_boxcox_detrend_deseason,</span>
-<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'De-trended and de-seasoned data'</span>,<span class="at">ylab=</span><span class="st">'Transformed EPS ($)'</span>)</span>
-<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(eps_boxcox_detrend_deseason,</span>
-<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">main=</span><span class="st">'ACF of de-trended and de-seasoned data'</span>,<span class="at">xlab=</span><span class="st">'Lag (in years)'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(eps_boxcox_detrend_deseason,</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'De-trended and de-seasoned data'</span>,<span class="at">ylab=</span><span class="st">'Transformed EPS ($)'</span>)</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(eps_boxcox_detrend_deseason,</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">main=</span><span class="st">'ACF of de-trended and de-seasoned data'</span>,<span class="at">xlab=</span><span class="st">'Lag (in years)'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
