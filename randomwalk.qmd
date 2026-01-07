@@ -58,7 +58,7 @@ Let $\boldsymbol{\omega}$ be a time series random variable observed at regular t
 
 $$\begin{aligned} Y_1 &= \omega_1 \\ Y_t &= Y_{t-1} + \omega_t \quad \forall t>1\end{aligned}$$
 
-Then $\boldsymbol{Y}$ is a **random walk**, specifically a homogenous discrete-time random walk in one dimension.  If $\omega_t \stackrel{iid}{\sim} \textrm{Normal}(0,\sigma^2) \; \forall t \in T$, then we say that $Y(T)$ is a *Gaussian random walk.*
+Then $\boldsymbol{Y}$ is a **random walk**, specifically a homogenous discrete-time random walk in one dimension.  If $\omega_t \stackrel{iid}{\sim} \textrm{Normal}(0,\sigma^2) \; \forall t \in T$, then we say that $\boldsymbol{Y}$ is a *Gaussian random walk.*
 
 :::
 

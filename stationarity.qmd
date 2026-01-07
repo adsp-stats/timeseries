@@ -149,7 +149,7 @@ The exact parameter $\lambda$ which brings a nonstationary series closest to sta
 #| code-fold: true
 #| fig-cap: 'Box-Cox transformation of monthly airline passengers'
 par(mfrow=c(1,2),mar=c(4, 4, 3, 1))
-library(fabletools,quietly=TRUE)
+library(fabletools,quietly=TRUE,warn.conflicts=FALSE)
 plot(AirPassengers,ylab='Monthly Air Passengers (1000s)',main='Original nonstationary series')
 plot(box_cox(AirPassengers,0.1),ylab='Transformed series',main='Box-Cox transformation with lambda=0.1')
 abline(reg=lm(box_cox(AirPassengers,0.1)~time(AirPassengers)),col='#bbbbbb')
@@ -180,7 +180,7 @@ The **augmented Dickey-Fuller (ADF) test** extends this concept to control for c
 We see that the original air passenger data series shown above fails to display stationarity, while the Box-Cox transformation does show stationarity using an ADF test:
 
 ```{r}
-library(tseries,quietly=TRUE)
+library(tseries,quietly=TRUE,warn.conflict=FALSE)
 adf.test(AirPassengers)
 adf.test(box_cox(AirPassengers,lambda=0.1))
 ```

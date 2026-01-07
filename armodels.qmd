@@ -1,0 +1,149 @@
+# AR models
+
+One building block of statistical time series analysis is the *autoregressive (AR) model*. As the name implies, an AR model presumes that past values of the series can be used to directly predict current values using a regression-like structure:
+
+$$Y_t = \beta_0 + \beta_1 Y_{t-1} + \beta_2 Y_{t-2} + \ldots + \varepsilon_t$$
+
+I wrote the equation above using the notation of linear regression. We will be expressing the same concept using slightly different notation below.
+
+## AR(1) process
+
+Let's take the simplest case, where each value of the series is predicted only by the previous value. We would name this an *autoregressive model with order 1* or *AR(1) model*.
+
+::: {.callout-note}
+Let $\boldsymbol{Y}$ be a time series random variable observed at regular time periods $T = \{1, 2, \ldots, n\}$. Let $\boldsymbol{\omega}$ be a white noise process observed at the same time periods. If,
+
+$$Y_t = \phi Y_{t-1} + \omega_t$$
+
+For some $\phi \in \mathbb{R}$ and all $t \in T$, then we say that $\boldsymbol{Y}$ is an **autoregressive model with order 1**
+:::
+
+In theory, the exact properties of an AR(1) process depend on both the autoregressive parameter $\phi$ as well as the specific type of white noise process denoted by $\boldsymbol{\omega}$. In practice, we often assume $\boldsymbol{\omega}$ to be Gaussian white noise, leaving $\phi$ as the only input which needs estimation.
+
+```{r}
+#| code-fold: true
+#| fig-cap: "Nine AR(1) processes with the same innovations"
+par(mfrow=c(3,3),mar=c(3.1,3.1,3.1,1.1))
+set.seed(0106)
+w <- rnorm(100)
+phivec <- c(-1.5,-1.0,-0.5,0,0.3,0.6,0.9,1.0,1.5)
+Y <- t(rep(w[1],9))
+for (i in 2:100){Y <- rbind(Y, t(rep(w[i],9)+phivec*Y[i-1,]))}
+for (j in 1:9) plot(Y[,j],main=bquote(phi==.(phivec[j])),
+                    type='l',xlab=NA,ylab=NA,sub=NA)
+```
+
+The plots above provide examples of some specific properties of AR(1) processes:
+
+ * When $\phi \gt 1$ or $\phi \lt -1$, we say the process is **explosive.** After a short-to-moderate 'fuse', the innovations begin to cumulate exponentially, rapidly heading toward infinity.
+ 
+ * When $\phi = 1$, we say that the process is a *random walk*, since we now have the familiar model $Y_t = Y_{t-1} + \omega_t$. When $\phi = -1$ we have a variant on a random walk in which both the odd and even observations begin closely-related random walks headed in opposite directions.
+ 
+ * When $-1 \lt \phi \lt 1$ we observe a *stationary process*. This includes the case where $\phi = 0$ (pure white noise), but also other series with noticeable positive or negative autocorrelation. Despite the autocorrelation, the mean and variance of the unconditional variables $Y_t$ (that is, without knowing the past values of $\boldsymbol{Y}$ remain the same, and the autocorrelation of two values depends only on their lag distance, not their time index values.
+
+## Generalizing to AR(*p*)
+
+Now we may complicate the scenario, by allowing the current value $Y_t$ to have *several, different* relationships with *arbitrary* past lags of the series.
+
+::: {.callout-note}
+Let $\boldsymbol{Y}$ be a time series random variable observed at regular time periods $T = \{1, 2, \ldots, n\}$. Let $\boldsymbol{\omega} be a white noise process observed at the same time periods. If,
+
+$$Y_t = \phi_1 Y_{t-1} + \phi_2 Y_{t-2} + \ldots + \phi_p Y_{t-p} + \omega_t$$
+
+For some $(\phi_1, \phi_2, \ldots, \phi_p) \in \mathbb{R}^p$ and all $t \in T$, then we say that $\boldsymbol{Y}$ is an **autoregressive model with order** ***p***.
+:::
+
+These AR(*p*) processes can be difficult to visually distinguish because of the more complicated autocorrelation patterns.
+
+```{r}
+#| code-fold: true
+#| fig-cap: "Nine AR(2) and AR(3) processes with the same innovations"
+par(mfrow=c(3,3),mar=c(3.1,3.1,3.1,1.1))
+set.seed(0107)
+w <- rnorm(100)
+phi1vec <- c(0.5,0.7, 0.7,0.6,0,  -1.6,0.5,0.3,0)
+phi2vec <- c(0.5,0.7,-0.7,0.2,0.5, 0.8,0.4,0.2,0)
+phi3vec <- c(0,  0,   0,  0,  0,   0,  0.3,0.1,1)
+Y <- t(rep(w[1],9))
+Y <- rbind(Y, t(rep(w[2],9)+phi1vec*Y[1,]))
+Y <- rbind(Y, t(rep(w[3],9)+phi1vec*Y[2,]+phi2vec*Y[1,]))
+for (i in 4:100){Y <- rbind(Y,
+  t(rep(w[i],9)+phi1vec*Y[i-1,]+phi2vec*Y[i-2,]+phi3vec*Y[i-3,]))}
+for (j in 1:9) plot(Y[,j],main=bquote(
+  bold(phi) == list(.(phi1vec[j]),.(phi2vec[j]),.(phi3vec[j]))),
+  type='l',xlab=NA,ylab=NA,sub=NA)
+```
+
+## Recognizing an AR process from its ACF plot
+
+An autocorrelation function (ACF) plot will sometimes provide helpful summary or diagnostic information about an AR(*p*) model. In the simplest case of AR(1), the height of the ACF plot at the first lag will be equal to *p*, and the remaining lags will scale geometrically downward.  For example, when $p=0.8$, the second lag will have an autocorrelation of roughly 0.64, and the third lag will have autocorrelation of roughly 0.512
+
+```{r}
+#| code-fold: true
+#| fig-cap: "Two AR(1) processes and their ACF plots, 1000 obs each"
+par(mfrow=c(1,2),mar=c(3.1,3.1,3.1,1.1))
+set.seed(0108)
+ar08 <- arima.sim(list(ar=0.8),n=1000)
+arneg05 <- arima.sim(list(ar=-0.5),n=1000)
+
+acf(ar08,main=expression(paste('ACF when ',phi == 0.8)),lag.max=15)
+acf(arneg05,main=expression(paste('ACF when ',phi == -0.5)),lag.max=15)
+```
+
+More complex AR models have correspondingly complex ACF plots, and you will not always be able to easily diagnose the order and coefficient sizes:
+
+```{r}
+#| code-fold: true
+#| fig-cap: "Two AR(2) processes and their ACF plots, 1000 obs each"
+par(mfrow=c(1,2),mar=c(3.1,3.1,3.1,1.1))
+set.seed(0109)
+ar08neg05 <- arima.sim(list(ar=c(0.8,-0.5)),n=1000)
+arneg05neg04 <- arima.sim(list(ar=c(-0.5,-0.4)),n=1000)
+
+acf(ar08neg05,main=expression(paste('ACF when ',phi == list(0.8,-0.5))),lag.max=15)
+acf(arneg05neg04,main=expression(paste('ACF when ',phi == list(-0.5,-0.4))),lag.max=15)
+```
+
+You do *not* need to be able to spot a complex AR model from a brief inspection of its time series or its ACF plot. However, you *should* know that complex behavior can be very accurately fit by a relatively simple AR model.
+
+## Which AR processes are stationary
+
+We will learn more about this elsewhere, when we discuss unit roots. For now, I will leave you with a simple set of guidelines:
+
+ * AR(1) processes are stationary when $|\phi_1| \lt 1$
+ 
+ * AR(2) processes are stationary when three conditions are met:
+ 
+ $$\begin{aligned}(1) \qquad & |\phi_2| \lt 1 \\ (2) \qquad & \phi_1 + \phi_2 \lt 1 \\ (3) \qquad & \phi_1 - \phi_2 \lt 1 \end{aligned}$$
+ 
+ Representing the two parameters $phi_1$ and $\phi_2$ on the coördinate plane, we would say any process with its parameters inside the shaded region is stationary:
+ 
+```{r}
+#| code-fold: true
+#| fig-cap: 'Stationary sets of AR(2) parameters'
+plot(c(-2.25,2.25),c(-1.25,1.25),type='n',main=NA,sub=NA,
+     ylab=expression(phi[2]),xlab=expression(phi[1]),asp=1)
+polygon(x=c(-2,0,2),y=c(-1,1,-1),lty=1,lwd=2,density=-1,col='#0000ff7f')
+abline(h=0,v=0,lty=2,col='#7f7f7f')
+```
+
+ * For AR(3) and higher processes, stationarity will depend upon the roots of the characteristic polynomial, which can be calculated with a unit root test.
+ 
+## AR model responses to system shocks
+
+AR models translate one-time system shocks into persistent, slowly-decaying signals. Consider a simple AR(1) model which processes a fairly quiet series of innovations, interrupted irregularly by a much larger signal:
+
+```{r}
+#| code-fold: true
+#| fig-cap: "Persistence and decay in an AR(1) model"
+set.seed(0110)
+w <- runif(100,-1,1)
+w[8] <- 10; w[15] <- 10; w[25] <- -10; w[45] <- -10;
+ar <- arima.sim(list(ar=0.9),n=100,innov=w)
+plot(10+ar,type='s',lwd=2,ylim=c(-10,25))
+lines(w,type='h',col='#0000ff',lwd=2)
+abline(h-10,lty=2,col='#7f7f7f')
+legend(x='topright',lwd=2,col=c('#000000','#0000ff'),bty='n',
+       legend=c(expression(paste('Time series ',Y[t])),
+                expression(paste('Innovations ',omega[t]))))
+```
