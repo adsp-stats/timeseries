@@ -302,7 +302,7 @@ window.Quarto = {
 <tr class="odd">
 <td style="text-align: left;">stats</td>
 <td style="text-align: left;">window</td>
-<td style="text-align: left;">Extract the last time index</td>
+<td style="text-align: left;">Subset/downsample a time series</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">stats</td>
@@ -322,22 +322,27 @@ window.Quarto = {
 <tr class="odd">
 <td style="text-align: left;"><em>MASS</em></td>
 <td style="text-align: left;">boxcox</td>
-<td style="text-align: left;">Suggest Box-Cox parameters</td>
+<td style="text-align: left;">Suggest Box-Cox parameter lambda</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;"><em>forecast</em></td>
+<td style="text-align: left;">BoxCox</td>
+<td style="text-align: left;">Transform data with known lambda</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">stats</td>
 <td style="text-align: left;">acf</td>
 <td style="text-align: left;">Compute and plot autocorrelation</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">stats</td>
 <td style="text-align: left;">monthplot</td>
 <td style="text-align: left;">Plot annual change across seasons</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;"><em>forecast</em></td>
 <td style="text-align: left;">seasonplot</td>
-<td style="text-align: left;">Plot annual change across seasons</td>
+<td style="text-align: left;">Plot seasonal change across years</td>
 </tr>
 </tbody>
 </table>
@@ -587,7 +592,7 @@ KPSS Trend = 0.25322, Truncation lag parameter = 3, p-value = 0.01</code></pre>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">start=</span><span class="dv">1960</span>,<span class="at">frequency=</span><span class="dv">4</span>)</span>
 <span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfcol=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
 <span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(eps_boxcox_detrend,<span class="at">main=</span><span class="st">'De-trended, transformed data'</span>,<span class="at">ylab=</span><span class="st">'Transformed EPS ($)'</span>)</span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(eps_boxcox_detrend,<span class="at">main=</span><span class="st">'ACF of de-trended, transformed data'</span>,<span class="at">xlab=</span><span class="st">'Lag (in years)'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(eps_boxcox_detrend,<span class="at">main=</span><span class="st">'De-trended, transformed ACF'</span>,<span class="at">xlab=</span><span class="st">'Lag (in years)'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -598,7 +603,8 @@ KPSS Trend = 0.25322, Truncation lag parameter = 3, p-value = 0.01</code></pre>
 </div>
 <p>The Box-Cox transformation and de-trending successfully removed a lot of the nonstationary behavior, but the remaining autocorrelation is highly <em>seasonal</em> — each transformed EPS observation is very similar to the EPS from four quarters ago (and thus eight, and twelve…). If we plot the quarterly earnings by year (or each year’s earnings by quarter), we can see this pattern more plainly, where Q3 usually brings very strong earnings for J&amp;J, while Q4 brings weaker earnings:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">monthplot</span>(eps_boxcox_detrend,<span class="at">ylab=</span><span class="st">'Transformed EPS'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">monthplot</span>(eps_boxcox_detrend,<span class="at">ylab=</span><span class="st">'Transformed EPS'</span>,</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">main=</span><span class="st">'Month plot: eps_boxcox_detrend'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -646,9 +652,9 @@ KPSS Trend = 0.25394, Truncation lag parameter = 3, p-value = 0.01</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
 <span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(eps_boxcox_detrend_deseason,</span>
-<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'De-trended and de-seasoned data'</span>,<span class="at">ylab=</span><span class="st">'Transformed EPS ($)'</span>)</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'De-trended, de-seasoned data'</span>,<span class="at">ylab=</span><span class="st">'Transformed EPS ($)'</span>)</span>
 <span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(eps_boxcox_detrend_deseason,</span>
-<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">main=</span><span class="st">'ACF of de-trended and de-seasoned data'</span>,<span class="at">xlab=</span><span class="st">'Lag (in years)'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">main=</span><span class="st">'De-trended de-seasoned ACF'</span>,<span class="at">xlab=</span><span class="st">'Lag (in years)'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
