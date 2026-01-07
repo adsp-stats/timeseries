@@ -154,11 +154,12 @@ The exact parameter $\lambda$ which brings a nonstationary series closest to sta
 
 ```{r}
 #| code-fold: true
-#| fig-cap: 'Box-Cox transformation of monthly airline passengers'
+#| fig-cap: 'Box-Cox transformation of monthly 1Y Treasury yields'
+yields <- window(tcm1y,end=1982.24)
 par(mfrow=c(1,2),mar=c(4, 4, 3, 1))
-plot(AirPassengers,ylab='Monthly Air Passengers (1000s)',main='Original nonstationary series')
-plot(box_cox(AirPassengers,0.1),ylab='Transformed series',main='Box-Cox transformation with lambda=0.1')
-abline(reg=lm(box_cox(AirPassengers,0.1)~time(AirPassengers)),col='#bbbbbb')
+plot(yields,ylab='1Y yield',main='Original nonstationary series')
+plot(box_cox(yields,0.15),ylab='Transformed series',main='Box-Cox transformation with lambda=0.15')
+abline(reg=lm(box_cox(yields,0.15)~time(yields)),col='#bbbbbb')
 ```
 
 ## Tests for stationarity
@@ -186,8 +187,8 @@ The **augmented Dickey-Fuller (ADF) test** extends this concept to control for c
 We see that the original air passenger data series shown above fails to display stationarity, while the Box-Cox transformation does show stationarity using an ADF test:
 
 ```{r}
-adf.test(AirPassengers)
-adf.test(box_cox(AirPassengers,lambda=0.1))
+adf.test(yields)
+adf.test(box_cox(yields,lambda=0.15))
 ```
 
 ### The Kwiatkowski-Phillips-Schmidt-Shin (KPSS) test
@@ -205,8 +206,8 @@ The KPSS test examines whether the random walk variance could be 0 (in which cas
 We see that the original air passenger data series shown above fails to display stationarity, while the Box-Cox transformation does show stationarity using a KPSS test:
 
 ```{r}
-kpss.test(AirPassengers,null='Trend')
-kpss.test(box_cox(AirPassengers,lambda=0.1),null='Trend')
+kpss.test(yields,null='Trend')
+kpss.test(box_cox(yields,lambda=0.15),null='Trend')
 ```
 
 So what have we gained, since these results are the same as the ADF test results above? Essentially, by using both tests, we can now differentiate between three distinct situations:
