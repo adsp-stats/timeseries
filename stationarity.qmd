@@ -159,7 +159,7 @@ data(tcm)
 yields <- window(tcm1y,end=1982.24)
 par(mfrow=c(1,2),mar=c(4, 4, 3, 1))
 plot(yields,ylab='1Y yield',main='Original nonstationary series')
-plot(box_cox(yields,0.15),ylab='Transformed series',main='Box-Cox transformation with lambda=0.15')
+plot(box_cox(yields,0.15),ylab='Transformed series',main='Box-Cox with lambda=0.15')
 abline(reg=lm(box_cox(yields,0.15)~time(yields)),col='#bbbbbb')
 ```
 
