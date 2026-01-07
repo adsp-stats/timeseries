@@ -155,7 +155,7 @@ The exact parameter $\lambda$ which brings a nonstationary series closest to sta
 ```{r}
 #| code-fold: true
 #| fig-cap: 'Box-Cox transformation of monthly 1Y Treasury yields'
-data(tcm1y)
+data(tcm1)
 yields <- window(tcm1y,end=1982.24)
 par(mfrow=c(1,2),mar=c(4, 4, 3, 1))
 plot(yields,ylab='1Y yield',main='Original nonstationary series')
