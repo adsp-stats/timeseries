@@ -1,9 +1,10 @@
 # Coding it up in R
 
 ```{r}
-library(MASS,quietly=TRUE)
-library(tseries,quietly=TRUE,warn.conflicts=FALSE)
-library(forecast,quietly=TRUE)
+#| output: false
+library(MASS)
+library(tseries)
+library(forecast)
 ```
 
 ## Time series functions used in this document
