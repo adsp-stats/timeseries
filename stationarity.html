@@ -465,16 +465,18 @@ Note
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">1</span>))</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(AirPassengers,<span class="at">ylab=</span><span class="st">'Monthly Air Passengers (1000s)'</span>,<span class="at">main=</span><span class="st">'Original nonstationary series'</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">box_cox</span>(AirPassengers,<span class="fl">0.1</span>),<span class="at">ylab=</span><span class="st">'Transformed series'</span>,<span class="at">main=</span><span class="st">'Box-Cox transformation with lambda=0.1'</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">reg=</span><span class="fu">lm</span>(<span class="fu">box_cox</span>(AirPassengers,<span class="fl">0.1</span>)<span class="sc">~</span><span class="fu">time</span>(AirPassengers)),<span class="at">col=</span><span class="st">'#bbbbbb'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(tcm)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>yields <span class="ot">&lt;-</span> <span class="fu">window</span>(tcm1y,<span class="at">end=</span><span class="fl">1982.24</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">1</span>))</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(yields,<span class="at">ylab=</span><span class="st">'1Y yield'</span>,<span class="at">main=</span><span class="st">'Original nonstationary series'</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">box_cox</span>(yields,<span class="fl">0.15</span>),<span class="at">ylab=</span><span class="st">'Transformed series'</span>,<span class="at">main=</span><span class="st">'Box-Cox transformation with lambda=0.15'</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">reg=</span><span class="fu">lm</span>(<span class="fu">box_cox</span>(yields,<span class="fl">0.15</span>)<span class="sc">~</span><span class="fu">time</span>(yields)),<span class="at">col=</span><span class="st">'#bbbbbb'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="stationarity_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Box-Cox transformation of monthly airline passengers</figcaption>
+<figcaption>Box-Cox transformation of monthly 1Y Treasury yields</figcaption>
 </figure>
 </div>
 </div>
@@ -498,29 +500,22 @@ Note
 <p>The <strong>augmented Dickey-Fuller (ADF) test</strong> extends this concept to control for complex autocorrelations in the original data series which might obscure the presence of a random walk. While the ADF test is slightly less powerful than the original Dickey-Fuller test, it’s more widely used today and considered an improvement upon the original.</p>
 <p>We see that the original air passenger data series shown above fails to display stationarity, while the Box-Cox transformation does show stationarity using an ADF test:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">adf.test</span>(AirPassengers)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in adf.test(AirPassengers): p-value smaller than printed p-value</code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">adf.test</span>(yields)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Augmented Dickey-Fuller Test
 
-data:  AirPassengers
-Dickey-Fuller = -7.3186, Lag order = 5, p-value = 0.01
+data:  yields
+Dickey-Fuller = -1.7333, Lag order = 7, p-value = 0.6893
 alternative hypothesis: stationary</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">adf.test</span>(<span class="fu">box_cox</span>(AirPassengers,<span class="at">lambda=</span><span class="fl">0.1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in adf.test(box_cox(AirPassengers, lambda = 0.1)): p-value smaller than
-printed p-value</code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">adf.test</span>(<span class="fu">box_cox</span>(yields,<span class="at">lambda=</span><span class="fl">0.15</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Augmented Dickey-Fuller Test
 
-data:  box_cox(AirPassengers, lambda = 0.1)
-Dickey-Fuller = -6.9092, Lag order = 5, p-value = 0.01
+data:  box_cox(yields, lambda = 0.15)
+Dickey-Fuller = -3.4646, Lag order = 7, p-value = 0.0463
 alternative hypothesis: stationary</code></pre>
 </div>
 </div>
@@ -534,29 +529,25 @@ alternative hypothesis: stationary</code></pre>
 <p>The KPSS test examines whether the random walk variance could be 0 (in which case it is not really present at all). By testing <span class="math inline">\(\sigma^2 = 0\)</span>, it creates <em>a null hypothesis of stationarity</em> and a one-sided alternative hypothesis that <span class="math inline">\(\boldsymbol{Y}\)</span> is a random walk.</p>
 <p>We see that the original air passenger data series shown above fails to display stationarity, while the Box-Cox transformation does show stationarity using a KPSS test:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kpss.test</span>(AirPassengers,<span class="at">null=</span><span class="st">'Trend'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kpss.test</span>(yields,<span class="at">null=</span><span class="st">'Trend'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning in kpss.test(AirPassengers, null = "Trend"): p-value greater than
-printed p-value</code></pre>
+<pre><code>Warning in kpss.test(yields, null = "Trend"): p-value smaller than printed
+p-value</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     KPSS Test for Trend Stationarity
 
-data:  AirPassengers
-KPSS Trend = 0.09615, Truncation lag parameter = 4, p-value = 0.1</code></pre>
+data:  yields
+KPSS Trend = 0.42815, Truncation lag parameter = 5, p-value = 0.01</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kpss.test</span>(<span class="fu">box_cox</span>(AirPassengers,<span class="at">lambda=</span><span class="fl">0.1</span>),<span class="at">null=</span><span class="st">'Trend'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in kpss.test(box_cox(AirPassengers, lambda = 0.1), null = "Trend"):
-p-value greater than printed p-value</code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kpss.test</span>(<span class="fu">box_cox</span>(yields,<span class="at">lambda=</span><span class="fl">0.15</span>),<span class="at">null=</span><span class="st">'Trend'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     KPSS Test for Trend Stationarity
 
-data:  box_cox(AirPassengers, lambda = 0.1)
-KPSS Trend = 0.077267, Truncation lag parameter = 4, p-value = 0.1</code></pre>
+data:  box_cox(yields, lambda = 0.15)
+KPSS Trend = 0.14306, Truncation lag parameter = 5, p-value = 0.05544</code></pre>
 </div>
 </div>
 <p>So what have we gained, since these results are the same as the ADF test results above? Essentially, by using both tests, we can now differentiate between three distinct situations:</p>
