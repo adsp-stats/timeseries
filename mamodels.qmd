@@ -1,0 +1,118 @@
+# MA models
+
+A second building block of statistical time series analysis is the *moving average (MA) model*. Moving average models are not well-named: rather than predicting $Y_t$ as a weighted average of its past values (which is what AR models can do), MA models predict $Y_t$ using a weighted average of *the unobserved innovations*:
+
+$$Y_t = \beta_0 + \beta_1 \varepsilon_{t-1} + \beta_2 \varepsilon_{t-2} + \ldots + \varepsilon_t$$
+
+Once again I have sketched this idea using the terminology familiar to us from linear regression, but below I will redefine this idea using our new time series notation.
+
+## MA(1) process
+
+Let's take the simplest case, where each value of the series averages only the current and immediate previous innovation. We would name this an *moving average model with order 1* or *MA(1) model*.
+
+::: {.callout-note}
+Let $\boldsymbol{Y}$ be a time series random variable observed at regular time periods $T = \{1, 2, \ldots, n\}$. Let $\boldsymbol{\omega}$ be a white noise process observed at the same time periods. If,
+
+$$Y_t = \omega_t + \theta \omega_{t-1}$$
+
+For some $\theta \in \mathbb{R}$ and all $t \in T$, then we say that $\boldsymbol{Y}$ is an **moving average process with order 1**
+:::
+
+In theory, the exact properties of a MA(1) process depend on both the moving average parameter $\theta$ as well as the specific type of white noise process denoted by $\boldsymbol{\omega}$. In practice, we often assume $\boldsymbol{\omega}$ to be Gaussian white noise, leaving $\theta$ as the only input which needs estimation.
+
+```{r}
+#| code-fold: true
+#| fig-cap: "Nine MA(1) processes with the same innovations"
+par(mfrow=c(3,3),mar=c(3.1,3.1,3.1,1.1))
+set.seed(0106)
+w <- rnorm(20)
+thetavec <- c(-2,-1,-.6,-.3,0,.3,.6,1,2)
+Y <- t(rep(w[1],9))
+for (i in 2:20){Y <- rbind(Y, t(rep(w[i],9)+thetavec*w[i-1]))}
+for (j in 1:9) {plot(Y[,j],main=bquote(theta==.(thetavec[j])),
+                     type='l',xlab=NA,ylab=NA,sub=NA)
+  lines(1:20,Y[,5],col='#0000ff',lty=2)}
+```
+
+In the plots above, we see that MA processes are a little more subtle than AR processes:
+
+ * MA(1) processes remain stationary for any finite value of $\theta$, even large positive or negative values. (The weighted sum of any two zero-mean random variables still has a mean of zero.)
+ 
+ * Positive and negative values of $\theta$ produce similar patterns, with no parameter choice creating the alternating series seen in the AR(1) models.
+ 
+The properties and utility of MA models are perhaps better described with higher-order processes.
+
+## Generalizing to MA(*q*)
+
+Now we may complicate the scenario, by allowing the current value $Y_t$ to average *several, different* past innovations of the series.
+
+::: {.callout-note}
+Let $\boldsymbol{Y}$ be a time series random variable observed at regular time periods $T = \{1, 2, \ldots, n\}$. Let $\boldsymbol{\omega} be a white noise process observed at the same time periods. If,
+
+$$Y_t = \omega_t + \theta_1 \omega_{t-1} + \theta_2 \omega_{t-2} + \ldots + \theta_q \omega_{t-q}$$
+
+For some $(\theta_1, \theta_2, \ldots, \theta_q) \in \mathbb{R}^q$ and all $t \in T$, then we say that $\boldsymbol{Y}$ is an **moving average model with order** ***q***.
+:::
+
+MA(*q*) effects tend to become more pronounced at higher orders. For many combinations of parameters $\theta_1, \ldots, \theta_q$, the general effect is a smoothing filter which highlights consecutive large innovations but minimizes single innovations, and preserves no memory of the past beyond its averaging:
+
+```{r}
+#| code-fold: true
+#| fig-cap: "Nine MA processes with the same innovations"
+par(mfrow=c(3,3),mar=c(3.1,3.1,3.1,1.1))
+set.seed(0107)
+w <- rnorm(50)
+theta <- list(c(1,1),c(1,1,1,1),c(1,1,1,1,1,1),
+              c(0.8,0.6,0.4,0.2),c(0.4,0.3,0.2,0.1),c(0,0,0,1),
+              c(2,4,2,1),c(0,-1),c(-1,-1,-1,-1))
+Y <- matrix(nrow=50,ncol=9)
+for (i in 1:9) Y[,i] <- arima.sim(list(ma=theta[[i]]),n=50,innov=w)
+for (j in 1:9) plot(Y[,j],main=bquote(theta==.(paste(theta[[j]],collapse=','))),
+  type='l',xlab=NA,ylab=NA,sub=NA)
+```
+
+## Recognizing a MA process from its ACF plot
+
+An autocorrelation function (ACF) plot will always provide helpful summary or diagnostic information about a MA(*q*) model. In the simplest case of MA(1), the height of the ACF plot at the first lag will be equal to $q/(1+q^2)$, and the remaining lags will show *little or no autocorrelation at all*. For example, when $p=0.8$, the first lag will have an autocorrelation of roughly $0.8/(1+0.64) \approx 0.49$, and all other lags will show only minimal autocorrelation:
+
+```{r}
+#| code-fold: true
+#| fig-cap: "Two MA processes and their ACF plots, 1000 obs each"
+par(mfrow=c(1,2),mar=c(3.1,3.1,3.1,1.1))
+set.seed(0108)
+ma08 <- arima.sim(list(ma=0.8),n=1000)
+ma080706 <- arima.sim(list(ma=c(0.8,0.7,0.6)),n=1000)
+
+acf(ma08,main=expression(paste('ACF when ',theta == 0.8)),lag.max=15)
+acf(ma080706,main=expression(paste('ACF when ',theta == list(0.8,0.7,0.6))),lag.max=15)
+```
+
+The key feature here is that for values $s \lt (t - q)$, $Y_t$ and $Y_s$ have *no elements in common* and are completely independent. Any small sample autocorrelation is purely spurious.
+
+## All MA processes are stationary
+
+Since MA processes are simply weighted sums of zero-mean white noise, they themselves are zero-mean and meet all the requirements for weak stationarity, no matter the choice(s) of $\boldsymbol{\theta}$. In the equations which follow, assume that $\mathbb{E}[\omega_t] = 0$ and $\mathbb{V}[\omega_t] = \sigma^2$:
+
+ $$\begin{aligned} (1) \qquad \mathbb{E}[Y_t] &= \mathbb{E}[\omega_t + \sum_{i=1}^q \theta_i \omega_{t-i}] = 0 + \sum_{i=1}^q \theta_i \mathbb{E}[\omega_{t-i}] = 0 + \sum_{i=1}^q 0 = 0 \\  \\ (2) \qquad \mathbb{V}[Y_t] &= \mathbb{V}[\omega_t + \sum_{i=1}^q \theta_i \omega_{t-i}] = \sigma^2 + \sum_{i=1}^q \theta^2_i \mathbb{V}[\omega_{t-i}] = \left(1 + \sum_i \theta_i^2 \right) \sigma^2 \\ \\ (3) \qquad \gamma_{st} &= \textrm{Cov}\left(\omega_s + \sum_{i=1}^q \theta_i \omega_{s-i},\, \omega_t + \sum_{i=1}^q \theta_i \omega_{t-i} \right) \\ &= \left\{ \begin{array}{ll} 0 & \textrm{if} \; |s - t| \gt q \\ \theta_q \sigma^2 & \textrm{if} \; |s - t| = q \\ (\theta_{q-1} + \theta_2 \theta_q) \sigma^2 & \textrm{if} \; |s - t| = q - 1 \\ \cdots & \cdots \end{array} \right\}\end{aligned}$$
+ 
+ We can see from the above that the mean and variance are constant and that the autocovariance of two entries depends only on the lag between them, which are the requirements of weak stationarity.
+ 
+## MA model responses to system shocks
+
+MA models dampen one-time system shocks by averaging them among the other innovations, and after the moving average window has passed, the system shock disappears entirely from the series. Consider a simple AR(1) model which processes a fairly quiet series of innovations, interrupted irregularly by a much larger signal:
+
+```{r}
+#| code-fold: true
+#| fig-cap: "Persistence and decay in an MA(0.9,0.6,0.3) model"
+set.seed(0110)
+w <- runif(100,-1,1)
+w[8] <- 10; w[15] <- 10; w[25] <- -10; w[45] <- -10;
+ma <- arima.sim(list(ma=c(0.9,0.6,0.3)),n=100,innov=w)
+plot(15+ma,type='s',lwd=2,ylim=c(-10,27),ylab=NA)
+lines(w,type='h',col='#0000ff',lwd=2)
+abline(h=15,lty=2,col='#7f7f7f')
+legend(x='topright',lwd=2,col=c('#000000','#0000ff'),bty='n',
+       legend=c(expression(paste('Time series ',Y[t])),
+                expression(paste('Innovations ',omega[t]))))
+```
+

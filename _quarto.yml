@@ -14,7 +14,11 @@ book:
         - randomwalk.qmd
         - stationarity.qmd
         - codingbasicsinr.qmd
- 
+    - part: "2. AR and MA models"
+      chapters:
+        - armodels.qmd
+        - mamodels.qmd
+        - backshift.qmd
 format:
   html:
     toc: true

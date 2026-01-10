@@ -15,7 +15,7 @@ Let $\boldsymbol{Y}$ be a time series random variable observed at regular time p
 
 $$Y_t = \phi Y_{t-1} + \omega_t$$
 
-For some $\phi \in \mathbb{R}$ and all $t \in T$, then we say that $\boldsymbol{Y}$ is an **autoregressive model with order 1**
+For some $\phi \in \mathbb{R}$ and all $t \in T$, then we say that $\boldsymbol{Y}$ is an **autoregressive process with order 1**
 :::
 
 In theory, the exact properties of an AR(1) process depend on both the autoregressive parameter $\phi$ as well as the specific type of white noise process denoted by $\boldsymbol{\omega}$. In practice, we often assume $\boldsymbol{\omega}$ to be Gaussian white noise, leaving $\phi$ as the only input which needs estimation.
@@ -39,7 +39,7 @@ The plots above provide examples of some specific properties of AR(1) processes:
  
  * When $\phi = 1$, we say that the process is a *random walk*, since we now have the familiar model $Y_t = Y_{t-1} + \omega_t$. When $\phi = -1$ we have a variant on a random walk in which both the odd and even observations begin closely-related random walks headed in opposite directions.
  
- * When $-1 \lt \phi \lt 1$ we observe a *stationary process*. This includes the case where $\phi = 0$ (pure white noise), but also other series with noticeable positive or negative autocorrelation. Despite the autocorrelation, the mean and variance of the unconditional variables $Y_t$ (that is, without knowing the past values of $\boldsymbol{Y}$ remain the same, and the autocorrelation of two values depends only on their lag distance, not their time index values.
+ * When $-1 \lt \phi \lt 1$ we observe a *stationary process*. This includes the case where $\phi = 0$ (pure white noise), but also other series with noticeable positive or negative autocorrelation. Despite the autocorrelation, the mean and variance of the unconditional variables $Y_t$ (that is, without knowing the past values of $\boldsymbol{Y}$) remain the same, and the autocorrelation of two values depends only on their lag distance, not their time index values.
 
 ## Generalizing to AR(*p*)
 
@@ -76,7 +76,7 @@ for (j in 1:9) plot(Y[,j],main=bquote(
 
 ## Recognizing an AR process from its ACF plot
 
-An autocorrelation function (ACF) plot will sometimes provide helpful summary or diagnostic information about an AR(*p*) model. In the simplest case of AR(1), the height of the ACF plot at the first lag will be equal to *p*, and the remaining lags will scale geometrically downward.  For example, when $p=0.8$, the second lag will have an autocorrelation of roughly 0.64, and the third lag will have autocorrelation of roughly 0.512
+An autocorrelation function (ACF) plot will sometimes provide helpful summary or diagnostic information about an AR(*p*) model. In the simplest case of AR(1), the height of the ACF plot at the first lag will be equal to *p*, and the remaining lags will scale geometrically downward. For example, when $p=0.8$, the second lag will have an autocorrelation of roughly 0.64, and the third lag will have autocorrelation of roughly 0.512
 
 ```{r}
 #| code-fold: true
@@ -140,9 +140,9 @@ set.seed(0110)
 w <- runif(100,-1,1)
 w[8] <- 10; w[15] <- 10; w[25] <- -10; w[45] <- -10;
 ar <- arima.sim(list(ar=0.9),n=100,innov=w)
-plot(10+ar,type='s',lwd=2,ylim=c(-10,25))
+plot(15+ar,type='s',lwd=2,ylim=c(-10,27),ylab=NA)
 lines(w,type='h',col='#0000ff',lwd=2)
-abline(h-10,lty=2,col='#7f7f7f')
+abline(h=15,lty=2,col='#7f7f7f')
 legend(x='topright',lwd=2,col=c('#000000','#0000ff'),bty='n',
        legend=c(expression(paste('Time series ',Y[t])),
                 expression(paste('Innovations ',omega[t]))))
