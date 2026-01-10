@@ -346,5 +346,192 @@
       "1. Time series basics",
       "<span class='chapter-number'>6</span>  <span class='chapter-title'>Coding it up in R</span>"
     ]
+  },
+  {
+    "objectID": "armodels.html",
+    "href": "armodels.html",
+    "title": "AR models",
+    "section": "",
+    "text": "AR(1) process\nOne building block of statistical time series analysis is the autoregressive (AR) model. As the name implies, an AR model presumes that past values of the series can be used to directly predict current values using a regression-like structure:\n\\[Y_t = \\beta_0 + \\beta_1 Y_{t-1} + \\beta_2 Y_{t-2} + \\ldots + \\varepsilon_t\\]\nI wrote the equation above using the notation of linear regression. We will be expressing the same concept using slightly different notation below.\nLet’s take the simplest case, where each value of the series is predicted only by the previous value. We would name this an autoregressive model with order 1 or AR(1) model.\nIn theory, the exact properties of an AR(1) process depend on both the autoregressive parameter \\(\\phi\\) as well as the specific type of white noise process denoted by \\(\\boldsymbol{\\omega}\\). In practice, we often assume \\(\\boldsymbol{\\omega}\\) to be Gaussian white noise, leaving \\(\\phi\\) as the only input which needs estimation.\nCode\npar(mfrow=c(3,3),mar=c(3.1,3.1,3.1,1.1))\nset.seed(0106)\nw &lt;- rnorm(100)\nphivec &lt;- c(-1.5,-1.0,-0.5,0,0.3,0.6,0.9,1.0,1.5)\nY &lt;- t(rep(w[1],9))\nfor (i in 2:100){Y &lt;- rbind(Y, t(rep(w[i],9)+phivec*Y[i-1,]))}\nfor (j in 1:9) plot(Y[,j],main=bquote(phi==.(phivec[j])),\n                    type='l',xlab=NA,ylab=NA,sub=NA)\n\n\n\n\n\nNine AR(1) processes with the same innovations\nThe plots above provide examples of some specific properties of AR(1) processes:",
+    "crumbs": [
+      "2. AR and MA models",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>AR models</span>"
+    ]
+  },
+  {
+    "objectID": "armodels.html#ar1-process",
+    "href": "armodels.html#ar1-process",
+    "title": "AR models",
+    "section": "",
+    "text": "Note\n\n\n\nLet \\(\\boldsymbol{Y}\\) be a time series random variable observed at regular time periods \\(T = \\{1, 2, \\ldots, n\\}\\). Let \\(\\boldsymbol{\\omega}\\) be a white noise process observed at the same time periods. If,\n\\[Y_t = \\phi Y_{t-1} + \\omega_t\\]\nFor some \\(\\phi \\in \\mathbb{R}\\) and all \\(t \\in T\\), then we say that \\(\\boldsymbol{Y}\\) is an autoregressive process with order 1\n\n\n\n\n\n\nWhen \\(\\phi \\gt 1\\) or \\(\\phi \\lt -1\\), we say the process is explosive. After a short-to-moderate ‘fuse’, the innovations begin to cumulate exponentially, rapidly heading toward infinity.\nWhen \\(\\phi = 1\\), we say that the process is a random walk, since we now have the familiar model \\(Y_t = Y_{t-1} + \\omega_t\\). When \\(\\phi = -1\\) we have a variant on a random walk in which both the odd and even observations begin closely-related random walks headed in opposite directions.\nWhen \\(-1 \\lt \\phi \\lt 1\\) we observe a stationary process. This includes the case where \\(\\phi = 0\\) (pure white noise), but also other series with noticeable positive or negative autocorrelation. Despite the autocorrelation, the mean and variance of the unconditional variables \\(Y_t\\) (that is, without knowing the past values of \\(\\boldsymbol{Y}\\)) remain the same, and the autocorrelation of two values depends only on their lag distance, not their time index values.",
+    "crumbs": [
+      "2. AR and MA models",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>AR models</span>"
+    ]
+  },
+  {
+    "objectID": "armodels.html#generalizing-to-arp",
+    "href": "armodels.html#generalizing-to-arp",
+    "title": "AR models",
+    "section": "Generalizing to AR(p)",
+    "text": "Generalizing to AR(p)\nNow we may complicate the scenario, by allowing the current value \\(Y_t\\) to have several, different relationships with arbitrary past lags of the series.\n\n\n\n\n\n\nNote\n\n\n\nLet \\(\\boldsymbol{Y}\\) be a time series random variable observed at regular time periods \\(T = \\{1, 2, \\ldots, n\\}\\). Let $ be a white noise process observed at the same time periods. If,\n\\[Y_t = \\phi_1 Y_{t-1} + \\phi_2 Y_{t-2} + \\ldots + \\phi_p Y_{t-p} + \\omega_t\\]\nFor some \\((\\phi_1, \\phi_2, \\ldots, \\phi_p) \\in \\mathbb{R}^p\\) and all \\(t \\in T\\), then we say that \\(\\boldsymbol{Y}\\) is an autoregressive model with order p.\n\n\nThese AR(p) processes can be difficult to visually distinguish because of the more complicated autocorrelation patterns.\n\n\nCode\npar(mfrow=c(3,3),mar=c(3.1,3.1,3.1,1.1))\nset.seed(0107)\nw &lt;- rnorm(100)\nphi1vec &lt;- c(0.5,0.7, 0.7,0.6,0,  -1.6,0.5,0.3,0)\nphi2vec &lt;- c(0.5,0.7,-0.7,0.2,0.5, 0.8,0.4,0.2,0)\nphi3vec &lt;- c(0,  0,   0,  0,  0,   0,  0.3,0.1,1)\nY &lt;- t(rep(w[1],9))\nY &lt;- rbind(Y, t(rep(w[2],9)+phi1vec*Y[1,]))\nY &lt;- rbind(Y, t(rep(w[3],9)+phi1vec*Y[2,]+phi2vec*Y[1,]))\nfor (i in 4:100){Y &lt;- rbind(Y,\n  t(rep(w[i],9)+phi1vec*Y[i-1,]+phi2vec*Y[i-2,]+phi3vec*Y[i-3,]))}\nfor (j in 1:9) plot(Y[,j],main=bquote(\n  bold(phi) == list(.(phi1vec[j]),.(phi2vec[j]),.(phi3vec[j]))),\n  type='l',xlab=NA,ylab=NA,sub=NA)\n\n\n\n\n\nNine AR(2) and AR(3) processes with the same innovations",
+    "crumbs": [
+      "2. AR and MA models",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>AR models</span>"
+    ]
+  },
+  {
+    "objectID": "armodels.html#recognizing-an-ar-process-from-its-acf-plot",
+    "href": "armodels.html#recognizing-an-ar-process-from-its-acf-plot",
+    "title": "AR models",
+    "section": "Recognizing an AR process from its ACF plot",
+    "text": "Recognizing an AR process from its ACF plot\nAn autocorrelation function (ACF) plot will sometimes provide helpful summary or diagnostic information about an AR(p) model. In the simplest case of AR(1), the height of the ACF plot at the first lag will be equal to p, and the remaining lags will scale geometrically downward. For example, when \\(p=0.8\\), the second lag will have an autocorrelation of roughly 0.64, and the third lag will have autocorrelation of roughly 0.512\n\n\nCode\npar(mfrow=c(1,2),mar=c(3.1,3.1,3.1,1.1))\nset.seed(0108)\nar08 &lt;- arima.sim(list(ar=0.8),n=1000)\narneg05 &lt;- arima.sim(list(ar=-0.5),n=1000)\n\nacf(ar08,main=expression(paste('ACF when ',phi == 0.8)),lag.max=15)\nacf(arneg05,main=expression(paste('ACF when ',phi == -0.5)),lag.max=15)\n\n\n\n\n\nTwo AR(1) processes and their ACF plots, 1000 obs each\n\n\n\n\nMore complex AR models have correspondingly complex ACF plots, and you will not always be able to easily diagnose the order and coefficient sizes:\n\n\nCode\npar(mfrow=c(1,2),mar=c(3.1,3.1,3.1,1.1))\nset.seed(0109)\nar08neg05 &lt;- arima.sim(list(ar=c(0.8,-0.5)),n=1000)\narneg05neg04 &lt;- arima.sim(list(ar=c(-0.5,-0.4)),n=1000)\n\nacf(ar08neg05,main=expression(paste('ACF when ',phi == list(0.8,-0.5))),lag.max=15)\nacf(arneg05neg04,main=expression(paste('ACF when ',phi == list(-0.5,-0.4))),lag.max=15)\n\n\n\n\n\nTwo AR(2) processes and their ACF plots, 1000 obs each\n\n\n\n\nYou do not need to be able to spot a complex AR model from a brief inspection of its time series or its ACF plot. However, you should know that complex behavior can be very accurately fit by a relatively simple AR model.",
+    "crumbs": [
+      "2. AR and MA models",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>AR models</span>"
+    ]
+  },
+  {
+    "objectID": "armodels.html#which-ar-processes-are-stationary",
+    "href": "armodels.html#which-ar-processes-are-stationary",
+    "title": "AR models",
+    "section": "Which AR processes are stationary",
+    "text": "Which AR processes are stationary\nWe will learn more about this elsewhere, when we discuss unit roots. For now, I will leave you with a simple set of guidelines:\n\nAR(1) processes are stationary when \\(|\\phi_1| \\lt 1\\)\nAR(2) processes are stationary when three conditions are met:\n\n\\[\\begin{aligned}(1) \\qquad & |\\phi_2| \\lt 1 \\\\ (2) \\qquad & \\phi_1 + \\phi_2 \\lt 1 \\\\ (3) \\qquad & \\phi_1 - \\phi_2 \\lt 1 \\end{aligned}\\]\nRepresenting the two parameters \\(phi_1\\) and \\(\\phi_2\\) on the coördinate plane, we would say any process with its parameters inside the shaded region is stationary:\n\n\nCode\nplot(c(-2.25,2.25),c(-1.25,1.25),type='n',main=NA,sub=NA,\n     ylab=expression(phi[2]),xlab=expression(phi[1]),asp=1)\npolygon(x=c(-2,0,2),y=c(-1,1,-1),lty=1,lwd=2,density=-1,col='#0000ff7f')\nabline(h=0,v=0,lty=2,col='#7f7f7f')\n\n\n\n\n\nStationary sets of AR(2) parameters\n\n\n\n\n\nFor AR(3) and higher processes, stationarity will depend upon the roots of the characteristic polynomial, which can be calculated with a unit root test.",
+    "crumbs": [
+      "2. AR and MA models",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>AR models</span>"
+    ]
+  },
+  {
+    "objectID": "armodels.html#ar-model-responses-to-system-shocks",
+    "href": "armodels.html#ar-model-responses-to-system-shocks",
+    "title": "AR models",
+    "section": "AR model responses to system shocks",
+    "text": "AR model responses to system shocks\nAR models translate one-time system shocks into persistent, slowly-decaying signals. Consider a simple AR(1) model which processes a fairly quiet series of innovations, interrupted irregularly by a much larger signal:\n\n\nCode\nset.seed(0110)\nw &lt;- runif(100,-1,1)\nw[8] &lt;- 10; w[15] &lt;- 10; w[25] &lt;- -10; w[45] &lt;- -10;\nar &lt;- arima.sim(list(ar=0.9),n=100,innov=w)\nplot(15+ar,type='s',lwd=2,ylim=c(-10,27),ylab=NA)\nlines(w,type='h',col='#0000ff',lwd=2)\nabline(h=15,lty=2,col='#7f7f7f')\nlegend(x='topright',lwd=2,col=c('#000000','#0000ff'),bty='n',\n       legend=c(expression(paste('Time series ',Y[t])),\n                expression(paste('Innovations ',omega[t]))))\n\n\n\n\n\nPersistence and decay in an AR(1) model",
+    "crumbs": [
+      "2. AR and MA models",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>AR models</span>"
+    ]
+  },
+  {
+    "objectID": "mamodels.html",
+    "href": "mamodels.html",
+    "title": "MA models",
+    "section": "",
+    "text": "MA(1) process\nA second building block of statistical time series analysis is the moving average (MA) model. Moving average models are not well-named: rather than predicting \\(Y_t\\) as a weighted average of its past values (which is what AR models can do), MA models predict \\(Y_t\\) using a weighted average of the unobserved innovations:\n\\[Y_t = \\beta_0 + \\beta_1 \\varepsilon_{t-1} + \\beta_2 \\varepsilon_{t-2} + \\ldots + \\varepsilon_t\\]\nOnce again I have sketched this idea using the terminology familiar to us from linear regression, but below I will redefine this idea using our new time series notation.\nLet’s take the simplest case, where each value of the series averages only the current and immediate previous innovation. We would name this an moving average model with order 1 or MA(1) model.\nIn theory, the exact properties of a MA(1) process depend on both the moving average parameter \\(\\theta\\) as well as the specific type of white noise process denoted by \\(\\boldsymbol{\\omega}\\). In practice, we often assume \\(\\boldsymbol{\\omega}\\) to be Gaussian white noise, leaving \\(\\theta\\) as the only input which needs estimation.\nCode\npar(mfrow=c(3,3),mar=c(3.1,3.1,3.1,1.1))\nset.seed(0106)\nw &lt;- rnorm(20)\nthetavec &lt;- c(-2,-1,-.6,-.3,0,.3,.6,1,2)\nY &lt;- t(rep(w[1],9))\nfor (i in 2:20){Y &lt;- rbind(Y, t(rep(w[i],9)+thetavec*w[i-1]))}\nfor (j in 1:9) {plot(Y[,j],main=bquote(theta==.(thetavec[j])),\n                     type='l',xlab=NA,ylab=NA,sub=NA)\n  lines(1:20,Y[,5],col='#0000ff',lty=2)}\n\n\n\n\n\nNine MA(1) processes with the same innovations\nIn the plots above, we see that MA processes are a little more subtle than AR processes:\nThe properties and utility of MA models are perhaps better described with higher-order processes.",
+    "crumbs": [
+      "2. AR and MA models",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>MA models</span>"
+    ]
+  },
+  {
+    "objectID": "mamodels.html#ma1-process",
+    "href": "mamodels.html#ma1-process",
+    "title": "MA models",
+    "section": "",
+    "text": "Note\n\n\n\nLet \\(\\boldsymbol{Y}\\) be a time series random variable observed at regular time periods \\(T = \\{1, 2, \\ldots, n\\}\\). Let \\(\\boldsymbol{\\omega}\\) be a white noise process observed at the same time periods. If,\n\\[Y_t = \\omega_t + \\theta \\omega_{t-1}\\]\nFor some \\(\\theta \\in \\mathbb{R}\\) and all \\(t \\in T\\), then we say that \\(\\boldsymbol{Y}\\) is an moving average process with order 1\n\n\n\n\n\n\nMA(1) processes remain stationary for any finite value of \\(\\theta\\), even large positive or negative values. (The weighted sum of any two zero-mean random variables still has a mean of zero.)\nPositive and negative values of \\(\\theta\\) produce similar patterns, with no parameter choice creating the alternating series seen in the AR(1) models.",
+    "crumbs": [
+      "2. AR and MA models",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>MA models</span>"
+    ]
+  },
+  {
+    "objectID": "mamodels.html#generalizing-to-maq",
+    "href": "mamodels.html#generalizing-to-maq",
+    "title": "MA models",
+    "section": "Generalizing to MA(q)",
+    "text": "Generalizing to MA(q)\nNow we may complicate the scenario, by allowing the current value \\(Y_t\\) to average several, different past innovations of the series.\n\n\n\n\n\n\nNote\n\n\n\nLet \\(\\boldsymbol{Y}\\) be a time series random variable observed at regular time periods \\(T = \\{1, 2, \\ldots, n\\}\\). Let $ be a white noise process observed at the same time periods. If,\n\\[Y_t = \\omega_t + \\theta_1 \\omega_{t-1} + \\theta_2 \\omega_{t-2} + \\ldots + \\theta_q \\omega_{t-q}\\]\nFor some \\((\\theta_1, \\theta_2, \\ldots, \\theta_q) \\in \\mathbb{R}^q\\) and all \\(t \\in T\\), then we say that \\(\\boldsymbol{Y}\\) is an moving average model with order q.\n\n\nMA(q) effects tend to become more pronounced at higher orders. For many combinations of parameters \\(\\theta_1, \\ldots, \\theta_q\\), the general effect is a smoothing filter which highlights consecutive large innovations but minimizes single innovations, and preserves no memory of the past beyond its averaging:\n\n\nCode\npar(mfrow=c(3,3),mar=c(3.1,3.1,3.1,1.1))\nset.seed(0107)\nw &lt;- rnorm(50)\ntheta &lt;- list(c(1,1),c(1,1,1,1),c(1,1,1,1,1,1),\n              c(0.8,0.6,0.4,0.2),c(0.4,0.3,0.2,0.1),c(0,0,0,1),\n              c(2,4,2,1),c(0,-1),c(-1,-1,-1,-1))\nY &lt;- matrix(nrow=50,ncol=9)\nfor (i in 1:9) Y[,i] &lt;- arima.sim(list(ma=theta[[i]]),n=50,innov=w)\nfor (j in 1:9) plot(Y[,j],main=bquote(theta==.(paste(theta[[j]],collapse=','))),\n  type='l',xlab=NA,ylab=NA,sub=NA)\n\n\n\n\n\nNine MA processes with the same innovations",
+    "crumbs": [
+      "2. AR and MA models",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>MA models</span>"
+    ]
+  },
+  {
+    "objectID": "mamodels.html#recognizing-a-ma-process-from-its-acf-plot",
+    "href": "mamodels.html#recognizing-a-ma-process-from-its-acf-plot",
+    "title": "MA models",
+    "section": "Recognizing a MA process from its ACF plot",
+    "text": "Recognizing a MA process from its ACF plot\nAn autocorrelation function (ACF) plot will always provide helpful summary or diagnostic information about a MA(q) model. In the simplest case of MA(1), the height of the ACF plot at the first lag will be equal to \\(q/(1+q^2)\\), and the remaining lags will show little or no autocorrelation at all. For example, when \\(p=0.8\\), the first lag will have an autocorrelation of roughly \\(0.8/(1+0.64) \\approx 0.49\\), and all other lags will show only minimal autocorrelation:\n\n\nCode\npar(mfrow=c(1,2),mar=c(3.1,3.1,3.1,1.1))\nset.seed(0108)\nma08 &lt;- arima.sim(list(ma=0.8),n=1000)\nma080706 &lt;- arima.sim(list(ma=c(0.8,0.7,0.6)),n=1000)\n\nacf(ma08,main=expression(paste('ACF when ',theta == 0.8)),lag.max=15)\nacf(ma080706,main=expression(paste('ACF when ',theta == list(0.8,0.7,0.6))),lag.max=15)\n\n\n\n\n\nTwo MA processes and their ACF plots, 1000 obs each\n\n\n\n\nThe key feature here is that for values \\(s \\lt (t - q)\\), \\(Y_t\\) and \\(Y_s\\) have no elements in common and are completely independent. Any small sample autocorrelation is purely spurious.",
+    "crumbs": [
+      "2. AR and MA models",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>MA models</span>"
+    ]
+  },
+  {
+    "objectID": "mamodels.html#all-ma-processes-are-stationary",
+    "href": "mamodels.html#all-ma-processes-are-stationary",
+    "title": "MA models",
+    "section": "All MA processes are stationary",
+    "text": "All MA processes are stationary\nSince MA processes are simply weighted sums of zero-mean white noise, they themselves are zero-mean and meet all the requirements for weak stationarity, no matter the choice(s) of \\(\\boldsymbol{\\theta}\\). In the equations which follow, assume that \\(\\mathbb{E}[\\omega_t] = 0\\) and \\(\\mathbb{V}[\\omega_t] = \\sigma^2\\):\n\\[\\begin{aligned} (1) \\qquad \\mathbb{E}[Y_t] &= \\mathbb{E}[\\omega_t + \\sum_{i=1}^q \\theta_i \\omega_{t-i}] = 0 + \\sum_{i=1}^q \\theta_i \\mathbb{E}[\\omega_{t-i}] = 0 + \\sum_{i=1}^q 0 = 0 \\\\  \\\\ (2) \\qquad \\mathbb{V}[Y_t] &= \\mathbb{V}[\\omega_t + \\sum_{i=1}^q \\theta_i \\omega_{t-i}] = \\sigma^2 + \\sum_{i=1}^q \\theta^2_i \\mathbb{V}[\\omega_{t-i}] = \\left(1 + \\sum_i \\theta_i^2 \\right) \\sigma^2 \\\\ \\\\ (3) \\qquad \\gamma_{st} &= \\textrm{Cov}\\left(\\omega_s + \\sum_{i=1}^q \\theta_i \\omega_{s-i},\\, \\omega_t + \\sum_{i=1}^q \\theta_i \\omega_{t-i} \\right) \\\\ &= \\left\\{ \\begin{array}{ll} 0 & \\textrm{if} \\; |s - t| \\gt q \\\\ \\theta_q \\sigma^2 & \\textrm{if} \\; |s - t| = q \\\\ (\\theta_{q-1} + \\theta_2 \\theta_q) \\sigma^2 & \\textrm{if} \\; |s - t| = q - 1 \\\\ \\cdots & \\cdots \\end{array} \\right\\}\\end{aligned}\\]\nWe can see from the above that the mean and variance are constant and that the autocovariance of two entries depends only on the lag between them, which are the requirements of weak stationarity.",
+    "crumbs": [
+      "2. AR and MA models",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>MA models</span>"
+    ]
+  },
+  {
+    "objectID": "mamodels.html#ma-model-responses-to-system-shocks",
+    "href": "mamodels.html#ma-model-responses-to-system-shocks",
+    "title": "MA models",
+    "section": "MA model responses to system shocks",
+    "text": "MA model responses to system shocks\nMA models dampen one-time system shocks by averaging them among the other innovations, and after the moving average window has passed, the system shock disappears entirely from the series. Consider a simple AR(1) model which processes a fairly quiet series of innovations, interrupted irregularly by a much larger signal:\n\n\nCode\nset.seed(0110)\nw &lt;- runif(100,-1,1)\nw[8] &lt;- 10; w[15] &lt;- 10; w[25] &lt;- -10; w[45] &lt;- -10;\nma &lt;- arima.sim(list(ma=c(0.9,0.6,0.3)),n=100,innov=w)\nplot(15+ma,type='s',lwd=2,ylim=c(-10,27),ylab=NA)\nlines(w,type='h',col='#0000ff',lwd=2)\nabline(h=15,lty=2,col='#7f7f7f')\nlegend(x='topright',lwd=2,col=c('#000000','#0000ff'),bty='n',\n       legend=c(expression(paste('Time series ',Y[t])),\n                expression(paste('Innovations ',omega[t]))))\n\n\n\n\n\nPersistence and decay in an MA(0.9,0.6,0.3) model",
+    "crumbs": [
+      "2. AR and MA models",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>MA models</span>"
+    ]
+  },
+  {
+    "objectID": "backshift.html",
+    "href": "backshift.html",
+    "title": "Backshift notation",
+    "section": "",
+    "text": "The backshift operator\nWhen we learned linear regression techniques, it was convenient to move away from an arithmetic expansion such as:\n\\[y_i = \\beta_0 + \\beta_1 x_{1,i} + \\beta_2 x_{2,i} + \\beta_k x_{k,i} + \\varepsilon_i\\]\nAnd instead move toward a matrix representation, such as:\n\\[\\boldsymbol{y} = \\mathbf{X}\\boldsymbol{\\beta} + \\boldsymbol{\\varepsilon}\\]\nWe will now learn a similar technique for time series analysis, which collapses all lags and their coefficients using the backshift operator.\nWritten thus, we can treat \\(B\\) almost as a separate variable,1 and use it to remove lagged terms from our equations:\n\\[\\begin{aligned} & \\, Y_t = 1.3\\,Y_{t-1} - 0.36\\,Y_{t-2} + \\omega_t \\\\ \\\\ \\Longrightarrow & \\,Y_t = 1.3\\,B\\,Y_t - 0.36\\,B^2\\,Y_t + \\omega_t \\\\ \\\\ \\Longrightarrow & \\, Y_t = Y_t(0.5B - 0.36B^2) + \\omega_t \\\\ \\\\ \\Longrightarrow & \\,\\omega_t = Y_t(1 - 1.3B + 0.36B^2)  \\end{aligned}\\]\nThe model above was an AR(2) process, but we can equally use this notation with MA models:\n\\[\\begin{aligned} & \\, Y_t = \\omega_t + 0.8\\,\\omega_{t-1} + 0.16\\,\\omega_{t-2} \\\\ \\\\ \\Longrightarrow & \\,Y_t = \\omega_t + 0.8\\,B\\,\\omega_t + 0.16\\,B^2\\,\\omega_t \\\\ \\\\ \\Longrightarrow & \\, Y_t = \\omega_t(1 + 0.8B + 0.16B^2) \\end{aligned}\\]",
+    "crumbs": [
+      "2. AR and MA models",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Backshift notation</span>"
+    ]
+  },
+  {
+    "objectID": "backshift.html#the-backshift-operator",
+    "href": "backshift.html#the-backshift-operator",
+    "title": "Backshift notation",
+    "section": "",
+    "text": "Note\n\n\n\nLet \\(\\boldsymbol{Y}\\) be a time series random variable observed at regular time periods \\(T = \\{1, 2, \\ldots, n\\}\\). Then the unary operator \\(B\\) (backshift) is defined as follows:\n\\[B \\, Y_t = Y_{t-1}\\]\n\\[B^k \\, Y_t = Y_{t-k}\\]",
+    "crumbs": [
+      "2. AR and MA models",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Backshift notation</span>"
+    ]
+  },
+  {
+    "objectID": "backshift.html#the-ar-and-ma-characteristic-polynomials",
+    "href": "backshift.html#the-ar-and-ma-characteristic-polynomials",
+    "title": "Backshift notation",
+    "section": "The AR and MA characteristic polynomials",
+    "text": "The AR and MA characteristic polynomials\nSo far, this hasn’t seemed to save much space or offer us any new possibilities. We can bring it altogether by introducing two characteristic polynomials. These equations aren’t any sort of theorem or result, just a definition:\n\n\n\n\n\n\nNote\n\n\n\nThe characteristic polynomial of an AR process of order p is defined as follows:\n\\[\\Phi(B) = 1 - \\phi_1 B - \\phi_2 B^2 - ... - \\phi_p B^p\\]\nThe characteristic polynomial of an MA process of order q is defined as follows:\n\\[\\Theta(B) = 1 + \\theta_1 B + \\theta_2 B^2 + ... + \\theta_q B^q\\]\n\n\nWith these two “shortcuts” we can represent every AR process as follows:\n\\[\\omega_t = \\Phi(B) \\cdot Y_t\\]\nAnd we can represent every MA process as follows:\n\\[Y_t = \\Theta(B) \\cdot \\omega_t\\]",
+    "crumbs": [
+      "2. AR and MA models",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Backshift notation</span>"
+    ]
+  },
+  {
+    "objectID": "backshift.html#roots-of-the-characteristic-polynomials",
+    "href": "backshift.html#roots-of-the-characteristic-polynomials",
+    "title": "Backshift notation",
+    "section": "Roots of the characteristic polynomials",
+    "text": "Roots of the characteristic polynomials\nIn the examples I gave above, we could say that for the AR(2) process,\n\\[\\Phi(B) = 1 - 1.3B + 0.36B^2\\]\nKeen-eyed mathemagicians might have already noticed that we can factor and solve for the roots of this equation:\n\\[\\Phi(B) = (1 - 0.4B)(1 - 0.9B)\\]\n\\[\\Phi(B) = 0 \\iff B \\in \\{0.4, 0.9\\}\\]\nLikewise, we could solve for the roots of the MA(2) characteristic polynomial\n\\[\\Theta(B) = 1 + 0.8B + 0.16B^2\\]\n\\[\\Theta(B) = (1 + 0.4B)^2\\]\n\\[\\Theta(B) = 0 \\iff B = -0.4\\]\nThe dramatic reveal of why we would want to solve the roots of these polynomials must wait for the next page.",
+    "crumbs": [
+      "2. AR and MA models",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Backshift notation</span>"
+    ]
+  },
+  {
+    "objectID": "backshift.html#footnotes",
+    "href": "backshift.html#footnotes",
+    "title": "Backshift notation",
+    "section": "",
+    "text": "Not a random variable, but a variable we could solve for, such as \\(x\\) in the equation \\(x^2 - 4x = -3\\)↩︎",
+    "crumbs": [
+      "2. AR and MA models",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Backshift notation</span>"
+    ]
   }
 ]

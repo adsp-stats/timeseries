@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>White noise – Forecasting Essentials and Notes: Online Resource</title>
+<title>MA models – Forecasting Essentials and Notes: Online Resource</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -65,8 +65,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./randomwalk.html" rel="next">
-<link href="./autocovariance.html" rel="prev">
+<link href="./backshift.html" rel="next">
+<link href="./armodels.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -148,7 +148,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./whatisatimeseries.html">1. Time series basics</a></li><li class="breadcrumb-item"><a href="./whitenoise.html"><span class="chapter-title">White noise</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./armodels.html">2. AR and MA models</a></li><li class="breadcrumb-item"><a href="./mamodels.html"><span class="chapter-title">MA models</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -202,7 +202,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./whitenoise.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">White noise</span></a>
+  <a href="./whitenoise.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">White noise</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -238,7 +238,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./mamodels.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">MA models</span></a>
+  <a href="./mamodels.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">MA models</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -258,18 +258,20 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#motivation" id="toc-motivation" class="nav-link active" data-scroll-target="#motivation">Motivation</a></li>
-  <li><a href="#definition" id="toc-definition" class="nav-link" data-scroll-target="#definition">Definition</a></li>
-  <li><a href="#additive-gaussian-white-noise" id="toc-additive-gaussian-white-noise" class="nav-link" data-scroll-target="#additive-gaussian-white-noise">Additive Gaussian white noise</a></li>
+  <li><a href="#ma1-process" id="toc-ma1-process" class="nav-link active" data-scroll-target="#ma1-process">MA(1) process</a></li>
+  <li><a href="#generalizing-to-maq" id="toc-generalizing-to-maq" class="nav-link" data-scroll-target="#generalizing-to-maq">Generalizing to MA(<em>q</em>)</a></li>
+  <li><a href="#recognizing-a-ma-process-from-its-acf-plot" id="toc-recognizing-a-ma-process-from-its-acf-plot" class="nav-link" data-scroll-target="#recognizing-a-ma-process-from-its-acf-plot">Recognizing a MA process from its ACF plot</a></li>
+  <li><a href="#all-ma-processes-are-stationary" id="toc-all-ma-processes-are-stationary" class="nav-link" data-scroll-target="#all-ma-processes-are-stationary">All MA processes are stationary</a></li>
+  <li><a href="#ma-model-responses-to-system-shocks" id="toc-ma-model-responses-to-system-shocks" class="nav-link" data-scroll-target="#ma-model-responses-to-system-shocks">MA model responses to system shocks</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content column-body" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./whatisatimeseries.html">1. Time series basics</a></li><li class="breadcrumb-item"><a href="./whitenoise.html"><span class="chapter-title">White noise</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./armodels.html">2. AR and MA models</a></li><li class="breadcrumb-item"><a href="./mamodels.html"><span class="chapter-title">MA models</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-title">White noise</span></h1>
+<h1 class="title"><span class="chapter-title">MA models</span></h1>
 </div>
 
 
@@ -286,96 +288,12 @@ window.Quarto = {
 </header>
 
 
-<section id="motivation" class="level2">
-<h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
-<p>Imagine observing a signal with a strong periodicity, like a sine wave. We could depict that signal as a waveform in the time domain (the world we experience). We could also depict that signal as a peak in the frequency domain (<em>i.e.</em> the spectral density). Let’s suppose that the signal repeats every 100 time-units, for a frequency of 0.01:</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">1</span>))</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>y1 <span class="ot">&lt;-</span> <span class="fu">sin</span>((<span class="dv">1</span><span class="sc">:</span><span class="dv">1200</span>)<span class="sc">*</span><span class="dv">2</span><span class="sc">*</span>pi<span class="sc">/</span><span class="dv">100</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y1,<span class="at">type=</span><span class="st">'b'</span>,<span class="at">pch=</span><span class="dv">20</span>,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">200</span>))</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">spectrum</span>(y1,<span class="at">log=</span><span class="st">'no'</span>,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.2</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="whitenoise_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Single waveform viewed in the time domain and the frequency domain</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p>Now imagine a more complicated signal, a composite of our first signal and a new signal which repeats every 20 units, creating a new spectral density peak at 0.05:</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">1</span>))</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>y2 <span class="ot">&lt;-</span> <span class="fu">sin</span>((<span class="dv">1</span><span class="sc">:</span><span class="dv">1200</span>)<span class="sc">*</span><span class="dv">2</span><span class="sc">*</span>pi<span class="sc">/</span><span class="dv">20</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y1<span class="sc">+</span>y2,<span class="at">type=</span><span class="st">'b'</span>,<span class="at">pch=</span><span class="dv">20</span>,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">200</span>))</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">spectrum</span>(y1<span class="sc">+</span>y2,<span class="at">log=</span><span class="st">'no'</span>,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.2</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="whitenoise_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Double waveform viewed in the time domain and the frequency domain</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p>We can continue to add more peaks to the spectral density, for example by adding a new waveform with a period every 8 observations (for a frequency of 0.125):</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">1</span>))</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>y3 <span class="ot">&lt;-</span> <span class="fu">sin</span>((<span class="dv">1</span><span class="sc">:</span><span class="dv">1200</span>)<span class="sc">*</span><span class="dv">2</span><span class="sc">*</span>pi<span class="sc">/</span><span class="dv">8</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y1<span class="sc">+</span>y2<span class="sc">+</span>y3,<span class="at">type=</span><span class="st">'b'</span>,<span class="at">pch=</span><span class="dv">20</span>,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">200</span>))</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">spectrum</span>(y1<span class="sc">+</span>y2<span class="sc">+</span>y3,<span class="at">log=</span><span class="st">'no'</span>,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.2</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="whitenoise_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Treble waveform viewed in the time domain and the frequency domain</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p>Let’s take this to the limit case: what if the spectral density were equally powerful at <em>every</em> frequency? We call this <em>white noise</em>:</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">1</span>))</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>y4 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100000</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y4,<span class="at">type=</span><span class="st">'b'</span>,<span class="at">pch=</span><span class="dv">20</span>,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">200</span>))</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">spectrum</span>(y4,<span class="at">log=</span><span class="st">'no'</span>,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.2</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="whitenoise_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Standard normal data viewed in the time domain and the frequency domain</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p>White noise refers to any time-domain generating process which has uniform power across the frequency domain. It has no connection to anyone named White<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>, and instead is a metaphor for “white light” — light which is equally strong across all wavelength frequencies in the visible part of the electomagnetic spectrum.</p>
-</section>
-<section id="definition" class="level2">
-<h2 class="anchored" data-anchor-id="definition">Definition</h2>
-<p>Many different series can be white noise. Choosing either -1 or +1 with equal and independent probability would be a series of white noise. White noise must have the following properties in the time domain:</p>
-<ul>
-<li><p>The observations must show no serial correlation, and in fact most definitions require that they be statistically independent of each other.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p></li>
-<li><p>The observations must have mean 0.</p></li>
-<li><p>The observations must have a finite variance.</p></li>
-</ul>
-</section>
-<section id="additive-gaussian-white-noise" class="level2">
-<h2 class="anchored" data-anchor-id="additive-gaussian-white-noise">Additive Gaussian white noise</h2>
-<p>Although many series <em>can</em> be white noise, some of the models we will study in this course assume that the white noise takes a specific form, where each observation is drawn from an IID Normal distribution with mean zero and constant variance. In other words, the error process we normally<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> associate with a linear regression is also white noise, and is often used to describe the error process of time series models. (The Normal distribution is also called the Gaussian distribution.)</p>
-<p>An individual value from a white noise process is sometimes called an “innovation” or a “random shock” instead of an “error”. We will generally use the term “innovation” in this course, rather than “error”, to emphasize that the shocks are not <em>wrong</em> or <em>misleading</em> in any sense, they are simply unknown until the moment they happen; they are new discoveries that change the status quo.</p>
-<p>To reinforce this perspective, white noise innovations in a time series model are generally denoted as <span class="math inline">\(\omega_1, \omega_2, \ldots, \omega_n\)</span> and <em>not</em> as <span class="math inline">\(\varepsilon_1, \varepsilon_2, \ldots, \varepsilon_n\)</span>. As a mnemonic, you could say they are “w for white noise, not e for error”.</p>
+<p>A second building block of statistical time series analysis is the <em>moving average (MA) model</em>. Moving average models are not well-named: rather than predicting <span class="math inline">\(Y_t\)</span> as a weighted average of its past values (which is what AR models can do), MA models predict <span class="math inline">\(Y_t\)</span> using a weighted average of <em>the unobserved innovations</em>:</p>
+<p><span class="math display">\[Y_t = \beta_0 + \beta_1 \varepsilon_{t-1} + \beta_2 \varepsilon_{t-2} + \ldots + \varepsilon_t\]</span></p>
+<p>Once again I have sketched this idea using the terminology familiar to us from linear regression, but below I will redefine this idea using our new time series notation.</p>
+<section id="ma1-process" class="level2">
+<h2 class="anchored" data-anchor-id="ma1-process">MA(1) process</h2>
+<p>Let’s take the simplest case, where each value of the series averages only the current and immediate previous innovation. We would name this an <em>moving average model with order 1</em> or <em>MA(1) model</em>.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -386,19 +304,143 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Let <span class="math inline">\(\boldsymbol{\omega}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>. If <span class="math inline">\(\omega_t \sim \textrm{Normal}(0,\sigma^2)\)</span> for all <span class="math inline">\(t \in T\)</span> and <span class="math inline">\(\omega_s \perp \omega_t\)</span> for all <span class="math inline">\(s,t \in T\)</span>, then the generating process <span class="math inline">\(\boldsymbol{\omega}\)</span> is said to be <strong>additive Gaussian white noise</strong></p>
+<p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>. Let <span class="math inline">\(\boldsymbol{\omega}\)</span> be a white noise process observed at the same time periods. If,</p>
+<p><span class="math display">\[Y_t = \omega_t + \theta \omega_{t-1}\]</span></p>
+<p>For some <span class="math inline">\(\theta \in \mathbb{R}\)</span> and all <span class="math inline">\(t \in T\)</span>, then we say that <span class="math inline">\(\boldsymbol{Y}\)</span> is an <strong>moving average process with order 1</strong></p>
 </div>
 </div>
-
-
+<p>In theory, the exact properties of a MA(1) process depend on both the moving average parameter <span class="math inline">\(\theta\)</span> as well as the specific type of white noise process denoted by <span class="math inline">\(\boldsymbol{\omega}\)</span>. In practice, we often assume <span class="math inline">\(\boldsymbol{\omega}\)</span> to be Gaussian white noise, leaving <span class="math inline">\(\theta\)</span> as the only input which needs estimation.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">1.1</span>))</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0106</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">20</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>thetavec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="sc">-</span>.<span class="dv">6</span>,<span class="sc">-</span>.<span class="dv">3</span>,<span class="dv">0</span>,.<span class="dv">3</span>,.<span class="dv">6</span>,<span class="dv">1</span>,<span class="dv">2</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">rep</span>(w[<span class="dv">1</span>],<span class="dv">9</span>))</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">20</span>){Y <span class="ot">&lt;-</span> <span class="fu">rbind</span>(Y, <span class="fu">t</span>(<span class="fu">rep</span>(w[i],<span class="dv">9</span>)<span class="sc">+</span>thetavec<span class="sc">*</span>w[i<span class="dv">-1</span>]))}</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {<span class="fu">plot</span>(Y[,j],<span class="at">main=</span><span class="fu">bquote</span>(theta<span class="sc">==</span>.(thetavec[j])),</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                     <span class="at">type=</span><span class="st">'l'</span>,<span class="at">xlab=</span><span class="cn">NA</span>,<span class="at">ylab=</span><span class="cn">NA</span>,<span class="at">sub=</span><span class="cn">NA</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lines</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>,Y[,<span class="dv">5</span>],<span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">lty=</span><span class="dv">2</span>)}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="mamodels_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Nine MA(1) processes with the same innovations</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>In the plots above, we see that MA processes are a little more subtle than AR processes:</p>
+<ul>
+<li><p>MA(1) processes remain stationary for any finite value of <span class="math inline">\(\theta\)</span>, even large positive or negative values. (The weighted sum of any two zero-mean random variables still has a mean of zero.)</p></li>
+<li><p>Positive and negative values of <span class="math inline">\(\theta\)</span> produce similar patterns, with no parameter choice creating the alternating series seen in the AR(1) models.</p></li>
+</ul>
+<p>The properties and utility of MA models are perhaps better described with higher-order processes.</p>
 </section>
-<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
-<hr>
-<ol>
-<li id="fn1"><p><em>E.g.</em>, the econometrician Halbert White for whom we name White standard errors and the White test for heteroskedasticity.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>Independent does imply uncorrelated, but not all uncorrelated variables are independent.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>No pun intended!<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-</ol>
+<section id="generalizing-to-maq" class="level2">
+<h2 class="anchored" data-anchor-id="generalizing-to-maq">Generalizing to MA(<em>q</em>)</h2>
+<p>Now we may complicate the scenario, by allowing the current value <span class="math inline">\(Y_t\)</span> to average <em>several, different</em> past innovations of the series.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>. Let $ be a white noise process observed at the same time periods. If,</p>
+<p><span class="math display">\[Y_t = \omega_t + \theta_1 \omega_{t-1} + \theta_2 \omega_{t-2} + \ldots + \theta_q \omega_{t-q}\]</span></p>
+<p>For some <span class="math inline">\((\theta_1, \theta_2, \ldots, \theta_q) \in \mathbb{R}^q\)</span> and all <span class="math inline">\(t \in T\)</span>, then we say that <span class="math inline">\(\boldsymbol{Y}\)</span> is an <strong>moving average model with order</strong> <strong><em>q</em></strong>.</p>
+</div>
+</div>
+<p>MA(<em>q</em>) effects tend to become more pronounced at higher orders. For many combinations of parameters <span class="math inline">\(\theta_1, \ldots, \theta_q\)</span>, the general effect is a smoothing filter which highlights consecutive large innovations but minimizes single innovations, and preserves no memory of the past beyond its averaging:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">1.1</span>))</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0107</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">50</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>theta <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>),<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>),<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>),</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(<span class="fl">0.8</span>,<span class="fl">0.6</span>,<span class="fl">0.4</span>,<span class="fl">0.2</span>),<span class="fu">c</span>(<span class="fl">0.4</span>,<span class="fl">0.3</span>,<span class="fl">0.2</span>,<span class="fl">0.1</span>),<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">4</span>,<span class="dv">2</span>,<span class="dv">1</span>),<span class="fu">c</span>(<span class="dv">0</span>,<span class="sc">-</span><span class="dv">1</span>),<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>))</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow=</span><span class="dv">50</span>,<span class="at">ncol=</span><span class="dv">9</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) Y[,i] <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ma=</span>theta[[i]]),<span class="at">n=</span><span class="dv">50</span>,<span class="at">innov=</span>w)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) <span class="fu">plot</span>(Y[,j],<span class="at">main=</span><span class="fu">bquote</span>(theta<span class="sc">==</span>.(<span class="fu">paste</span>(theta[[j]],<span class="at">collapse=</span><span class="st">','</span>))),</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">type=</span><span class="st">'l'</span>,<span class="at">xlab=</span><span class="cn">NA</span>,<span class="at">ylab=</span><span class="cn">NA</span>,<span class="at">sub=</span><span class="cn">NA</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="mamodels_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Nine MA processes with the same innovations</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="recognizing-a-ma-process-from-its-acf-plot" class="level2">
+<h2 class="anchored" data-anchor-id="recognizing-a-ma-process-from-its-acf-plot">Recognizing a MA process from its ACF plot</h2>
+<p>An autocorrelation function (ACF) plot will always provide helpful summary or diagnostic information about a MA(<em>q</em>) model. In the simplest case of MA(1), the height of the ACF plot at the first lag will be equal to <span class="math inline">\(q/(1+q^2)\)</span>, and the remaining lags will show <em>little or no autocorrelation at all</em>. For example, when <span class="math inline">\(p=0.8\)</span>, the first lag will have an autocorrelation of roughly <span class="math inline">\(0.8/(1+0.64) \approx 0.49\)</span>, and all other lags will show only minimal autocorrelation:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">1.1</span>))</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0108</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>ma08 <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ma=</span><span class="fl">0.8</span>),<span class="at">n=</span><span class="dv">1000</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>ma080706 <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ma=</span><span class="fu">c</span>(<span class="fl">0.8</span>,<span class="fl">0.7</span>,<span class="fl">0.6</span>)),<span class="at">n=</span><span class="dv">1000</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(ma08,<span class="at">main=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'ACF when '</span>,theta <span class="sc">==</span> <span class="fl">0.8</span>)),<span class="at">lag.max=</span><span class="dv">15</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(ma080706,<span class="at">main=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'ACF when '</span>,theta <span class="sc">==</span> <span class="fu">list</span>(<span class="fl">0.8</span>,<span class="fl">0.7</span>,<span class="fl">0.6</span>))),<span class="at">lag.max=</span><span class="dv">15</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="mamodels_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Two MA processes and their ACF plots, 1000 obs each</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The key feature here is that for values <span class="math inline">\(s \lt (t - q)\)</span>, <span class="math inline">\(Y_t\)</span> and <span class="math inline">\(Y_s\)</span> have <em>no elements in common</em> and are completely independent. Any small sample autocorrelation is purely spurious.</p>
+</section>
+<section id="all-ma-processes-are-stationary" class="level2">
+<h2 class="anchored" data-anchor-id="all-ma-processes-are-stationary">All MA processes are stationary</h2>
+<p>Since MA processes are simply weighted sums of zero-mean white noise, they themselves are zero-mean and meet all the requirements for weak stationarity, no matter the choice(s) of <span class="math inline">\(\boldsymbol{\theta}\)</span>. In the equations which follow, assume that <span class="math inline">\(\mathbb{E}[\omega_t] = 0\)</span> and <span class="math inline">\(\mathbb{V}[\omega_t] = \sigma^2\)</span>:</p>
+<p><span class="math display">\[\begin{aligned} (1) \qquad \mathbb{E}[Y_t] &amp;= \mathbb{E}[\omega_t + \sum_{i=1}^q \theta_i \omega_{t-i}] = 0 + \sum_{i=1}^q \theta_i \mathbb{E}[\omega_{t-i}] = 0 + \sum_{i=1}^q 0 = 0 \\  \\ (2) \qquad \mathbb{V}[Y_t] &amp;= \mathbb{V}[\omega_t + \sum_{i=1}^q \theta_i \omega_{t-i}] = \sigma^2 + \sum_{i=1}^q \theta^2_i \mathbb{V}[\omega_{t-i}] = \left(1 + \sum_i \theta_i^2 \right) \sigma^2 \\ \\ (3) \qquad \gamma_{st} &amp;= \textrm{Cov}\left(\omega_s + \sum_{i=1}^q \theta_i \omega_{s-i},\, \omega_t + \sum_{i=1}^q \theta_i \omega_{t-i} \right) \\ &amp;= \left\{ \begin{array}{ll} 0 &amp; \textrm{if} \; |s - t| \gt q \\ \theta_q \sigma^2 &amp; \textrm{if} \; |s - t| = q \\ (\theta_{q-1} + \theta_2 \theta_q) \sigma^2 &amp; \textrm{if} \; |s - t| = q - 1 \\ \cdots &amp; \cdots \end{array} \right\}\end{aligned}\]</span></p>
+<p>We can see from the above that the mean and variance are constant and that the autocovariance of two entries depends only on the lag between them, which are the requirements of weak stationarity.</p>
+</section>
+<section id="ma-model-responses-to-system-shocks" class="level2">
+<h2 class="anchored" data-anchor-id="ma-model-responses-to-system-shocks">MA model responses to system shocks</h2>
+<p>MA models dampen one-time system shocks by averaging them among the other innovations, and after the moving average window has passed, the system shock disappears entirely from the series. Consider a simple AR(1) model which processes a fairly quiet series of innovations, interrupted irregularly by a much larger signal:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0110</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">100</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>w[<span class="dv">8</span>] <span class="ot">&lt;-</span> <span class="dv">10</span>; w[<span class="dv">15</span>] <span class="ot">&lt;-</span> <span class="dv">10</span>; w[<span class="dv">25</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">10</span>; w[<span class="dv">45</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">10</span>;</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>ma <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ma=</span><span class="fu">c</span>(<span class="fl">0.9</span>,<span class="fl">0.6</span>,<span class="fl">0.3</span>)),<span class="at">n=</span><span class="dv">100</span>,<span class="at">innov=</span>w)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">15</span><span class="sc">+</span>ma,<span class="at">type=</span><span class="st">'s'</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">10</span>,<span class="dv">27</span>),<span class="at">ylab=</span><span class="cn">NA</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(w,<span class="at">type=</span><span class="st">'h'</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="dv">15</span>,<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'#7f7f7f'</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topright'</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#0000ff'</span>),<span class="at">bty=</span><span class="st">'n'</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend=</span><span class="fu">c</span>(<span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'Time series '</span>,Y[t])),</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>                <span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'Innovations '</span>,omega[t]))))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="mamodels_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Persistence and decay in an MA(0.9,0.6,0.3) model</figcaption>
+</figure>
+</div>
+</div>
+</div>
+
+
 </section>
 
 </main> <!-- /main -->
@@ -843,13 +885,13 @@ Note
   </script>
 <nav class="page-navigation column-body">
   <div class="nav-page nav-page-previous">
-      <a href="./autocovariance.html" class="pagination-link" aria-label="Autocovariance and autocorrelation">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Autocovariance and autocorrelation</span></span>
+      <a href="./armodels.html" class="pagination-link" aria-label="AR models">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">AR models</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./randomwalk.html" class="pagination-link" aria-label="Random walks">
-        <span class="nav-page-text"><span class="chapter-title">Random walks</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./backshift.html" class="pagination-link" aria-label="Backshift notation">
+        <span class="nav-page-text"><span class="chapter-title">Backshift notation</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Forecasting Essentials and Notes: Online Resource</title>
+<title>Backshift notation – Forecasting Essentials and Notes: Online Resource</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -30,7 +30,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./whatisatimeseries.html" rel="next">
+<link href="./mamodels.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -71,6 +71,35 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -83,7 +112,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Introduction</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./armodels.html">2. AR and MA models</a></li><li class="breadcrumb-item"><a href="./backshift.html"><span class="chapter-title">Backshift notation</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -112,7 +141,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Introduction</span></a>
   </div>
 </li>
@@ -178,7 +207,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./backshift.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Backshift notation</span></a>
+  <a href="./backshift.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Backshift notation</span></a>
   </div>
 </li>
       </ul>
@@ -193,20 +222,18 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#sec-intro" id="toc-sec-intro" class="nav-link active" data-scroll-target="#sec-intro">Introduction</a>
-  <ul class="collapse">
-  <li><a href="#sec-referencetexts" id="toc-sec-referencetexts" class="nav-link" data-scroll-target="#sec-referencetexts">Recommended textbooks</a></li>
-  <li><a href="#how-these-notes-were-made" id="toc-how-these-notes-were-made" class="nav-link" data-scroll-target="#how-these-notes-were-made">How these notes were made</a></li>
-  </ul></li>
+  <li><a href="#the-backshift-operator" id="toc-the-backshift-operator" class="nav-link active" data-scroll-target="#the-backshift-operator">The backshift operator</a></li>
+  <li><a href="#the-ar-and-ma-characteristic-polynomials" id="toc-the-ar-and-ma-characteristic-polynomials" class="nav-link" data-scroll-target="#the-ar-and-ma-characteristic-polynomials">The AR and MA characteristic polynomials</a></li>
+  <li><a href="#roots-of-the-characteristic-polynomials" id="toc-roots-of-the-characteristic-polynomials" class="nav-link" data-scroll-target="#roots-of-the-characteristic-polynomials">Roots of the characteristic polynomials</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content column-body" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./armodels.html">2. AR and MA models</a></li><li class="breadcrumb-item"><a href="./backshift.html"><span class="chapter-title">Backshift notation</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Forecasting Essentials and Notes: Online Resource</h1>
+<h1 class="title"><span class="chapter-title">Backshift notation</span></h1>
 </div>
 
 
@@ -223,33 +250,76 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="sec-intro" class="level1 unnumbered">
-<h1 class="unnumbered">Introduction</h1>
-<p>Hello! I’m Jonathan, and I want to teach you time series analysis I have designed this website to accompany the University of Chicago course ADSP 31006 “Time Series Analysis and Forecasting”. Although the course will mostly be taught in a traditional lecture format, I would like to use this website to provide backing material for the lectures.</p>
-<section id="sec-referencetexts" class="level2">
-<h2 class="anchored" data-anchor-id="sec-referencetexts">Recommended textbooks</h2>
-<p>Unlike <a href="https://adsp-stats.github.io/statisticalmodels">my statistics course website</a>, I do <em>not</em> intend that this course website be considered the principle text for the class. We will have two primary textbooks (described below), and the notes in these pages <em>supplement</em> the readings without <em>replacing</em> the readings.</p>
-<ul>
-<li><p><em>Forecasting: Principles and Practice</em> 3rd edition, by Rob Hyndman and George Athanasopoulos</p>
-<p>This book is <a href="https://otexts.com/fpp3/">freely available</a> and one of our two major reference sources. The book relies heavily on R code using the <code>tidyverse</code> constellation of packages and the new <code>fable</code> package written by the authors, which interleaves specifically with the <code>tsibble</code> package. Readers who prefer base R may instead read the book’s <a href="https://otexts.com/fpp3/">second edition</a> (also freely available), and readers who prefer Python will benefit from the new <a href="https://otexts.com/fpppy/">Python edition</a> (also freely available).</p></li>
-<li><p><em>Practical Time Series Analysis</em>, by Aileen Nielsen</p>
-<p>This is the second of our two major reference sources. In contrast to the Hyndman and Athanasopoulos textbook, Nielsen includes more on-the-job tips about working with real datasets, structuring and storing the data, and putting forecasting models into production. She uses a combination of R (using the less-common <code>data.table</code> environment) and Python examples, and describes time series analysis from both a statistical and a machine learning perspective.</p></li>
-<li><p><em>Time Series Analysis: Forecasting and Control</em> 5th edition, by George Box, et al.</p>
-<p>One of the classic texts in the field. Box and his co-authors have introduced and refined (over several decades) the best all-purpose textbook from a purely statistical perspective. They spend less time discussing programming considerations or machine learning models.</p></li>
-</ul>
+<p>When we learned linear regression techniques, it was convenient to move away from an arithmetic expansion such as:</p>
+<p><span class="math display">\[y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + \beta_k x_{k,i} + \varepsilon_i\]</span></p>
+<p>And instead move toward a matrix representation, such as:</p>
+<p><span class="math display">\[\boldsymbol{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\varepsilon}\]</span></p>
+<p>We will now learn a similar technique for time series analysis, which collapses all lags and their coefficients using the <em>backshift operator</em>.</p>
+<section id="the-backshift-operator" class="level2">
+<h2 class="anchored" data-anchor-id="the-backshift-operator">The backshift operator</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>. Then the unary operator <span class="math inline">\(B\)</span> (<strong>backshift</strong>) is defined as follows:</p>
+<p><span class="math display">\[B \, Y_t = Y_{t-1}\]</span></p>
+<p><span class="math display">\[B^k \, Y_t = Y_{t-k}\]</span></p>
+</div>
+</div>
+<p>Written thus, we can treat <span class="math inline">\(B\)</span> almost as a separate variable,<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> and use it to remove lagged terms from our equations:</p>
+<p><span class="math display">\[\begin{aligned} &amp; \, Y_t = 1.3\,Y_{t-1} - 0.36\,Y_{t-2} + \omega_t \\ \\ \Longrightarrow &amp; \,Y_t = 1.3\,B\,Y_t - 0.36\,B^2\,Y_t + \omega_t \\ \\ \Longrightarrow &amp; \, Y_t = Y_t(0.5B - 0.36B^2) + \omega_t \\ \\ \Longrightarrow &amp; \,\omega_t = Y_t(1 - 1.3B + 0.36B^2)  \end{aligned}\]</span></p>
+<p>The model above was an AR(2) process, but we can equally use this notation with MA models:</p>
+<p><span class="math display">\[\begin{aligned} &amp; \, Y_t = \omega_t + 0.8\,\omega_{t-1} + 0.16\,\omega_{t-2} \\ \\ \Longrightarrow &amp; \,Y_t = \omega_t + 0.8\,B\,\omega_t + 0.16\,B^2\,\omega_t \\ \\ \Longrightarrow &amp; \, Y_t = \omega_t(1 + 0.8B + 0.16B^2) \end{aligned}\]</span></p>
 </section>
-<section id="how-these-notes-were-made" class="level2">
-<h2 class="anchored" data-anchor-id="how-these-notes-were-made">How these notes were made</h2>
-<p>I assembled these notes using <a href="https://quarto.org">Quarto</a>, a publishing system built around the Pandoc markdown language. I wrote all the code backing these notes in <a href="https://cran.r-project.org">R</a>, and alongside every figure or table you can find the corresponding R code.</p>
-<p>Neither the text nor the R code in these notes were generated by AI tools: for better and worse the opinions expressed here are my own, and the I’ve described these concepts in my own voice.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> Complaints can be submitted <a href="https://chatgpt.com">here</a>.</p>
+<section id="the-ar-and-ma-characteristic-polynomials" class="level2">
+<h2 class="anchored" data-anchor-id="the-ar-and-ma-characteristic-polynomials">The AR and MA characteristic polynomials</h2>
+<p>So far, this hasn’t seemed to save much space or offer us any new possibilities. We can bring it altogether by introducing two <em>characteristic polynomials</em>. These equations aren’t any sort of theorem or result, just a definition:</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <strong>characteristic polynomial of an AR process</strong> of order <em>p</em> is defined as follows:</p>
+<p><span class="math display">\[\Phi(B) = 1 - \phi_1 B - \phi_2 B^2 - ... - \phi_p B^p\]</span></p>
+<p>The <strong>characteristic polynomial of an MA process</strong> of order <em>q</em> is defined as follows:</p>
+<p><span class="math display">\[\Theta(B) = 1 + \theta_1 B + \theta_2 B^2 + ... + \theta_q B^q\]</span></p>
+</div>
+</div>
+<p>With these two “shortcuts” we can represent every AR process as follows:</p>
+<p><span class="math display">\[\omega_t = \Phi(B) \cdot Y_t\]</span></p>
+<p>And we can represent every MA process as follows:</p>
+<p><span class="math display">\[Y_t = \Theta(B) \cdot \omega_t\]</span></p>
+</section>
+<section id="roots-of-the-characteristic-polynomials" class="level2">
+<h2 class="anchored" data-anchor-id="roots-of-the-characteristic-polynomials">Roots of the characteristic polynomials</h2>
+<p>In the examples I gave above, we could say that for the AR(2) process,</p>
+<p><span class="math display">\[\Phi(B) = 1 - 1.3B + 0.36B^2\]</span></p>
+<p>Keen-eyed mathemagicians might have already noticed that we can factor and solve for the roots of this equation:</p>
+<p><span class="math display">\[\Phi(B) = (1 - 0.4B)(1 - 0.9B)\]</span></p>
+<p><span class="math display">\[\Phi(B) = 0 \iff B \in \{0.4, 0.9\}\]</span></p>
+<p>Likewise, we could solve for the roots of the MA(2) characteristic polynomial</p>
+<p><span class="math display">\[\Theta(B) = 1 + 0.8B + 0.16B^2\]</span></p>
+<p><span class="math display">\[\Theta(B) = (1 + 0.4B)^2\]</span></p>
+<p><span class="math display">\[\Theta(B) = 0 \iff B = -0.4\]</span></p>
+<p>The dramatic reveal of <em>why</em> we would want to solve the roots of these polynomials must wait for the next page.</p>
 
 
-</section>
 </section>
 <section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr>
 <ol>
-<li id="fn1"><p>AI assistance was used to brainstorm case studies and examples, and to help with the layout and coding of the website itself.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>Not a <em>random</em> variable, but a variable we could solve for, such as <span class="math inline">\(x\)</span> in the equation <span class="math inline">\(x^2 - 4x = -3\)</span><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 
@@ -695,11 +765,11 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation column-body">
   <div class="nav-page nav-page-previous">
+      <a href="./mamodels.html" class="pagination-link" aria-label="MA models">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">MA models</span></span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./whatisatimeseries.html" class="pagination-link" aria-label="What is a time series?">
-        <span class="nav-page-text"><span class="chapter-title">What is a time series?</span></span> <i class="bi bi-arrow-right-short"></i>
-      </a>
   </div>
 </nav>
 </div> <!-- /content -->
