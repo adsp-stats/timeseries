@@ -19,6 +19,8 @@ book:
         - armodels.qmd
         - mamodels.qmd
         - backshift.qmd
+        - arimamodels.qmd
+        - identificationinr.qmd
 format:
   html:
     toc: true

@@ -64,7 +64,7 @@ Keen-eyed mathemagicians might have already noticed that we can factor and solve
 
 $$\Phi(B) = (1 - 0.4B)(1 - 0.9B)$$
 
-$$\Phi(B) = 0 \iff B \in \{0.4, 0.9\}$$
+$$\Phi(B) = 0 \iff B \in \{2.5, 1.111\ldots\}$$
 
 Likewise, we could solve for the roots of the MA(2) characteristic polynomial
 
@@ -72,6 +72,6 @@ $$\Theta(B) = 1 + 0.8B + 0.16B^2$$
 
 $$\Theta(B) = (1 + 0.4B)^2$$
 
-$$\Theta(B) = 0 \iff B = -0.4$$
+$$\Theta(B) = 0 \iff B = -2.5$$
 
 The dramatic reveal of *why* we would want to solve the roots of these polynomials must wait for the next page.
