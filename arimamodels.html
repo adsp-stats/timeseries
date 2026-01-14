@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>MA models – Forecasting Essentials and Notes: Online Resource</title>
+<title>ARIMA models – Forecasting Essentials and Notes: Online Resource</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -65,8 +65,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./backshift.html" rel="next">
-<link href="./armodels.html" rel="prev">
+<link href="./identificationinr.html" rel="next">
+<link href="./backshift.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -148,7 +148,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./armodels.html">2. AR and MA models</a></li><li class="breadcrumb-item"><a href="./mamodels.html"><span class="chapter-title">MA models</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./armodels.html">2. AR and MA models</a></li><li class="breadcrumb-item"><a href="./arimamodels.html"><span class="chapter-title">ARIMA models</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -238,7 +238,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./mamodels.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">MA models</span></a>
+  <a href="./mamodels.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">MA models</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -248,7 +248,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./arimamodels.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">ARIMA models</span></a>
+  <a href="./arimamodels.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">ARIMA models</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -268,20 +268,24 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#ma1-process" id="toc-ma1-process" class="nav-link active" data-scroll-target="#ma1-process">MA(1) process</a></li>
-  <li><a href="#generalizing-to-maq" id="toc-generalizing-to-maq" class="nav-link" data-scroll-target="#generalizing-to-maq">Generalizing to MA(<em>q</em>)</a></li>
-  <li><a href="#recognizing-a-ma-process-from-its-acf-plot" id="toc-recognizing-a-ma-process-from-its-acf-plot" class="nav-link" data-scroll-target="#recognizing-a-ma-process-from-its-acf-plot">Recognizing a MA process from its ACF plot</a></li>
-  <li><a href="#all-ma-processes-are-stationary" id="toc-all-ma-processes-are-stationary" class="nav-link" data-scroll-target="#all-ma-processes-are-stationary">All MA processes are stationary</a></li>
-  <li><a href="#ma-model-responses-to-system-shocks" id="toc-ma-model-responses-to-system-shocks" class="nav-link" data-scroll-target="#ma-model-responses-to-system-shocks">MA model responses to system shocks</a></li>
+  <li><a href="#arma-models" id="toc-arma-models" class="nav-link active" data-scroll-target="#arma-models">ARMA models</a></li>
+  <li><a href="#characteristic-polynomials-their-roots-and-reciprocals" id="toc-characteristic-polynomials-their-roots-and-reciprocals" class="nav-link" data-scroll-target="#characteristic-polynomials-their-roots-and-reciprocals">Characteristic polynomials, their roots and reciprocals</a></li>
+  <li><a href="#properties-of-an-arma-process" id="toc-properties-of-an-arma-process" class="nav-link" data-scroll-target="#properties-of-an-arma-process">Properties of an ARMA process</a>
+  <ul class="collapse">
+  <li><a href="#stationarity-ar" id="toc-stationarity-ar" class="nav-link" data-scroll-target="#stationarity-ar">Stationarity (AR)</a></li>
+  <li><a href="#invertibility-ma" id="toc-invertibility-ma" class="nav-link" data-scroll-target="#invertibility-ma">Invertibility (MA)</a></li>
+  <li><a href="#reducibility-both" id="toc-reducibility-both" class="nav-link" data-scroll-target="#reducibility-both">Reducibility (both)</a></li>
+  </ul></li>
+  <li><a href="#arima-models-and-integration" id="toc-arima-models-and-integration" class="nav-link" data-scroll-target="#arima-models-and-integration">ARIMA models and integration</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content column-body" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./armodels.html">2. AR and MA models</a></li><li class="breadcrumb-item"><a href="./mamodels.html"><span class="chapter-title">MA models</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./armodels.html">2. AR and MA models</a></li><li class="breadcrumb-item"><a href="./arimamodels.html"><span class="chapter-title">ARIMA models</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-title">MA models</span></h1>
+<h1 class="title"><span class="chapter-title">ARIMA models</span></h1>
 </div>
 
 
@@ -298,60 +302,10 @@ window.Quarto = {
 </header>
 
 
-<p>A second building block of statistical time series analysis is the <em>moving average (MA) model</em>. Moving average models are not well-named: rather than predicting <span class="math inline">\(Y_t\)</span> as a weighted average of its past values (which is what AR models can do), MA models predict <span class="math inline">\(Y_t\)</span> using a weighted average of <em>the unobserved innovations</em>:</p>
-<p><span class="math display">\[Y_t = \beta_0 + \beta_1 \varepsilon_{t-1} + \beta_2 \varepsilon_{t-2} + \ldots + \varepsilon_t\]</span></p>
-<p>Once again I have sketched this idea using the terminology familiar to us from linear regression, but below I will redefine this idea using our new time series notation.</p>
-<section id="ma1-process" class="level2">
-<h2 class="anchored" data-anchor-id="ma1-process">MA(1) process</h2>
-<p>Let’s take the simplest case, where each value of the series averages only the current and immediate previous innovation. We would name this an <em>moving average model with order 1</em> or <em>MA(1) model</em>.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>. Let <span class="math inline">\(\boldsymbol{\omega}\)</span> be a white noise process observed at the same time periods. If,</p>
-<p><span class="math display">\[Y_t = \omega_t + \theta \omega_{t-1}\]</span></p>
-<p>For some <span class="math inline">\(\theta \in \mathbb{R}\)</span> and all <span class="math inline">\(t \in T\)</span>, then we say that <span class="math inline">\(\boldsymbol{Y}\)</span> is an <strong>moving average process with order 1</strong></p>
-</div>
-</div>
-<p>In theory, the exact properties of a MA(1) process depend on both the moving average parameter <span class="math inline">\(\theta\)</span> as well as the specific type of white noise process denoted by <span class="math inline">\(\boldsymbol{\omega}\)</span>. In practice, we often assume <span class="math inline">\(\boldsymbol{\omega}\)</span> to be Gaussian white noise, leaving <span class="math inline">\(\theta\)</span> as the only input which needs estimation.</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">1.1</span>))</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0106</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">20</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>thetavec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="sc">-</span>.<span class="dv">6</span>,<span class="sc">-</span>.<span class="dv">3</span>,<span class="dv">0</span>,.<span class="dv">3</span>,.<span class="dv">6</span>,<span class="dv">1</span>,<span class="dv">2</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">rep</span>(w[<span class="dv">1</span>],<span class="dv">9</span>))</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">20</span>){Y <span class="ot">&lt;-</span> <span class="fu">rbind</span>(Y, <span class="fu">t</span>(<span class="fu">rep</span>(w[i],<span class="dv">9</span>)<span class="sc">+</span>thetavec<span class="sc">*</span>w[i<span class="dv">-1</span>]))}</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {<span class="fu">plot</span>(Y[,j],<span class="at">main=</span><span class="fu">bquote</span>(theta<span class="sc">==</span>.(thetavec[j])),</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                     <span class="at">type=</span><span class="st">'l'</span>,<span class="at">xlab=</span><span class="cn">NA</span>,<span class="at">ylab=</span><span class="cn">NA</span>,<span class="at">sub=</span><span class="cn">NA</span>)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lines</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>,Y[,<span class="dv">5</span>],<span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">lty=</span><span class="dv">2</span>)}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="mamodels_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Nine MA(1) processes with the same innovations</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p>In the plots above, we see that MA processes are a little more subtle than AR processes:</p>
-<ul>
-<li><p>MA(1) processes remain stationary for any finite value of <span class="math inline">\(\theta\)</span>, even large positive or negative values. (The weighted sum of any two zero-mean random variables still has a mean of zero.)</p></li>
-<li><p>Positive and negative values of <span class="math inline">\(\theta\)</span> produce similar patterns, with no parameter choice creating the alternating series seen in the AR(1) models.</p></li>
-</ul>
-<p>The properties and utility of MA models are perhaps better described with higher-order processes.</p>
-</section>
-<section id="generalizing-to-maq" class="level2">
-<h2 class="anchored" data-anchor-id="generalizing-to-maq">Generalizing to MA(<em>q</em>)</h2>
-<p>Now we may complicate the scenario, by allowing the current value <span class="math inline">\(Y_t\)</span> to average <em>several, different</em> past innovations of the series.</p>
+<p>Having learned about <a href="./armodels.html">AR models</a> and <a href="./mamodels.html">MA models</a> and <a href="./stationarity.html">difference-stationarity</a> we are now ready to bring these pieces together into the first major modeling and forecasting technique: ARIMA models.</p>
+<section id="arma-models" class="level2">
+<h2 class="anchored" data-anchor-id="arma-models">ARMA models</h2>
+<p>ARIMA is in fact an extension of a slightly simpler model called ARMA, which contains both AR and MA components. We will learn about ARMA models first before extending to the full ARIMA model.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -363,94 +317,194 @@ Note
 </div>
 <div class="callout-body-container callout-body">
 <p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>. Let $ be a white noise process observed at the same time periods. If,</p>
-<p><span class="math display">\[Y_t = \omega_t + \theta_1 \omega_{t-1} + \theta_2 \omega_{t-2} + \ldots + \theta_q \omega_{t-q}\]</span></p>
-<p>For some <span class="math inline">\((\theta_1, \theta_2, \ldots, \theta_q) \in \mathbb{R}^q\)</span> and all <span class="math inline">\(t \in T\)</span>, then we say that <span class="math inline">\(\boldsymbol{Y}\)</span> is an <strong>moving average model with order</strong> <strong><em>q</em></strong>.</p>
+<p><span class="math display">\[Y_t = \omega_t + \sum_{i=1}^{p}\phi_i Y_i + \sum_{j=1}^q \theta_j \omega_j\]</span></p>
+<p>For some <span class="math inline">\(\Phi = (\phi_1, \ldots, \phi_p) \in \mathbb{R}^p\)</span> and some <span class="math inline">\(\Theta = (\theta_1, \ldots, \theta_q) \in \mathbb{R}^q\)</span> and all <span class="math inline">\(t \in T\)</span>, then we say that <span class="math inline">\(\boldsymbol{Y}\)</span> is an <strong>autoregressive and moving average (ARMA) model</strong> written ARMA(<em>p</em>,<em>q</em>).</p>
 </div>
 </div>
-<p>MA(<em>q</em>) effects tend to become more pronounced at higher orders. For many combinations of parameters <span class="math inline">\(\theta_1, \ldots, \theta_q\)</span>, the general effect is a smoothing filter which highlights consecutive large innovations but minimizes single innovations, and preserves no memory of the past beyond its averaging:</p>
+<p>ARMA models quite simply combine AR and MA models in one. They allow the current value of the time series (<span class="math inline">\(Y_t\)</span>) to depend both on past values as well as past shocks. Like other time series we have seen, ARMA models are sometimes written as though they are zero-mean, but can also be expressed with a level or a deterministic trend:</p>
+<p><span class="math display">\[Y_t = c + \omega_t + \sum_{i=1}^{p}\phi_i Y_i + \sum_{j=1}^q \theta_j \omega_j\]</span></p>
+<p><span class="math display">\[Y_t = c + \delta t + \omega_t + \sum_{i=1}^{p}\phi_i Y_i + \sum_{j=1}^q \theta_j \omega_j\]</span></p>
+</section>
+<section id="characteristic-polynomials-their-roots-and-reciprocals" class="level2">
+<h2 class="anchored" data-anchor-id="characteristic-polynomials-their-roots-and-reciprocals">Characteristic polynomials, their roots and reciprocals</h2>
+<p>Using <a href="./backshift.html">the notation developed earlier</a>, we can represent this ARMA model using the characteristic polynomials for the AR and MA components:</p>
+<p><span class="math display">\[\begin{aligned} Y_t &amp;= \omega_t + \sum_{i=1}^{p}\phi_i Y_i + \sum_{j=1}^q \theta_j \omega_j \Longrightarrow \\ \\ Y_t - \sum_{i=1}^{p}\phi_i Y_i &amp;= \omega_t + \sum_{j=1}^q \theta_j \omega_j \Longrightarrow \\ \\ Y_t \left(1 - \sum_{i=1}^{p}\phi_i B^i \right) &amp;= \omega_t \left(1 + \sum_{j=1}^{q}\theta_j B^j \right) \Longrightarrow \\ \\ Y_t \Phi(B) &amp;= \omega_t \Theta(B) \end{aligned}\]</span> Each of these two polynomials, <span class="math inline">\(\Phi(B)\)</span> and <span class="math inline">\(\Theta(B)\)</span>, have real, imaginary, or complex roots. The location of these roots determines the properties of the ARMA series.</p>
+<p>Sometimes, we find it mathematically convenient to work with the characteristic polynomials, and other times we find it useful to factor them in a specific way. Consider the AR equation:</p>
+<p><span class="math display">\[Y_t (1 - \phi_1 B - \phi_2 B^2 - \ldots \phi_p B^p) = \omega_t\]</span></p>
+<p>We can solve directly for the real or complex roots <span class="math inline">\(B^0_1, \ldots, B^0_p\)</span>, or we could factor the equation like so:</p>
+<p><span class="math display">\[Y_t (1 - \lambda_1B) \cdot (1 - \lambda_2B) \cdot \ldots \cdot (1 - \lambda_pB)\]</span></p>
+<p>Why would we do that? Because of a convenient formula for the sum of an infinite geometric series: For any real or imaginary constant <span class="math inline">\(r: |r| \lt 1\)</span>, we have:</p>
+<p><span class="math display">\[\frac{1}{1-r} = 1 + r + r^2 + \ldots\]</span> Which means we can write,</p>
+<p><span class="math display">\[\begin{aligned} Y_t &amp;= \omega_t \frac{1}{(1 - \lambda_1B) \cdot (1 - \lambda_2B) \cdot \ldots \cdot (1 - \lambda_pB)} \Longrightarrow \\ \\ &amp;= \omega_t \frac{1}{\prod_{i=1}^p (1 - \lambda_i B)} = \omega_t \sum_{i=1}^p \frac{c_i}{1 - \lambda_i B} = \omega_t \sum_{i=1}^p \sum_{j=1}^\infty \lambda_i^j B^j \end{aligned}\]</span></p>
+<p>Therefore, every AR process can be represented by the sum of several infinite series of geometrically dampened shocks from the past innovations. This AR process will have constant variance <em>only</em> if the sum of <em>every</em> geometric series is finite, which means that <span class="math inline">\(|\lambda_i| \lt 1\)</span> for <em>each and every</em> <span class="math inline">\(\lambda_i\)</span>.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> Because each <span class="math inline">\(\lambda_i\)</span> is a reciprocal of the roots of the characteristic polynomial,<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>, this is equivalent to the condition that <em>each and every root of the characteristic polynomial must lie outside the unit circle.</em></p>
+<p>A very similar line of reasoning holds with the characteristic polynomial of the MA component, <span class="math inline">\(\Theta(B)\)</span>, and its roots.</p>
+</section>
+<section id="properties-of-an-arma-process" class="level2">
+<h2 class="anchored" data-anchor-id="properties-of-an-arma-process">Properties of an ARMA process</h2>
+<p>The characteristic polynomials and their roots help us to describe some ARMA processes as having one or more of the following properties.</p>
+<section id="stationarity-ar" class="level3">
+<h3 class="anchored" data-anchor-id="stationarity-ar">Stationarity (AR)</h3>
+<p>As mentioned above, the roots of the AR characteristic polynomial determine whether the process is stationary or not. Specifically,</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>, and let the generating process for <span class="math inline">\(\boldsymbol{Y}\)</span> follow an ARMA(<em>p</em>,<em>q</em>) process (where either <em>p</em> or <em>q</em> can be 0).</p>
+<p>Let <span class="math inline">\(z_1, z_2, \ldots, z_p\)</span> be the (possibly non-unique) real or complex roots of the AR characteristic polynomial:</p>
+<p><span class="math display">\[\Phi(z) = 1 - \phi_1 z - \ldots - \phi_p z^p\]</span></p>
+<ol type="1">
+<li><p>The ARMA process <span class="math inline">\(\boldsymbol{Y}\)</span> is <em>stationary</em> if and only if all AR roots lie outside the unit circle: <span class="math inline">\(|z_i| \gt 1 \quad \forall i \in {1,\ldots,p}\)</span></p></li>
+<li><p>The ARMA process <span class="math inline">\(\boldsymbol{Y}\)</span> is a <em>random walk</em> if and only if exactly one AR root lies on the unit circle and all others lie outside the unit circle: <span class="math inline">\(\exists \, i \in {1,\ldots,p}: |z_i| = 1\)</span> and <span class="math inline">\(|z_j| \gt 1 \quad \forall j \in {1,\ldots,p}: j \ne i\)</span></p></li>
+<li><p>The ARMA process <span class="math inline">\(\boldsymbol{Y}\)</span> is <em>explosive</em> if any AR roots lie within the unit circle: <span class="math inline">\(\exists \, i \in {1,\ldots,p}: |z_i| \lt 1\)</span></p></li>
+</ol>
+</div>
+</div>
+</section>
+<section id="invertibility-ma" class="level3">
+<h3 class="anchored" data-anchor-id="invertibility-ma">Invertibility (MA)</h3>
+<p>We observe the past values <span class="math inline">\(Y_1, \ldots, Y_t\)</span> — these concrete observations help us to identify and estimate an AR process. However, we do not directly observe the innovations <span class="math inline">\(\omega_1, \ldots, \omega_t\)</span>, and have to estimate them from our own (estimated) parameters <span class="math inline">\(\boldsymbol{\phi} = (\phi_1, \ldots, \phi_p)\)</span> and <span class="math inline">\(\boldsymbol{\theta} = (\theta_1, \ldots, \theta_q)\)</span>. The cyclical nature of these estimates often allow multiple MA processes to fit the data equally well.</p>
+<p>For example, consider the MA(1) series:</p>
+<p><span class="math display">\[Y_t = \omega_t + 2 \omega_{t-1}, \qquad \omega_i \stackrel{iid}{\sim} \textrm{Normal}(0,1^2)\]</span></p>
+<p>From this definition we could calculate the following (stationary) moments:</p>
+<p><span class="math display">\[\begin{aligned} \mathbb{E}[Y_t] &amp;= \mathbb{E}[\omega_t] + 2\mathbb{E}[\omega_{t-1}] = 0 + 2(0) = 0 \\ \\ \mathbb{V}[Y_t] &amp;= \mathbb{V}[\omega_t] + 2^2\mathbb{V}[\omega_{t-1}] = 1 + 4(1) = 5 \\ \\ \gamma_{st} &amp;= \left\{\begin{array}{ll} \textrm{Cov}(\omega_t,\omega_t) + \textrm{Cov}(2\omega_{t-1},2\omega_{t-1}) = 5 &amp; \textrm{if}\; s=t \\ \textrm{Cov}(2\omega_{t-1},\omega_{t-1}) = 2 &amp; \textrm{if}\; |s - t| = 1 \\ 0 &amp; \textrm{else} \end{array} \right\} \end{aligned}\]</span></p>
+<p>However, other MA processes would match these same moments, for example:</p>
+<p><span class="math display">\[Y_t = \omega_t + 0.5 \omega_{t-1}, \qquad \omega_i \stackrel{iid}{\sim} \textrm{Normal}(0,2^2)\]</span></p>
+<p>Recalculating the moments, we would see that:</p>
+<p><span class="math display">\[\begin{aligned} \mathbb{E}[Y_t] &amp;= \mathbb{E}[\omega_t] + 0.5\mathbb{E}[\omega_{t-1}] = 0 + 0.5(0) = 0 \\ \\ \mathbb{V}[Y_t] &amp;= \mathbb{V}[\omega_t] + 0.5^2\mathbb{V}[\omega_{t-1}] = 4 + 0.25(4) = 5 \\ \\ \gamma_{st} &amp;= \left\{\begin{array}{ll} \textrm{Cov}(\omega_t,\omega_t) + \textrm{Cov}(0.5\omega_{t-1},0.5\omega_{t-1}) = 5 &amp; \textrm{if}\; s=t \\ \textrm{Cov}(0.5\omega_{t-1},\omega_{t-1}) = 2 &amp; \textrm{if}\; |s - t| = 1 \\ 0 &amp; \textrm{else} \end{array} \right\} \end{aligned}\]</span></p>
+<p>Because the first and second moments are the same, <em>any sample of data will support either model equally well</em>.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> So, do we have any reason to prefer one over the other?</p>
+<p>Not to hold you in suspense: yes. We do prefer one over the other. If we adopt the first model, we would write:</p>
+<p><span class="math display">\[\begin{aligned} Y_t &amp;= \omega_t + 2\omega_{t-1} \Longrightarrow \\ \omega_t &amp;= Y_t - 2\omega_{t-1} \\ &amp;= Y_t - 2(Y_{t-1} - 2\omega_{t-2}) \\ &amp;= Y_t - 2(Y_{t-1} - 2(Y_{t-1} - 2\omega_{t-3})) \\ &amp; = Y_t - 2Y_{t-1} + 4Y_{t-2} - 8Y_{t-2} + 16Y_{t-4} - \ldots \end{aligned}\]</span></p>
+<p>In other words, each current innovation would be dependent upon an explosive series of the past observations of <span class="math inline">\(\boldsymbol{Y}\)</span>. Any small amount of past error (measurement error, misspecification, etc.) would compound to the point where the current values of the series would be effectively arbitrary.</p>
+<p>However, if we use the second model — which fits the data equally well — we see that:</p>
+<p><span class="math display">\[\begin{aligned} Y_t &amp;= \omega_t + 0.5\omega_{t-1} \Longrightarrow \\ \omega_t &amp;= Y_t - 0.5\omega_{t-1} \\ &amp;= Y_t - 0.5(Y_{t-1} - 0.5\omega_{t-2}) \\ &amp;= Y_t - 0.5(Y_{t-1} - 0.5(Y_{t-1} - 0.5\omega_{t-3})) \\ &amp; = Y_t - 0.5Y_{t-1} + 0.25Y_{t-2} - 0.125Y_{t-2} + 0.0625Y_{t-4} - \ldots \end{aligned}\]</span></p>
+<p>Now we see that the current innovation can be estimated as a finite, converging sum of all the past values of the series, which soon have vanishingly small effects on the present. Our ability to recover this dampened trend relies upon the roots of the MA characteristic polynomial:</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>, and let the generating process for <span class="math inline">\(\boldsymbol{Y}\)</span> follow an ARMA(<em>p</em>,<em>q</em>) process (where either <em>p</em> or <em>q</em> can be 0).</p>
+<p>Let <span class="math inline">\(z_1, z_2, \ldots, z_p\)</span> be the (possibly non-unique) real or complex roots of the MA characteristic polynomial:</p>
+<p><span class="math display">\[\Theta(z) = 1 + \theta_1 z + \ldots + \theta_p z^p\]</span></p>
+<ol type="1">
+<li><p>The ARMA process <span class="math inline">\(\boldsymbol{Y}\)</span> is <em>invertible</em> if and only if all MA roots lie outside the unit circle: <span class="math inline">\(|z_i| \gt 1 \quad \forall i \in {1,\ldots,q}\)</span></p></li>
+<li><p>The ARMA process <span class="math inline">\(\boldsymbol{Y}\)</span> is <em>non-invertible</em> otherwise.</p>
+<ul>
+<li><p>If any of the MA roots lie exactly on the unit circle, there exists no alternative invertible representation of <span class="math inline">\(\boldsymbol{Y}\)</span> with the same first- and second- degree moments.</p></li>
+<li><p>If none of the MA roots lie exactly on the unit circle, an alternative invertible representation of <span class="math inline">\(\boldsymbol{Y}\)</span> with the same first- and second- degree moments can be found by reciprocating each root within the unit circle: <span class="math inline">\(z'_i = \frac{1}{z_i} \;\forall \; z_i: |z_i| \lt 1\)</span></p></li>
+</ul></li>
+</ol>
+</div>
+</div>
+</section>
+<section id="reducibility-both" class="level3">
+<h3 class="anchored" data-anchor-id="reducibility-both">Reducibility (both)</h3>
+<p>The existence of duplicate AR or MA roots is not generally a problem. For example, consider the AR model:</p>
+<p><span class="math display">\[Y_t = Y_{t-1} - 0.25Y_{t-2} + \omega_t\]</span></p>
+<p>Which can be factored as <span class="math inline">\(\omega_t = Y_t(1 - B + 0.25B^2) = Y_t(1 - 0.5B)(1 - 0.5B)\)</span> meaning that it has a double root at <span class="math inline">\(z = 2\)</span>. These roots lie outside the unit circle, the process is stationary, and <span class="math inline">\(\boldsymbol{Y}\)</span> would be a fine target for further analysis.</p>
+<p>However, some ARMA representations reveal one or more identical roots on both the AR and MA sides at once. <em>This situation unnecessarily complicates the model and can mislead the analyst on matters of stationarity, invertibility, or the need for differencing.</em></p>
+<p>As an example, consider an ARMA(2,1) model,</p>
+<p><span class="math display">\[Y_t = 3.5Y_{t-1} - 1.5Y_{t-2} + \omega_t - 3\omega_{t-1}\]</span></p>
+<p>This model looks gnarly, with large autoregressive coefficients we would normally associate with explosive behavior. However, note that we can refactor <span class="math inline">\(\boldsymbol{Y}\)</span> as:</p>
+<p><span class="math display">\[Y_t(1 - 0.5B)(1 - 3B) = \omega_t(1 - 3B)\]</span></p>
+<p>And, canceling out the common terms, arrive at:</p>
+<p><span class="math display">\[Y_t(1 - 0.5B) = \omega_t\]</span></p>
+<p>Which expands to <span class="math inline">\(Y_t = 0.5Y_{t-1} + \omega_t\)</span>, a perfectly well-behaved stationary AR(1) model.</p>
+</section>
+</section>
+<section id="arima-models-and-integration" class="level2">
+<h2 class="anchored" data-anchor-id="arima-models-and-integration">ARIMA models and integration</h2>
+<p>When discussing stationarity and the roots of the AR characteristic polynomial, I left out one possible condition: if the presence of a single root on the unit circle implies a random walk, what happens if multiple roots can be found on the unit circle?</p>
+<p>If we <em>do</em> observe a random walk, such as the ARMA(1,1) process <span class="math inline">\(Y_t = Y_{t-1} + \omega_t + 0.75\omega_{t-1}\)</span>, we can always difference to find a stationary model, as described <a href="./stationarity.html">elsewhere</a>:</p>
+<p><span class="math display">\[\nabla Y_t = Y_t - Y_{t-1} = \omega_t + 0.75 \omega_{t-1}\]</span></p>
+<p>Sometimes we do see multiple roots on the unit circle, in which case we need to difference multiple times, one for each root, to retrieve a stationary series. Consider the clearly nonstationary AR(3) process <span class="math inline">\(Y_t = 2.5Y_{t-1} - 2Y_{t-2} + 0.5Y_{t-3} + \omega_t\)</span>:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">1.1</span>))</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0107</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">50</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>theta <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>),<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>),<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>),</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(<span class="fl">0.8</span>,<span class="fl">0.6</span>,<span class="fl">0.4</span>,<span class="fl">0.2</span>),<span class="fu">c</span>(<span class="fl">0.4</span>,<span class="fl">0.3</span>,<span class="fl">0.2</span>,<span class="fl">0.1</span>),<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>),</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">4</span>,<span class="dv">2</span>,<span class="dv">1</span>),<span class="fu">c</span>(<span class="dv">0</span>,<span class="sc">-</span><span class="dv">1</span>),<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>))</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow=</span><span class="dv">50</span>,<span class="at">ncol=</span><span class="dv">9</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) Y[,i] <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ma=</span>theta[[i]]),<span class="at">n=</span><span class="dv">50</span>,<span class="at">innov=</span>w)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) <span class="fu">plot</span>(Y[,j],<span class="at">main=</span><span class="fu">bquote</span>(theta<span class="sc">==</span>.(<span class="fu">paste</span>(theta[[j]],<span class="at">collapse=</span><span class="st">','</span>))),</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">type=</span><span class="st">'l'</span>,<span class="at">xlab=</span><span class="cn">NA</span>,<span class="at">ylab=</span><span class="cn">NA</span>,<span class="at">sub=</span><span class="cn">NA</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0112</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">103</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">vector</span>(); Y[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>] <span class="ot">&lt;-</span> w[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">4</span><span class="sc">:</span><span class="dv">103</span>) Y[i] <span class="ot">&lt;-</span> <span class="fl">2.5</span><span class="sc">*</span>Y[i<span class="dv">-1</span>] <span class="sc">-</span> <span class="dv">2</span><span class="sc">*</span>Y[i<span class="dv">-2</span>] <span class="sc">+</span> <span class="fl">0.5</span><span class="sc">*</span>Y[i<span class="dv">-3</span>] <span class="sc">+</span> w[i]</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(Y[<span class="dv">4</span><span class="sc">:</span><span class="dv">103</span>],<span class="at">type=</span><span class="st">'l'</span>,<span class="at">ylab=</span><span class="fu">expression</span>(Y[t]),<span class="at">xlab=</span><span class="st">'Time index t'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="mamodels_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Nine MA processes with the same innovations</figcaption>
+<p><img src="arimamodels_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Explosive AR(3) process before differencing</figcaption>
 </figure>
 </div>
 </div>
 </div>
-</section>
-<section id="recognizing-a-ma-process-from-its-acf-plot" class="level2">
-<h2 class="anchored" data-anchor-id="recognizing-a-ma-process-from-its-acf-plot">Recognizing a MA process from its ACF plot</h2>
-<p>An autocorrelation function (ACF) plot will always provide helpful summary or diagnostic information about a MA(<em>q</em>) model. In the simplest case of MA(1), the height of the ACF plot at the first lag will be equal to <span class="math inline">\(q/(1+q^2)\)</span>, and the remaining lags will show <em>little or no autocorrelation at all</em>. For example, when <span class="math inline">\(p=0.8\)</span>, the first lag will have an autocorrelation of roughly <span class="math inline">\(0.8/(1+0.64) \approx 0.49\)</span>, and all other lags will show only minimal autocorrelation:</p>
+<p>This AR model’s characteristic polynomial factors to <span class="math inline">\(Y_t(1 - B)(1 - B)(1 - 0.5B) = \omega_t\)</span>. The difference operator itself can be defined as <span class="math inline">\(\nabla Y_t = Y_t - Y_{t-1} = Y_t(1 - B)\)</span>, and from this we see that the first difference of our AR(3) model would have the factored representation <span class="math inline">\(\nabla Y_t(1 - B)(1 - 0.5B) = \omega_t\)</span>, or when expanded, <span class="math inline">\(\nabla Y_t = 1.5 \nabla Y_{t-1} - 0.5 \nabla Y_{t-2}\)</span>. This AR(2) series is still non-stationary, but no longer explosive!</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">1.1</span>))</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0108</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>ma08 <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ma=</span><span class="fl">0.8</span>),<span class="at">n=</span><span class="dv">1000</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>ma080706 <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ma=</span><span class="fu">c</span>(<span class="fl">0.8</span>,<span class="fl">0.7</span>,<span class="fl">0.6</span>)),<span class="at">n=</span><span class="dv">1000</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(ma08,<span class="at">main=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'ACF when '</span>,theta <span class="sc">==</span> <span class="fl">0.8</span>)),<span class="at">lag.max=</span><span class="dv">15</span>)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(ma080706,<span class="at">main=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'ACF when '</span>,theta <span class="sc">==</span> <span class="fu">list</span>(<span class="fl">0.8</span>,<span class="fl">0.7</span>,<span class="fl">0.6</span>))),<span class="at">lag.max=</span><span class="dv">15</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">diff</span>(Y[<span class="dv">4</span><span class="sc">:</span><span class="dv">103</span>]),<span class="at">type=</span><span class="st">'l'</span>,<span class="at">ylab=</span><span class="fu">expression</span>(nabla<span class="sc">*</span>y[t]),<span class="at">xlab=</span><span class="st">'Time index t'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="mamodels_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Two MA processes and their ACF plots, 1000 obs each</figcaption>
+<p><img src="arimamodels_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Explosive AR(3) process after first differencing</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>The key feature here is that for values <span class="math inline">\(s \lt (t - q)\)</span>, <span class="math inline">\(Y_t\)</span> and <span class="math inline">\(Y_s\)</span> have <em>no elements in common</em> and are completely independent. Any small sample autocorrelation is purely spurious.</p>
-</section>
-<section id="all-ma-processes-are-stationary" class="level2">
-<h2 class="anchored" data-anchor-id="all-ma-processes-are-stationary">All MA processes are stationary</h2>
-<p>Since MA processes are simply weighted sums of zero-mean white noise, they themselves are zero-mean and meet all the requirements for weak stationarity, no matter the choice(s) of <span class="math inline">\(\boldsymbol{\theta}\)</span>. In the equations which follow, assume that <span class="math inline">\(\mathbb{E}[\omega_t] = 0\)</span> and <span class="math inline">\(\mathbb{V}[\omega_t] = \sigma^2\)</span>:</p>
-<p><span class="math display">\[\begin{aligned} (1) \qquad \mathbb{E}[Y_t] &amp;= \mathbb{E}[\omega_t + \sum_{i=1}^q \theta_i \omega_{t-i}] = 0 + \sum_{i=1}^q \theta_i \mathbb{E}[\omega_{t-i}] = 0 + \sum_{i=1}^q 0 = 0 \\  \\ (2) \qquad \mathbb{V}[Y_t] &amp;= \mathbb{V}[\omega_t + \sum_{i=1}^q \theta_i \omega_{t-i}] = \sigma^2 + \sum_{i=1}^q \theta^2_i \mathbb{V}[\omega_{t-i}] = \left(1 + \sum_i \theta_i^2 \right) \sigma^2 \\ \\ (3) \qquad \gamma_{st} &amp;= \textrm{Cov}\left(\omega_s + \sum_{i=1}^q \theta_i \omega_{s-i},\, \omega_t + \sum_{i=1}^q \theta_i \omega_{t-i} \right) \\ &amp;= \left\{ \begin{array}{ll} 0 &amp; \textrm{if} \; |s - t| \gt q \\ \theta_q \sigma^2 &amp; \textrm{if} \; |s - t| = q \\ (\theta_{q-1} + \theta_2 \theta_q) \sigma^2 &amp; \textrm{if} \; |s - t| = q - 1 \\ \cdots &amp; \cdots \end{array} \right\}\end{aligned}\]</span></p>
-<p>We can see from the above that the mean and variance are constant and that the autocovariance of two entries depends only on the lag between them, which are the requirements of weak stationarity.</p>
-</section>
-<section id="ma-model-responses-to-system-shocks" class="level2">
-<h2 class="anchored" data-anchor-id="ma-model-responses-to-system-shocks">MA model responses to system shocks</h2>
-<p>MA models dampen one-time system shocks by averaging them among the other innovations, and after the moving average window has passed, the system shock disappears entirely from the series. Consider a simple AR(1) model which processes a fairly quiet series of innovations, interrupted irregularly by a much larger signal:</p>
+<p>We can now apply a second round of differencing: <span class="math inline">\(\nabla^2 Y_t = Y_t(1 - B)^2\)</span>, leading to the factored representation <span class="math inline">\(\nabla^2 Y_t (1 - 0.5B) = \omega_t\)</span> and the expanded form <span class="math inline">\(\nabla^2 Y_t = 0.5 \nabla^2 Y_{t-1} + \omega_t\)</span>, which is a stationary AR(1) series:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0110</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">100</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>w[<span class="dv">8</span>] <span class="ot">&lt;-</span> <span class="dv">10</span>; w[<span class="dv">15</span>] <span class="ot">&lt;-</span> <span class="dv">10</span>; w[<span class="dv">25</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">10</span>; w[<span class="dv">45</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">10</span>;</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>ma <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ma=</span><span class="fu">c</span>(<span class="fl">0.9</span>,<span class="fl">0.6</span>,<span class="fl">0.3</span>)),<span class="at">n=</span><span class="dv">100</span>,<span class="at">innov=</span>w)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">15</span><span class="sc">+</span>ma,<span class="at">type=</span><span class="st">'s'</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">10</span>,<span class="dv">27</span>),<span class="at">ylab=</span><span class="cn">NA</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(w,<span class="at">type=</span><span class="st">'h'</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">lwd=</span><span class="dv">2</span>)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="dv">15</span>,<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'#7f7f7f'</span>)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topright'</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#0000ff'</span>),<span class="at">bty=</span><span class="st">'n'</span>,</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend=</span><span class="fu">c</span>(<span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'Time series '</span>,Y[t])),</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>                <span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'Innovations '</span>,omega[t]))))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">diff</span>(Y[<span class="dv">4</span><span class="sc">:</span><span class="dv">103</span>],<span class="at">differences=</span><span class="dv">2</span>),<span class="at">type=</span><span class="st">'l'</span>,<span class="at">ylab=</span><span class="fu">expression</span>(nabla<span class="sc">^</span><span class="dv">2</span><span class="sc">*</span>y[t]),<span class="at">xlab=</span><span class="st">'Time index t'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="mamodels_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Persistence and decay in an MA(0.9,0.6,0.3) model</figcaption>
+<p><img src="arimamodels_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Explosive AR(3) process after twice differencing</figcaption>
 </figure>
 </div>
+</div>
+</div>
+<p>When one or more exact unit roots create random walk or explosive behavior, we can remove this nonstationary behavior by differencing. We call the amount of differencing the <em>order of integration</em>:</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>, and let the generating process for <span class="math inline">\(\boldsymbol{Y}\)</span> follow an ARMA(<span class="math inline">\(p'\)</span>,<span class="math inline">\(q'\)</span>) process (where either <span class="math inline">\(p'\)</span> or <span class="math inline">\(q'\)</span> can be 0).</p>
+<ol type="1">
+<li><p>If <span class="math inline">\(Y_t\)</span> is not stationary, but <span class="math inline">\(\nabla^d Y_t\)</span> <em>is</em> weakly stationary, then we say that <span class="math inline">\(\boldsymbol{Y}\)</span> is <strong>integrated with order</strong> <strong><em>d</em></strong>.</p></li>
+<li><p>In which case, if the stationary series <span class="math inline">\(\nabla^d Y_t\)</span> can be written as an ARMA(<em>p</em>,<em>q</em>) process, we say that <span class="math inline">\(\boldsymbol{Y}\)</span> follows an <strong>autoregressive integrated moving average (ARIMA) model</strong> written ARIMA(<em>p</em>,<em>d</em>,<em>q</em>).</p></li>
+</ol>
 </div>
 </div>
 
 
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>We do know that the AR process is mean-zero since we have now expressed it as a weighted sum of mean-zero innovations.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Remember, the characteristic polynomial can be factored into <span class="math inline">\(\Phi(B) = \prod_i (1 - \lambda_i B)\)</span><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>So long as we use techniques like Method of Moments, Least Squares, or Maximum Likelihood which rely on first- and second-moment-based estimators.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
 </section>
 
 </main> <!-- /main -->
@@ -895,13 +949,13 @@ Note
   </script>
 <nav class="page-navigation column-body">
   <div class="nav-page nav-page-previous">
-      <a href="./armodels.html" class="pagination-link" aria-label="AR models">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">AR models</span></span>
+      <a href="./backshift.html" class="pagination-link" aria-label="Backshift notation">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Backshift notation</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./backshift.html" class="pagination-link" aria-label="Backshift notation">
-        <span class="nav-page-text"><span class="chapter-title">Backshift notation</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./identificationinr.html" class="pagination-link" aria-label="ARIMA identification in R">
+        <span class="nav-page-text"><span class="chapter-title">ARIMA identification in R</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
