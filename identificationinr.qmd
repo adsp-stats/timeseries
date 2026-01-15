@@ -83,7 +83,7 @@ summary(gold)
 
 How we treat missing values depends on how they appeared in our data. Did we fail to observe these values, or were there no values be observed? Are these weekends, exchange holidays, days where the data firm had a system outage, or records which were later deemed unreliable?
 
-For now, we will *drag* the prices --- preserving the last known price across any missing observatinos until a new price is recorded.
+For now, we will *drag* the prices --- preserving the last known price across any missing observations until a new price is recorded.
 
 ```{r}
 gold.fill <- na.locf(gold)
@@ -185,7 +185,7 @@ The estimated coefficient on the AR(1) parameter is small, but it's more than fo
 c(ARIMA011=arima(gold.fill,order=c(0,1,1))$aic,
   ARIMA110=arima(gold.fill,order=c(1,1,0))$aic,
   ARIMA111=arima(gold.fill,order=c(1,1,1))$aic,
-  ARIMA0101=arima(gold.fill,order=c(0,1,0))$aic)
+  ARIMA010=arima(gold.fill,order=c(0,1,0))$aic)
 ```
 
 We can tentatively model these daily gold prices with an ARIMA(0,1,1) model, though an inspection of the AICs reveals that an ARIMA(1,1,0) model would work almost as well.

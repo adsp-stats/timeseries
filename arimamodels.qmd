@@ -8,7 +8,7 @@ ARIMA is in fact an extension of a slightly simpler model called ARMA, which con
 
 ::: {.callout-note}
 
-Let $\boldsymbol{Y}$ be a time series random variable observed at regular time periods $T = \{1, 2, \ldots, n\}$. Let $\boldsymbol{\omega} be a white noise process observed at the same time periods. If,
+Let $\boldsymbol{Y}$ be a time series random variable observed at regular time periods $T = \{1, 2, \ldots, n\}$. Let $\boldsymbol{\omega}$ be a white noise process observed at the same time periods. If,
 
 $$Y_t = \omega_t + \sum_{i=1}^{p}\phi_i Y_i + \sum_{j=1}^q \theta_j \omega_j$$
 
