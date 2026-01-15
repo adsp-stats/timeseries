@@ -437,7 +437,7 @@ window.Quarto = {
 </div>
 </div>
 <p>How we treat missing values depends on how they appeared in our data. Did we fail to observe these values, or were there no values be observed? Are these weekends, exchange holidays, days where the data firm had a system outage, or records which were later deemed unreliable?</p>
-<p>For now, we will <em>drag</em> the prices — preserving the last known price across any missing observatinos until a new price is recorded.</p>
+<p>For now, we will <em>drag</em> the prices — preserving the last known price across any missing observations until a new price is recorded.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>gold.fill <span class="ot">&lt;-</span> <span class="fu">na.locf</span>(gold)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>gold[<span class="dv">61</span><span class="sc">:</span><span class="dv">70</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -603,10 +603,10 @@ AIC=6371.29   AICc=6371.3   BIC=6381.31</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">ARIMA011=</span><span class="fu">arima</span>(gold.fill,<span class="at">order=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>))<span class="sc">$</span>aic,</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">ARIMA110=</span><span class="fu">arima</span>(gold.fill,<span class="at">order=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>))<span class="sc">$</span>aic,</span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">ARIMA111=</span><span class="fu">arima</span>(gold.fill,<span class="at">order=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>))<span class="sc">$</span>aic,</span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ARIMA0101=</span><span class="fu">arima</span>(gold.fill,<span class="at">order=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>))<span class="sc">$</span>aic)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ARIMA010=</span><span class="fu">arima</span>(gold.fill,<span class="at">order=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>))<span class="sc">$</span>aic)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> ARIMA011  ARIMA110  ARIMA111 ARIMA0101 
- 6371.289  6371.555  6373.279  6390.805 </code></pre>
+<pre><code>ARIMA011 ARIMA110 ARIMA111 ARIMA010 
+6371.289 6371.555 6373.279 6390.805 </code></pre>
 </div>
 </div>
 <p>We can tentatively model these daily gold prices with an ARIMA(0,1,1) model, though an inspection of the AICs reveals that an ARIMA(1,1,0) model would work almost as well.</p>
