@@ -317,18 +317,18 @@ Note
 </div>
 <div class="callout-body-container callout-body">
 <p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>. Let <span class="math inline">\(\boldsymbol{\omega}\)</span> be a white noise process observed at the same time periods. If,</p>
-<p><span class="math display">\[Y_t = \omega_t + \sum_{i=1}^{p}\phi_i Y_i + \sum_{j=1}^q \theta_j \omega_j\]</span></p>
+<p><span class="math display">\[Y_t = \omega_t + \sum_{i=1}^{p}\phi_i Y_{t-i} + \sum_{j=1}^q \theta_j \omega_{t-j}\]</span></p>
 <p>For some <span class="math inline">\(\Phi = (\phi_1, \ldots, \phi_p) \in \mathbb{R}^p\)</span> and some <span class="math inline">\(\Theta = (\theta_1, \ldots, \theta_q) \in \mathbb{R}^q\)</span> and all <span class="math inline">\(t \in T\)</span>, then we say that <span class="math inline">\(\boldsymbol{Y}\)</span> is an <strong>autoregressive and moving average (ARMA) model</strong> written ARMA(<em>p</em>,<em>q</em>).</p>
 </div>
 </div>
 <p>ARMA models quite simply combine AR and MA models in one. They allow the current value of the time series (<span class="math inline">\(Y_t\)</span>) to depend both on past values as well as past shocks. Like other time series we have seen, ARMA models are sometimes written as though they are zero-mean, but can also be expressed with a level or a deterministic trend:</p>
-<p><span class="math display">\[Y_t = c + \omega_t + \sum_{i=1}^{p}\phi_i Y_i + \sum_{j=1}^q \theta_j \omega_j\]</span></p>
-<p><span class="math display">\[Y_t = c + \delta t + \omega_t + \sum_{i=1}^{p}\phi_i Y_i + \sum_{j=1}^q \theta_j \omega_j\]</span></p>
+<p><span class="math display">\[Y_t = c + \omega_t + \sum_{i=1}^{p}\phi_i Y_{t-i} + \sum_{j=1}^q \theta_j \omega_{t-j}\]</span></p>
+<p><span class="math display">\[Y_t = c + \delta t + \omega_t + \sum_{i=1}^{p}\phi_i Y_{t-i} + \sum_{j=1}^q \theta_j \omega_{t-j}\]</span></p>
 </section>
 <section id="characteristic-polynomials-their-roots-and-reciprocals" class="level2">
 <h2 class="anchored" data-anchor-id="characteristic-polynomials-their-roots-and-reciprocals">Characteristic polynomials, their roots and reciprocals</h2>
 <p>Using <a href="./backshift.html">the notation developed earlier</a>, we can represent this ARMA model using the characteristic polynomials for the AR and MA components:</p>
-<p><span class="math display">\[\begin{aligned} Y_t &amp;= \omega_t + \sum_{i=1}^{p}\phi_i Y_i + \sum_{j=1}^q \theta_j \omega_j \Longrightarrow \\ \\ Y_t - \sum_{i=1}^{p}\phi_i Y_i &amp;= \omega_t + \sum_{j=1}^q \theta_j \omega_j \Longrightarrow \\ \\ Y_t \left(1 - \sum_{i=1}^{p}\phi_i B^i \right) &amp;= \omega_t \left(1 + \sum_{j=1}^{q}\theta_j B^j \right) \Longrightarrow \\ \\ Y_t \Phi(B) &amp;= \omega_t \Theta(B) \end{aligned}\]</span> Each of these two polynomials, <span class="math inline">\(\Phi(B)\)</span> and <span class="math inline">\(\Theta(B)\)</span>, have real, imaginary, or complex roots. The location of these roots determines the properties of the ARMA series.</p>
+<p><span class="math display">\[\begin{aligned} Y_t &amp;= \omega_t + \sum_{i=1}^{p}\phi_{t-i} Y_i + \sum_{j=1}^q \theta_j \omega_{t-j} \Longrightarrow \\ \\ Y_t - \sum_{i=1}^{p}\phi_i Y_{t-i} &amp;= \omega_t + \sum_{j=1}^q \theta_j \omega_{t-j} \Longrightarrow \\ \\ Y_t \left(1 - \sum_{i=1}^{p}\phi_i B^i \right) &amp;= \omega_t \left(1 + \sum_{j=1}^{q}\theta_j B^j \right) \Longrightarrow \\ \\ Y_t \Phi(B) &amp;= \omega_t \Theta(B) \end{aligned}\]</span> Each of these two polynomials, <span class="math inline">\(\Phi(B)\)</span> and <span class="math inline">\(\Theta(B)\)</span>, have real, imaginary, or complex roots. The location of these roots determines the properties of the ARMA series.</p>
 <p>Sometimes, we find it mathematically convenient to work with the characteristic polynomials, and other times we find it useful to factor them in a specific way. Consider the AR equation:</p>
 <p><span class="math display">\[Y_t (1 - \phi_1 B - \phi_2 B^2 - \ldots \phi_p B^p) = \omega_t\]</span></p>
 <p>We can solve directly for the real or complex roots <span class="math inline">\(B^0_1, \ldots, B^0_p\)</span>, or we could factor the equation like so:</p>
