@@ -46,7 +46,7 @@ The plots above provide examples of some specific properties of AR(1) processes:
 Now we may complicate the scenario, by allowing the current value $Y_t$ to have *several, different* relationships with *arbitrary* past lags of the series.
 
 ::: {.callout-note}
-Let $\boldsymbol{Y}$ be a time series random variable observed at regular time periods $T = \{1, 2, \ldots, n\}$. Let $\boldsymbol{\omega} be a white noise process observed at the same time periods. If,
+Let $\boldsymbol{Y}$ be a time series random variable observed at regular time periods $T = \{1, 2, \ldots, n\}$. Let $\boldsymbol{\omega}$ be a white noise process observed at the same time periods. If,
 
 $$Y_t = \phi_1 Y_{t-1} + \phi_2 Y_{t-2} + \ldots + \phi_p Y_{t-p} + \omega_t$$
 

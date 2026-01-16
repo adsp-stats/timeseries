@@ -47,7 +47,7 @@ The properties and utility of MA models are perhaps better described with higher
 Now we may complicate the scenario, by allowing the current value $Y_t$ to average *several, different* past innovations of the series.
 
 ::: {.callout-note}
-Let $\boldsymbol{Y}$ be a time series random variable observed at regular time periods $T = \{1, 2, \ldots, n\}$. Let $\boldsymbol{\omega} be a white noise process observed at the same time periods. If,
+Let $\boldsymbol{Y}$ be a time series random variable observed at regular time periods $T = \{1, 2, \ldots, n\}$. Let $\boldsymbol{\omega}$ be a white noise process observed at the same time periods. If,
 
 $$Y_t = \omega_t + \theta_1 \omega_{t-1} + \theta_2 \omega_{t-2} + \ldots + \theta_q \omega_{t-q}$$
 

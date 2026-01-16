@@ -10,7 +10,7 @@ ARIMA is in fact an extension of a slightly simpler model called ARMA, which con
 
 Let $\boldsymbol{Y}$ be a time series random variable observed at regular time periods $T = \{1, 2, \ldots, n\}$. Let $\boldsymbol{\omega}$ be a white noise process observed at the same time periods. If,
 
-$$Y_t = \omega_t + \sum_{i=1}^{p}\phi_i Y_i + \sum_{j=1}^q \theta_j \omega_j$$
+$$Y_t = \omega_t + \sum_{i=1}^{p}\phi_i Y_{t-i} + \sum_{j=1}^q \theta_j \omega_{t-j}$$
 
 For some $\Phi = (\phi_1, \ldots, \phi_p) \in \mathbb{R}^p$ and some $\Theta = (\theta_1, \ldots, \theta_q) \in \mathbb{R}^q$ and all $t \in T$, then we say that $\boldsymbol{Y}$ is an **autoregressive and moving average (ARMA) model** written ARMA(*p*,*q*).
 
@@ -18,15 +18,15 @@ For some $\Phi = (\phi_1, \ldots, \phi_p) \in \mathbb{R}^p$ and some $\Theta = (
 
 ARMA models quite simply combine AR and MA models in one. They allow the current value of the time series ($Y_t$) to depend both on past values as well as past shocks. Like other time series we have seen, ARMA models are sometimes written as though they are zero-mean, but can also be expressed with a level or a deterministic trend:
 
-$$Y_t = c + \omega_t + \sum_{i=1}^{p}\phi_i Y_i + \sum_{j=1}^q \theta_j \omega_j$$
+$$Y_t = c + \omega_t + \sum_{i=1}^{p}\phi_i Y_{t-i} + \sum_{j=1}^q \theta_j \omega_{t-j}$$
 
-$$Y_t = c + \delta t + \omega_t + \sum_{i=1}^{p}\phi_i Y_i + \sum_{j=1}^q \theta_j \omega_j$$
+$$Y_t = c + \delta t + \omega_t + \sum_{i=1}^{p}\phi_i Y_{t-i} + \sum_{j=1}^q \theta_j \omega_{t-j}$$
 
 ## Characteristic polynomials, their roots and reciprocals
 
 Using [the notation developed earlier](backshift.qmd), we can represent this ARMA model using the characteristic polynomials for the AR and MA components:
 
-$$\begin{aligned} Y_t &= \omega_t + \sum_{i=1}^{p}\phi_i Y_i + \sum_{j=1}^q \theta_j \omega_j \Longrightarrow \\ \\ Y_t - \sum_{i=1}^{p}\phi_i Y_i &= \omega_t + \sum_{j=1}^q \theta_j \omega_j \Longrightarrow \\ \\ Y_t \left(1 - \sum_{i=1}^{p}\phi_i B^i \right) &= \omega_t \left(1 + \sum_{j=1}^{q}\theta_j B^j \right) \Longrightarrow \\ \\ Y_t \Phi(B) &= \omega_t \Theta(B) \end{aligned}$$
+$$\begin{aligned} Y_t &= \omega_t + \sum_{i=1}^{p}\phi_{t-i} Y_i + \sum_{j=1}^q \theta_j \omega_{t-j} \Longrightarrow \\ \\ Y_t - \sum_{i=1}^{p}\phi_i Y_{t-i} &= \omega_t + \sum_{j=1}^q \theta_j \omega_{t-j} \Longrightarrow \\ \\ Y_t \left(1 - \sum_{i=1}^{p}\phi_i B^i \right) &= \omega_t \left(1 + \sum_{j=1}^{q}\theta_j B^j \right) \Longrightarrow \\ \\ Y_t \Phi(B) &= \omega_t \Theta(B) \end{aligned}$$
 Each of these two polynomials, $\Phi(B)$ and $\Theta(B)$, have real, imaginary, or complex roots. The location of these roots determines the properties of the ARMA series.
 
 Sometimes, we find it mathematically convenient to work with the characteristic polynomials, and other times we find it useful to factor them in a specific way. Consider the AR equation:
