@@ -1,6 +1,6 @@
 # ARIMA models
 
-Having learned about [AR models](armodels.qmd) and [MA models](mamodels.qmd) and [difference-stationarity](stationarity.qmd) we are now ready to bring these pieces together into the first major modeling and forecasting technique: ARIMA models.
+Having learned about [AR models](ar.qmd) and [MA models](ma.qmd) and [difference-stationarity](stationarity.qmd) we are now ready to bring these pieces together into the first major modeling and forecasting technique: ARIMA models.
 
 ## ARMA models
 

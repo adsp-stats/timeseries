@@ -14,13 +14,17 @@ book:
         - randomwalk.qmd
         - stationarity.qmd
         - codingbasicsinr.qmd
-    - part: "2. AR and MA models"
+    - part: "2. ARIMA models"
       chapters:
-        - armodels.qmd
-        - mamodels.qmd
+        - ar.qmd
+        - ma.qmd
         - backshift.qmd
-        - arimamodels.qmd
+        - arima.qmd
         - identificationinr.qmd
+    - part: "3. ETS and SARIMA models"
+      chapters:
+        - ets.qmd
+        - sarima.qmd
 format:
   html:
     toc: true

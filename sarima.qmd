@@ -1,0 +1,45 @@
+# SARIMA models
+
+We have already seen several datasets which display moderate or severe seasonality, but [the ARIMA models presented earlier](arima.qmd) did not explicitly model that seasonality. We can now add that functionality to the basic ARIMA structure, creating a type of ARIMA model often known as *seasonal ARIMA* or *SARIMA*.
+
+## Motivation
+
+Let's say that we are looking at a new monthly time series for the first time, and try to analyze it using the Box-Jenkins ARIMA modeling approach.
+
+```{r}
+#| code-fold: true
+#| fig-cap: 'Hypothetical seasonal time series'
+set.seed(0120)
+y <- 2+ arima.sim(model=list(ar=c(0.5,rep(0,10),0.3)),n=120)
+plot(y[1:60],type='l')  
+abline(v=0.5+12*(1:4),lty=2,col='#7f7f7f')
+text(x=12*(0:4),y=0.1,labels=paste('Year',1:5),pos=4,col='#7f7f7f')
+```
+
+Even upon a quick visual inspection, we see some signs of seasonality, with generally two peaks per year. The structure of these internal dependencies become clearer when we inspect the ACF and PACF plots:
+
+```{r}
+#| code-fold: true
+#| fig-cap: 'Autocorrelation structure of a seasonal timeseries'
+par(mfrow=c(1,2))
+acf(y,lag.max=25,main='ACF plot',ylab='Autocorrelation')
+mtext(c('1 year','2 years'),side=1,line=0,at=c(12,24),col='#7f7f7f',cex=0.75)
+pacf(y,lag.max=25,main='PACF plot',ylab='Partial autocorrelation')
+mtext(c('1 year','2 years'),side=1,line=0,at=c(12,24),col='#7f7f7f',cex=0.75)
+```
+
+The ACF plot shows the persistence typical of an AR process, but rather than scaling geometrically down to zero, we see long-term cyclical behavior with peaks at lags 12 and 24 (1 and 2 years). The PACF plot shows the dramatic dropoff after lag 1 typical of an AR(1) process, but then a second peak at lag 12 (1 year).
+
+Our conclusion is that this time series process can be at least weakly predicted not only by what happened last *month*, but also what happened last *year* at this time. Many real-world datasets display this type of double dependency --- for example, my inspiration for this simulated data was rainfall totals. There are wet years and dry years, so knowing if the previous month's rainfall totals were high or low is often helpful to determining whether this month's rainfall levels were high or low $(Y_t \approx Y_{t-1})$. But there are also wet months and dry months, so knowing the rainfall levels 12 months ago is also helpful in determining this month's rainfall levels $(Y_t \approx Y_{t-12})$.
+
+We can model this data as a long-order AR process with nonzero coefficients at 1 and 12 lags, something like AR(0.5,0,0,0,0,0,0,0,0,0,0,0.3), but this seems (and is) unnecessarily cumbersome for a data property we expect to encounter again and again. Instead, we will find new efficiencies through the use of [the backshift operator](backshift.qmd).
+
+::: {.callout-note}
+
+Let $\boldsymbol{Y}$ be a time series random variable observed at regular time periods $T = \{1, 2, \ldots, n\}$, with a known seasonal period of $m$. Let $\boldsymbol{\omega}$ be a white noise process observed at the same time periods. If there exist characteristic polynomials $\Phi(B), \Phi_s(B^m), \Theta(B), \Theta_s(B^m)$ with polynomial power $p, P, q, Q$ respectively, such that the relationship between $\boldsymbol{Y}$ and $\boldsymbol{\omega}$ can be written:
+
+$$Y_t \cdot \Phi(B) \cdot \Phi_s(B^m) (1 - B)^d (1 - B^m)^D= \omega_t \cdot \Theta(B) \cdot \Theta_s(B^m)$$
+
+Then we say that $\boldsymbol{Y}$ follows an **seasonal autoregressive integrated moving average (SARIMA) model** written SARIMA(*p*,*d*,*q*)(*P*,*D*,*Q*)~m~.
+
+:::
