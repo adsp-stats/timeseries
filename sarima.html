@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Backshift notation – Forecasting Essentials and Notes: Online Resource</title>
+<title>SARIMA models – Forecasting Essentials and Notes: Online Resource</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -30,8 +65,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./arima.html" rel="next">
-<link href="./ma.html" rel="prev">
+<link href="./ets.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -113,7 +147,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ar.html">2. ARIMA models</a></li><li class="breadcrumb-item"><a href="./backshift.html"><span class="chapter-title">Backshift notation</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ets.html">3. ETS and SARIMA models</a></li><li class="breadcrumb-item"><a href="./sarima.html"><span class="chapter-title">SARIMA models</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -208,7 +242,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./backshift.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Backshift notation</span></a>
+  <a href="./backshift.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Backshift notation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -239,7 +273,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./sarima.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">SARIMA models</span></a>
+  <a href="./sarima.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">SARIMA models</span></a>
   </div>
 </li>
       </ul>
@@ -254,18 +288,16 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#the-backshift-operator" id="toc-the-backshift-operator" class="nav-link active" data-scroll-target="#the-backshift-operator">The backshift operator</a></li>
-  <li><a href="#the-ar-and-ma-characteristic-polynomials" id="toc-the-ar-and-ma-characteristic-polynomials" class="nav-link" data-scroll-target="#the-ar-and-ma-characteristic-polynomials">The AR and MA characteristic polynomials</a></li>
-  <li><a href="#roots-of-the-characteristic-polynomials" id="toc-roots-of-the-characteristic-polynomials" class="nav-link" data-scroll-target="#roots-of-the-characteristic-polynomials">Roots of the characteristic polynomials</a></li>
+  <li><a href="#motivation" id="toc-motivation" class="nav-link active" data-scroll-target="#motivation">Motivation</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content column-body" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ar.html">2. ARIMA models</a></li><li class="breadcrumb-item"><a href="./backshift.html"><span class="chapter-title">Backshift notation</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ets.html">3. ETS and SARIMA models</a></li><li class="breadcrumb-item"><a href="./sarima.html"><span class="chapter-title">SARIMA models</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-title">Backshift notation</span></h1>
+<h1 class="title"><span class="chapter-title">SARIMA models</span></h1>
 </div>
 
 
@@ -282,13 +314,50 @@ window.Quarto = {
 </header>
 
 
-<p>When we learned linear regression techniques, it was convenient to move away from an arithmetic expansion such as:</p>
-<p><span class="math display">\[y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + \beta_k x_{k,i} + \varepsilon_i\]</span></p>
-<p>And instead move toward a matrix representation, such as:</p>
-<p><span class="math display">\[\boldsymbol{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\varepsilon}\]</span></p>
-<p>We will now learn a similar technique for time series analysis, which collapses all lags and their coefficients using the <em>backshift operator</em>.</p>
-<section id="the-backshift-operator" class="level2">
-<h2 class="anchored" data-anchor-id="the-backshift-operator">The backshift operator</h2>
+<p>We have already seen several datasets which display moderate or severe seasonality, but <a href="./arima.html">the ARIMA models presented earlier</a> did not explicitly model that seasonality. We can now add that functionality to the basic ARIMA structure, creating a type of ARIMA model often known as <em>seasonal ARIMA</em> or <em>SARIMA</em>.</p>
+<section id="motivation" class="level2">
+<h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
+<p>Let’s say that we are looking at a new monthly time series for the first time, and try to analyze it using the Box-Jenkins ARIMA modeling approach.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0120</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">+</span> <span class="fu">arima.sim</span>(<span class="at">model=</span><span class="fu">list</span>(<span class="at">ar=</span><span class="fu">c</span>(<span class="fl">0.5</span>,<span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">10</span>),<span class="fl">0.3</span>)),<span class="at">n=</span><span class="dv">120</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y[<span class="dv">1</span><span class="sc">:</span><span class="dv">60</span>],<span class="at">type=</span><span class="st">'l'</span>)  </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fl">0.5</span><span class="sc">+</span><span class="dv">12</span><span class="sc">*</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>),<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'#7f7f7f'</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="dv">12</span><span class="sc">*</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>),<span class="at">y=</span><span class="fl">0.1</span>,<span class="at">labels=</span><span class="fu">paste</span>(<span class="st">'Year'</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>),<span class="at">pos=</span><span class="dv">4</span>,<span class="at">col=</span><span class="st">'#7f7f7f'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="sarima_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Hypothetical seasonal time series</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Even upon a quick visual inspection, we see some signs of seasonality, with generally two peaks per year. The structure of these internal dependencies become clearer when we inspect the ACF and PACF plots:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(y,<span class="at">lag.max=</span><span class="dv">25</span>,<span class="at">main=</span><span class="st">'ACF plot'</span>,<span class="at">ylab=</span><span class="st">'Autocorrelation'</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="fu">c</span>(<span class="st">'1 year'</span>,<span class="st">'2 years'</span>),<span class="at">side=</span><span class="dv">1</span>,<span class="at">line=</span><span class="dv">0</span>,<span class="at">at=</span><span class="fu">c</span>(<span class="dv">12</span>,<span class="dv">24</span>),<span class="at">col=</span><span class="st">'#7f7f7f'</span>,<span class="at">cex=</span><span class="fl">0.75</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">pacf</span>(y,<span class="at">lag.max=</span><span class="dv">25</span>,<span class="at">main=</span><span class="st">'PACF plot'</span>,<span class="at">ylab=</span><span class="st">'Partial autocorrelation'</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="fu">c</span>(<span class="st">'1 year'</span>,<span class="st">'2 years'</span>),<span class="at">side=</span><span class="dv">1</span>,<span class="at">line=</span><span class="dv">0</span>,<span class="at">at=</span><span class="fu">c</span>(<span class="dv">12</span>,<span class="dv">24</span>),<span class="at">col=</span><span class="st">'#7f7f7f'</span>,<span class="at">cex=</span><span class="fl">0.75</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="sarima_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Autocorrelation structure of a seasonal timeseries</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The ACF plot shows the persistence typical of an AR process, but rather than scaling geometrically down to zero, we see long-term cyclical behavior with peaks at lags 12 and 24 (1 and 2 years). The PACF plot shows the dramatic dropoff after lag 1 typical of an AR(1) process, but then a second peak at lag 12 (1 year).</p>
+<p>Our conclusion is that this time series process can be at least weakly predicted not only by what happened last <em>month</em>, but also what happened last <em>year</em> at this time. Many real-world datasets display this type of double dependency — for example, my inspiration for this simulated data was rainfall totals. There are wet years and dry years, so knowing if the previous month’s rainfall totals were high or low is often helpful to determining whether this month’s rainfall levels were high or low <span class="math inline">\((Y_t \approx Y_{t-1})\)</span>. But there are also wet months and dry months, so knowing the rainfall levels 12 months ago is also helpful in determining this month’s rainfall levels <span class="math inline">\((Y_t \approx Y_{t-12})\)</span>.</p>
+<p>We can model this data as a long-order AR process with nonzero coefficients at 1 and 12 lags, something like AR(0.5,0,0,0,0,0,0,0,0,0,0,0.3), but this seems (and is) unnecessarily cumbersome for a data property we expect to encounter again and again. Instead, we will find new efficiencies through the use of <a href="./backshift.html">the backshift operator</a>.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -299,60 +368,13 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>. Then the unary operator <span class="math inline">\(B\)</span> (<strong>backshift</strong>) is defined as follows:</p>
-<p><span class="math display">\[B \, Y_t = Y_{t-1}\]</span></p>
-<p><span class="math display">\[B^k \, Y_t = Y_{t-k}\]</span></p>
+<p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>, with a known seasonal period of <span class="math inline">\(m\)</span>. Let <span class="math inline">\(\boldsymbol{\omega}\)</span> be a white noise process observed at the same time periods. If there exist characteristic polynomials <span class="math inline">\(\Phi(B), \Phi_s(B^m), \Theta(B), \Theta_s(B^m)\)</span> with polynomial power <span class="math inline">\(p, P, q, Q\)</span> respectively, such that the relationship between <span class="math inline">\(\boldsymbol{Y}\)</span> and <span class="math inline">\(\boldsymbol{\omega}\)</span> can be written:</p>
+<p><span class="math display">\[Y_t \cdot \Phi(B) \cdot \Phi_s(B^m) (1 - B)^d (1 - B^m)^D= \omega_t \cdot \Theta(B) \cdot \Theta_s(B^m)\]</span></p>
+<p>Then we say that <span class="math inline">\(\boldsymbol{Y}\)</span> follows an <strong>seasonal autoregressive integrated moving average (SARIMA) model</strong> written SARIMA(<em>p</em>,<em>d</em>,<em>q</em>)(<em>P</em>,<em>D</em>,<em>Q</em>)<sub>m</sub>.</p>
 </div>
 </div>
-<p>Written thus, we can treat <span class="math inline">\(B\)</span> almost as a separate variable,<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> and use it to remove lagged terms from our equations:</p>
-<p><span class="math display">\[\begin{aligned} &amp; \, Y_t = 1.3\,Y_{t-1} - 0.36\,Y_{t-2} + \omega_t \\ \\ \Longrightarrow &amp; \,Y_t = 1.3\,B\,Y_t - 0.36\,B^2\,Y_t + \omega_t \\ \\ \Longrightarrow &amp; \, Y_t = Y_t(0.5B - 0.36B^2) + \omega_t \\ \\ \Longrightarrow &amp; \,\omega_t = Y_t(1 - 1.3B + 0.36B^2)  \end{aligned}\]</span></p>
-<p>The model above was an AR(2) process, but we can equally use this notation with MA models:</p>
-<p><span class="math display">\[\begin{aligned} &amp; \, Y_t = \omega_t + 0.8\,\omega_{t-1} + 0.16\,\omega_{t-2} \\ \\ \Longrightarrow &amp; \,Y_t = \omega_t + 0.8\,B\,\omega_t + 0.16\,B^2\,\omega_t \\ \\ \Longrightarrow &amp; \, Y_t = \omega_t(1 + 0.8B + 0.16B^2) \end{aligned}\]</span></p>
-</section>
-<section id="the-ar-and-ma-characteristic-polynomials" class="level2">
-<h2 class="anchored" data-anchor-id="the-ar-and-ma-characteristic-polynomials">The AR and MA characteristic polynomials</h2>
-<p>So far, this hasn’t seemed to save much space or offer us any new possibilities. We can bring it altogether by introducing two <em>characteristic polynomials</em>. These equations aren’t any sort of theorem or result, just a definition:</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>The <strong>characteristic polynomial of an AR process</strong> of order <em>p</em> is defined as follows:</p>
-<p><span class="math display">\[\Phi(B) = 1 - \phi_1 B - \phi_2 B^2 - ... - \phi_p B^p\]</span></p>
-<p>The <strong>characteristic polynomial of an MA process</strong> of order <em>q</em> is defined as follows:</p>
-<p><span class="math display">\[\Theta(B) = 1 + \theta_1 B + \theta_2 B^2 + ... + \theta_q B^q\]</span></p>
-</div>
-</div>
-<p>With these two “shortcuts” we can represent every AR process as follows:</p>
-<p><span class="math display">\[\omega_t = \Phi(B) \cdot Y_t\]</span></p>
-<p>And we can represent every MA process as follows:</p>
-<p><span class="math display">\[Y_t = \Theta(B) \cdot \omega_t\]</span></p>
-</section>
-<section id="roots-of-the-characteristic-polynomials" class="level2">
-<h2 class="anchored" data-anchor-id="roots-of-the-characteristic-polynomials">Roots of the characteristic polynomials</h2>
-<p>In the examples I gave above, we could say that for the AR(2) process,</p>
-<p><span class="math display">\[\Phi(B) = 1 - 1.3B + 0.36B^2\]</span></p>
-<p>Keen-eyed mathemagicians might have already noticed that we can factor and solve for the roots of this equation:</p>
-<p><span class="math display">\[\Phi(B) = (1 - 0.4B)(1 - 0.9B)\]</span></p>
-<p><span class="math display">\[\Phi(B) = 0 \iff B \in \{2.5, 1.111\ldots\}\]</span></p>
-<p>Likewise, we could solve for the roots of the MA(2) characteristic polynomial</p>
-<p><span class="math display">\[\Theta(B) = 1 + 0.8B + 0.16B^2\]</span></p>
-<p><span class="math display">\[\Theta(B) = (1 + 0.4B)^2\]</span></p>
-<p><span class="math display">\[\Theta(B) = 0 \iff B = -2.5\]</span></p>
-<p>The dramatic reveal of <em>why</em> we would want to solve the roots of these polynomials must wait for the next page.</p>
 
 
-</section>
-<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
-<hr>
-<ol>
-<li id="fn1"><p>Not a <em>random</em> variable, but a variable we could solve for, such as <span class="math inline">\(x\)</span> in the equation <span class="math inline">\(x^2 - 4x = -3\)</span><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-</ol>
 </section>
 
 </main> <!-- /main -->
@@ -797,14 +819,11 @@ Note
   </script>
 <nav class="page-navigation column-body">
   <div class="nav-page nav-page-previous">
-      <a href="./ma.html" class="pagination-link" aria-label="MA models">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">MA models</span></span>
+      <a href="./ets.html" class="pagination-link" aria-label="ETS models">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">ETS models</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./arima.html" class="pagination-link" aria-label="ARIMA models">
-        <span class="nav-page-text"><span class="chapter-title">ARIMA models</span></span> <i class="bi bi-arrow-right-short"></i>
-      </a>
   </div>
 </nav>
 </div> <!-- /content -->

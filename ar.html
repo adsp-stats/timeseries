@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Random walks – Forecasting Essentials and Notes: Online Resource</title>
+<title>AR models – Forecasting Essentials and Notes: Online Resource</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -65,8 +65,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./stationarity.html" rel="next">
-<link href="./whitenoise.html" rel="prev">
+<link href="./ma.html" rel="next">
+<link href="./codingbasicsinr.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -148,7 +148,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./whatisatimeseries.html">1. Time series basics</a></li><li class="breadcrumb-item"><a href="./randomwalk.html"><span class="chapter-title">Random walks</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ar.html">2. ARIMA models</a></li><li class="breadcrumb-item"><a href="./ar.html"><span class="chapter-title">AR models</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -207,7 +207,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./randomwalk.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Random walks</span></a>
+  <a href="./randomwalk.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Random walks</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -233,7 +233,7 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ar.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">AR models</span></a>
+  <a href="./ar.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">AR models</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -289,18 +289,20 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#motivation" id="toc-motivation" class="nav-link active" data-scroll-target="#motivation">Motivation</a></li>
-  <li><a href="#definition" id="toc-definition" class="nav-link" data-scroll-target="#definition">Definition</a></li>
-  <li><a href="#properties" id="toc-properties" class="nav-link" data-scroll-target="#properties">Properties</a></li>
+  <li><a href="#ar1-process" id="toc-ar1-process" class="nav-link active" data-scroll-target="#ar1-process">AR(1) process</a></li>
+  <li><a href="#generalizing-to-arp" id="toc-generalizing-to-arp" class="nav-link" data-scroll-target="#generalizing-to-arp">Generalizing to AR(<em>p</em>)</a></li>
+  <li><a href="#recognizing-an-ar-process-from-its-acf-plot" id="toc-recognizing-an-ar-process-from-its-acf-plot" class="nav-link" data-scroll-target="#recognizing-an-ar-process-from-its-acf-plot">Recognizing an AR process from its ACF plot</a></li>
+  <li><a href="#which-ar-processes-are-stationary" id="toc-which-ar-processes-are-stationary" class="nav-link" data-scroll-target="#which-ar-processes-are-stationary">Which AR processes are stationary</a></li>
+  <li><a href="#ar-model-responses-to-system-shocks" id="toc-ar-model-responses-to-system-shocks" class="nav-link" data-scroll-target="#ar-model-responses-to-system-shocks">AR model responses to system shocks</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content column-body" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./whatisatimeseries.html">1. Time series basics</a></li><li class="breadcrumb-item"><a href="./randomwalk.html"><span class="chapter-title">Random walks</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ar.html">2. ARIMA models</a></li><li class="breadcrumb-item"><a href="./ar.html"><span class="chapter-title">AR models</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-title">Random walks</span></h1>
+<h1 class="title"><span class="chapter-title">AR models</span></h1>
 </div>
 
 
@@ -317,77 +319,12 @@ window.Quarto = {
 </header>
 
 
-<section id="motivation" class="level2">
-<h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
-<p>Before learning about time series which we can usefully study or forecast, it might help to see an example of a times series we <em>cannot</em> usefully study or forecast: the random walk.</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1999</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>rw <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(w)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(rw,<span class="at">type=</span><span class="st">'b'</span>,<span class="at">pch=</span><span class="dv">20</span>,<span class="at">xlab=</span><span class="st">'Index'</span>,<span class="at">ylab=</span><span class="st">'Measurement'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="randomwalk_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>100 observations of a random walk</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p>This times series <em>seems</em> to carry information. We see a positive trend. Perhaps we see some evidence of periodicity/seasonality. Sadly, we are mistaken: what we are looking at instead is a <em>random walk</em>.</p>
-<p>Random walks refer to memoryless time series processes which “drift” randomly across 1, 2, or more dimensions. They may return to their starting value, but do not do so predictably. Let’s examine five possible futures that the random walk above might take — each of these are completely consistent evolutions of the series, each as likely as the other.</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1999</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>w2 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">cbind</span>(w,w,w,w,w),<span class="fu">matrix</span>(<span class="fu">rnorm</span>(<span class="dv">500</span>),<span class="at">ncol=</span><span class="dv">5</span>))</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>rw2 <span class="ot">&lt;-</span> <span class="fu">apply</span>(w2,<span class="dv">2</span>,cumsum)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(rw,<span class="at">type=</span><span class="st">'l'</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">xlab=</span><span class="st">'Index'</span>,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">200</span>),<span class="at">ylab=</span><span class="st">'Measurement'</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">5</span>,<span class="dv">25</span>))</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">matplot</span>(<span class="at">x=</span><span class="dv">101</span><span class="sc">:</span><span class="dv">200</span>,<span class="at">y=</span>rw2[<span class="dv">101</span><span class="sc">:</span><span class="dv">200</span>,],<span class="at">type=</span><span class="st">'l'</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">pch=</span><span class="dv">20</span>,<span class="at">add=</span><span class="cn">TRUE</span>,<span class="at">lty=</span><span class="dv">1</span>,</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">col=</span><span class="fu">colorRampPalette</span>(<span class="fu">c</span>(<span class="st">'#0000ff'</span>,<span class="st">'#bbbbbb'</span>,<span class="st">'#ff0000'</span>))(<span class="dv">5</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="randomwalk_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Five possible extensions of the same random walk</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p>Random walks can be one-dimensional, like the example above, or multidimensional. The time between steps can be regular, irregular, or even continuous. The step sizes themselves can be equal, discrete, or continuous. (Random walks are, for example, closely tied to the idea of ‘Brownian motion’, which is the drift through space and time of tiny particles suspended in air or fluid, such as smoke, or dust in a sunbeam.)</p>
-<p>Below is an example of a two-dimensional random walk where each step size is one unit.</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>nw <span class="ot">&lt;-</span> <span class="dv">2000</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>rwcols <span class="ot">&lt;-</span> <span class="fu">colorRampPalette</span>(<span class="fu">c</span>(<span class="st">'#0000ff'</span>,<span class="st">'#bbbbbb'</span>,<span class="st">'#ff0000'</span>))(nw)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1235</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>rwx <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(<span class="fu">sample</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>),nw,<span class="cn">TRUE</span>))</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>rwy <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(<span class="fu">sample</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>),nw,<span class="cn">TRUE</span>))</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(rwx,rwy,<span class="at">type=</span><span class="st">'n'</span>,<span class="at">asp=</span><span class="dv">1</span>,,<span class="at">axes=</span><span class="cn">FALSE</span>,<span class="at">xlab=</span><span class="cn">NA</span>,<span class="at">ylab=</span><span class="cn">NA</span>,<span class="at">main=</span><span class="cn">NA</span>,<span class="at">sub=</span><span class="cn">NA</span>)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">1</span>,<span class="at">at=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">40</span>,<span class="sc">-</span><span class="dv">20</span>,<span class="dv">0</span>)); <span class="fu">axis</span>(<span class="dv">2</span>,<span class="at">at=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">20</span>,<span class="dv">0</span>,<span class="dv">20</span>))</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">segments</span>(<span class="at">x0=</span><span class="fu">c</span>(<span class="dv">0</span>,rwx[<span class="sc">-</span>nw]),<span class="at">x1=</span>rwx,<span class="at">y0=</span><span class="fu">c</span>(<span class="dv">0</span>,rwy[<span class="sc">-</span>nw]),<span class="at">y1=</span>rwy,<span class="at">col=</span>rwcols)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="fu">c</span>(<span class="dv">0</span>,rwx[nw]),<span class="fu">c</span>(<span class="dv">0</span>,rwy[nw]),<span class="at">col=</span>rwcols[<span class="fu">c</span>(<span class="dv">1</span>,nw)],<span class="at">pch=</span><span class="dv">19</span>)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'bottomleft'</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Start (t=0)'</span>,<span class="st">'End (t=2000)'</span>),</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">pch=</span><span class="dv">19</span>,<span class="at">col=</span>rwcols[<span class="fu">c</span>(<span class="dv">1</span>,nw)],<span class="at">bty=</span><span class="st">'n'</span>,<span class="at">cex=</span><span class="fl">0.8</span>)      </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="randomwalk_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>2000 steps of a 2D binary random walk.</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="definition" class="level2">
-<h2 class="anchored" data-anchor-id="definition">Definition</h2>
-<p>Although random walks appear in many forms, we will mostly concern ourselves in this course with a specific, one-dimensional walk observed in regular time intervals.</p>
+<p>One building block of statistical time series analysis is the <em>autoregressive (AR) model</em>. As the name implies, an AR model presumes that past values of the series can be used to directly predict current values using a regression-like structure:</p>
+<p><span class="math display">\[Y_t = \beta_0 + \beta_1 Y_{t-1} + \beta_2 Y_{t-2} + \ldots + \varepsilon_t\]</span></p>
+<p>I wrote the equation above using the notation of linear regression. We will be expressing the same concept using slightly different notation below.</p>
+<section id="ar1-process" class="level2">
+<h2 class="anchored" data-anchor-id="ar1-process">AR(1) process</h2>
+<p>Let’s take the simplest case, where each value of the series is predicted only by the previous value. We would name this an <em>autoregressive model with order 1</em> or <em>AR(1) model</em>.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -398,21 +335,189 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Let <span class="math inline">\(\boldsymbol{\omega}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>, where the distribution of each random observation <span class="math inline">\(\omega_t\)</span> is independently and identically distributed with mean 0 and finite variance <span class="math inline">\(\sigma^2\)</span> for all <span class="math inline">\(t \in T\)</span>. Define a new time series random variable <span class="math inline">\(\boldsymbol{Y} = Y_1, Y_2, \ldots, Y_n\)</span> as follows:</p>
-<p><span class="math display">\[\begin{aligned} Y_1 &amp;= \omega_1 \\ Y_t &amp;= Y_{t-1} + \omega_t \quad \forall t&gt;1\end{aligned}\]</span></p>
-<p>Then <span class="math inline">\(\boldsymbol{Y}\)</span> is a <strong>random walk</strong>, specifically a homogenous discrete-time random walk in one dimension. If <span class="math inline">\(\omega_t \stackrel{iid}{\sim} \textrm{Normal}(0,\sigma^2) \; \forall t \in T\)</span>, then we say that <span class="math inline">\(\boldsymbol{Y}\)</span> is a <em>Gaussian random walk.</em></p>
+<p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>. Let <span class="math inline">\(\boldsymbol{\omega}\)</span> be a white noise process observed at the same time periods. If,</p>
+<p><span class="math display">\[Y_t = \phi Y_{t-1} + \omega_t\]</span></p>
+<p>For some <span class="math inline">\(\phi \in \mathbb{R}\)</span> and all <span class="math inline">\(t \in T\)</span>, then we say that <span class="math inline">\(\boldsymbol{Y}\)</span> is an <strong>autoregressive process with order 1</strong></p>
+</div>
+</div>
+<p>In theory, the exact properties of an AR(1) process depend on both the autoregressive parameter <span class="math inline">\(\phi\)</span> as well as the specific type of white noise process denoted by <span class="math inline">\(\boldsymbol{\omega}\)</span>. In practice, we often assume <span class="math inline">\(\boldsymbol{\omega}\)</span> to be Gaussian white noise, leaving <span class="math inline">\(\phi\)</span> as the only input which needs estimation.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">1.1</span>))</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0106</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>phivec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.5</span>,<span class="sc">-</span><span class="fl">1.0</span>,<span class="sc">-</span><span class="fl">0.5</span>,<span class="dv">0</span>,<span class="fl">0.3</span>,<span class="fl">0.6</span>,<span class="fl">0.9</span>,<span class="fl">1.0</span>,<span class="fl">1.5</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">rep</span>(w[<span class="dv">1</span>],<span class="dv">9</span>))</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">100</span>){Y <span class="ot">&lt;-</span> <span class="fu">rbind</span>(Y, <span class="fu">t</span>(<span class="fu">rep</span>(w[i],<span class="dv">9</span>)<span class="sc">+</span>phivec<span class="sc">*</span>Y[i<span class="dv">-1</span>,]))}</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) <span class="fu">plot</span>(Y[,j],<span class="at">main=</span><span class="fu">bquote</span>(phi<span class="sc">==</span>.(phivec[j])),</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                    <span class="at">type=</span><span class="st">'l'</span>,<span class="at">xlab=</span><span class="cn">NA</span>,<span class="at">ylab=</span><span class="cn">NA</span>,<span class="at">sub=</span><span class="cn">NA</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="ar_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Nine AR(1) processes with the same innovations</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The plots above provide examples of some specific properties of AR(1) processes:</p>
+<ul>
+<li><p>When <span class="math inline">\(\phi \gt 1\)</span> or <span class="math inline">\(\phi \lt -1\)</span>, we say the process is <strong>explosive.</strong> After a short-to-moderate ‘fuse’, the innovations begin to cumulate exponentially, rapidly heading toward infinity.</p></li>
+<li><p>When <span class="math inline">\(\phi = 1\)</span>, we say that the process is a <em>random walk</em>, since we now have the familiar model <span class="math inline">\(Y_t = Y_{t-1} + \omega_t\)</span>. When <span class="math inline">\(\phi = -1\)</span> we have a variant on a random walk in which both the odd and even observations begin closely-related random walks headed in opposite directions.</p></li>
+<li><p>When <span class="math inline">\(-1 \lt \phi \lt 1\)</span> we observe a <em>stationary process</em>. This includes the case where <span class="math inline">\(\phi = 0\)</span> (pure white noise), but also other series with noticeable positive or negative autocorrelation. Despite the autocorrelation, the mean and variance of the unconditional variables <span class="math inline">\(Y_t\)</span> (that is, without knowing the past values of <span class="math inline">\(\boldsymbol{Y}\)</span>) remain the same, and the autocorrelation of two values depends only on their lag distance, not their time index values.</p></li>
+</ul>
+</section>
+<section id="generalizing-to-arp" class="level2">
+<h2 class="anchored" data-anchor-id="generalizing-to-arp">Generalizing to AR(<em>p</em>)</h2>
+<p>Now we may complicate the scenario, by allowing the current value <span class="math inline">\(Y_t\)</span> to have <em>several, different</em> relationships with <em>arbitrary</em> past lags of the series.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>. Let <span class="math inline">\(\boldsymbol{\omega}\)</span> be a white noise process observed at the same time periods. If,</p>
+<p><span class="math display">\[Y_t = \phi_1 Y_{t-1} + \phi_2 Y_{t-2} + \ldots + \phi_p Y_{t-p} + \omega_t\]</span></p>
+<p>For some <span class="math inline">\((\phi_1, \phi_2, \ldots, \phi_p) \in \mathbb{R}^p\)</span> and all <span class="math inline">\(t \in T\)</span>, then we say that <span class="math inline">\(\boldsymbol{Y}\)</span> is an <strong>autoregressive model with order</strong> <strong><em>p</em></strong>.</p>
+</div>
+</div>
+<p>These AR(<em>p</em>) processes can be difficult to visually distinguish because of the more complicated autocorrelation patterns.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">1.1</span>))</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0107</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>phi1vec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>,<span class="fl">0.7</span>, <span class="fl">0.7</span>,<span class="fl">0.6</span>,<span class="dv">0</span>,  <span class="sc">-</span><span class="fl">1.6</span>,<span class="fl">0.5</span>,<span class="fl">0.3</span>,<span class="dv">0</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>phi2vec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>,<span class="fl">0.7</span>,<span class="sc">-</span><span class="fl">0.7</span>,<span class="fl">0.2</span>,<span class="fl">0.5</span>, <span class="fl">0.8</span>,<span class="fl">0.4</span>,<span class="fl">0.2</span>,<span class="dv">0</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>phi3vec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>,  <span class="dv">0</span>,   <span class="dv">0</span>,  <span class="dv">0</span>,  <span class="dv">0</span>,   <span class="dv">0</span>,  <span class="fl">0.3</span>,<span class="fl">0.1</span>,<span class="dv">1</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">rep</span>(w[<span class="dv">1</span>],<span class="dv">9</span>))</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">rbind</span>(Y, <span class="fu">t</span>(<span class="fu">rep</span>(w[<span class="dv">2</span>],<span class="dv">9</span>)<span class="sc">+</span>phi1vec<span class="sc">*</span>Y[<span class="dv">1</span>,]))</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">rbind</span>(Y, <span class="fu">t</span>(<span class="fu">rep</span>(w[<span class="dv">3</span>],<span class="dv">9</span>)<span class="sc">+</span>phi1vec<span class="sc">*</span>Y[<span class="dv">2</span>,]<span class="sc">+</span>phi2vec<span class="sc">*</span>Y[<span class="dv">1</span>,]))</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">4</span><span class="sc">:</span><span class="dv">100</span>){Y <span class="ot">&lt;-</span> <span class="fu">rbind</span>(Y,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">t</span>(<span class="fu">rep</span>(w[i],<span class="dv">9</span>)<span class="sc">+</span>phi1vec<span class="sc">*</span>Y[i<span class="dv">-1</span>,]<span class="sc">+</span>phi2vec<span class="sc">*</span>Y[i<span class="dv">-2</span>,]<span class="sc">+</span>phi3vec<span class="sc">*</span>Y[i<span class="dv">-3</span>,]))}</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) <span class="fu">plot</span>(Y[,j],<span class="at">main=</span><span class="fu">bquote</span>(</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bold</span>(phi) <span class="sc">==</span> <span class="fu">list</span>(.(phi1vec[j]),.(phi2vec[j]),.(phi3vec[j]))),</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">type=</span><span class="st">'l'</span>,<span class="at">xlab=</span><span class="cn">NA</span>,<span class="at">ylab=</span><span class="cn">NA</span>,<span class="at">sub=</span><span class="cn">NA</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="ar_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Nine AR(2) and AR(3) processes with the same innovations</figcaption>
+</figure>
+</div>
 </div>
 </div>
 </section>
-<section id="properties" class="level2">
-<h2 class="anchored" data-anchor-id="properties">Properties</h2>
-<p>Note that a Gaussian random walk is equivalent to the cumulative sum of a Gaussian white noise process, and that more generally any the cumulative sum of <em>any</em> IID white noise process is some type of random walk.</p>
-<p>Consider the implications of these two calculations:</p>
-<p><span class="math display">\[\mathbb{E}[Y_t] = \mathbb{E}[\sum_{i=1}^t \omega_i] = \sum_{i=1}^t \mathbb{E}[\omega_i] = \sum_{i=1}^t 0 = 0\]</span></p>
-<p><span class="math display">\[\mathbb{V}[Y_t] = \mathbb{V}[\sum_{i=1}^t \omega_i] = \sum_{i=1}^t \mathbb{V}[\omega_i] = \sum_{i=1}^t \sigma^2 = t\sigma^2\]</span></p>
-<p>Taken together, we see that while the <em>expectation</em> or the <em>prediction</em> for the future location of a random walk remains its starting place, the <em>variance</em> increases proportionally with the time period, meaning that the range of likely values grows wider and wider, and that the series becomes quite unlikely to be found at the starting point itself, even though this is technically the “average” outcome.</p>
-<p>Note also that the expectation of a random walk <em>given its past history</em> has nothing to do with its starting point or how long it has run, but simply wherever it was last observed. Consider trying to forecast the value of a random walk at time <span class="math inline">\(t\)</span> given a series of observations ending at time <span class="math inline">\(s \lt t\)</span>:</p>
-<p><span class="math display">\[\begin{aligned} \mathbb{E}[Y_t|y_1,\ldots,y_s] &amp;= \mathbb{E}[(Y_s + \sum_{i=s+1}^t \omega_i)|y_1,\ldots,y_s] \\ &amp;= y_s + \mathbb{E}[\sum_{i=s+1}^t \omega_i] = y_s + \sum_{i=s+1}^t \mathbb{E}[\omega_i] \\ &amp;= y_s + \sum_{i=s+1}^t 0 = y_s \end{aligned}\]</span></p>
+<section id="recognizing-an-ar-process-from-its-acf-plot" class="level2">
+<h2 class="anchored" data-anchor-id="recognizing-an-ar-process-from-its-acf-plot">Recognizing an AR process from its ACF plot</h2>
+<p>An autocorrelation function (ACF) plot will sometimes provide helpful summary or diagnostic information about an AR(<em>p</em>) model. In the simplest case of AR(1), the height of the ACF plot at the first lag will be equal to <em>p</em>, and the remaining lags will scale geometrically downward. For example, when <span class="math inline">\(p=0.8\)</span>, the second lag will have an autocorrelation of roughly 0.64, and the third lag will have autocorrelation of roughly 0.512</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">1.1</span>))</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0108</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>ar08 <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ar=</span><span class="fl">0.8</span>),<span class="at">n=</span><span class="dv">1000</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>arneg05 <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ar=</span><span class="sc">-</span><span class="fl">0.5</span>),<span class="at">n=</span><span class="dv">1000</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(ar08,<span class="at">main=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'ACF when '</span>,phi <span class="sc">==</span> <span class="fl">0.8</span>)),<span class="at">lag.max=</span><span class="dv">15</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(arneg05,<span class="at">main=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'ACF when '</span>,phi <span class="sc">==</span> <span class="sc">-</span><span class="fl">0.5</span>)),<span class="at">lag.max=</span><span class="dv">15</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="ar_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Two AR(1) processes and their ACF plots, 1000 obs each</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>More complex AR models have correspondingly complex ACF plots, and you will not always be able to easily diagnose the order and coefficient sizes:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">1.1</span>))</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0109</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>ar08neg05 <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ar=</span><span class="fu">c</span>(<span class="fl">0.8</span>,<span class="sc">-</span><span class="fl">0.5</span>)),<span class="at">n=</span><span class="dv">1000</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>arneg05neg04 <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ar=</span><span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.5</span>,<span class="sc">-</span><span class="fl">0.4</span>)),<span class="at">n=</span><span class="dv">1000</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(ar08neg05,<span class="at">main=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'ACF when '</span>,phi <span class="sc">==</span> <span class="fu">list</span>(<span class="fl">0.8</span>,<span class="sc">-</span><span class="fl">0.5</span>))),<span class="at">lag.max=</span><span class="dv">15</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(arneg05neg04,<span class="at">main=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'ACF when '</span>,phi <span class="sc">==</span> <span class="fu">list</span>(<span class="sc">-</span><span class="fl">0.5</span>,<span class="sc">-</span><span class="fl">0.4</span>))),<span class="at">lag.max=</span><span class="dv">15</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="ar_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Two AR(2) processes and their ACF plots, 1000 obs each</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>You do <em>not</em> need to be able to spot a complex AR model from a brief inspection of its time series or its ACF plot. However, you <em>should</em> know that complex behavior can be very accurately fit by a relatively simple AR model.</p>
+</section>
+<section id="which-ar-processes-are-stationary" class="level2">
+<h2 class="anchored" data-anchor-id="which-ar-processes-are-stationary">Which AR processes are stationary</h2>
+<p>We will learn more about this elsewhere, when we discuss unit roots. For now, I will leave you with a simple set of guidelines:</p>
+<ul>
+<li><p>AR(1) processes are stationary when <span class="math inline">\(|\phi_1| \lt 1\)</span></p></li>
+<li><p>AR(2) processes are stationary when three conditions are met:</p></li>
+</ul>
+<p><span class="math display">\[\begin{aligned}(1) \qquad &amp; |\phi_2| \lt 1 \\ (2) \qquad &amp; \phi_1 + \phi_2 \lt 1 \\ (3) \qquad &amp; \phi_1 - \phi_2 \lt 1 \end{aligned}\]</span></p>
+<p>Representing the two parameters <span class="math inline">\(phi_1\)</span> and <span class="math inline">\(\phi_2\)</span> on the coördinate plane, we would say any process with its parameters inside the shaded region is stationary:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="fl">2.25</span>,<span class="fl">2.25</span>),<span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.25</span>,<span class="fl">1.25</span>),<span class="at">type=</span><span class="st">'n'</span>,<span class="at">main=</span><span class="cn">NA</span>,<span class="at">sub=</span><span class="cn">NA</span>,</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="fu">expression</span>(phi[<span class="dv">2</span>]),<span class="at">xlab=</span><span class="fu">expression</span>(phi[<span class="dv">1</span>]),<span class="at">asp=</span><span class="dv">1</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">polygon</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="dv">0</span>,<span class="dv">2</span>),<span class="at">y=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>),<span class="at">lty=</span><span class="dv">1</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">density=</span><span class="sc">-</span><span class="dv">1</span>,<span class="at">col=</span><span class="st">'#0000ff7f'</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="dv">0</span>,<span class="at">v=</span><span class="dv">0</span>,<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'#7f7f7f'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="ar_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Stationary sets of AR(2) parameters</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>For AR(3) and higher processes, stationarity will depend upon the roots of the characteristic polynomial, which can be calculated with a unit root test.</li>
+</ul>
+</section>
+<section id="ar-model-responses-to-system-shocks" class="level2">
+<h2 class="anchored" data-anchor-id="ar-model-responses-to-system-shocks">AR model responses to system shocks</h2>
+<p>AR models translate one-time system shocks into persistent, slowly-decaying signals. Consider a simple AR(1) model which processes a fairly quiet series of innovations, interrupted irregularly by a much larger signal:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0110</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">100</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>w[<span class="dv">8</span>] <span class="ot">&lt;-</span> <span class="dv">10</span>; w[<span class="dv">15</span>] <span class="ot">&lt;-</span> <span class="dv">10</span>; w[<span class="dv">25</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">10</span>; w[<span class="dv">45</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">10</span>;</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>ar <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ar=</span><span class="fl">0.9</span>),<span class="at">n=</span><span class="dv">100</span>,<span class="at">innov=</span>w)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">15</span><span class="sc">+</span>ar,<span class="at">type=</span><span class="st">'s'</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">10</span>,<span class="dv">27</span>),<span class="at">ylab=</span><span class="cn">NA</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(w,<span class="at">type=</span><span class="st">'h'</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="dv">15</span>,<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'#7f7f7f'</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topright'</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#0000ff'</span>),<span class="at">bty=</span><span class="st">'n'</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend=</span><span class="fu">c</span>(<span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'Time series '</span>,Y[t])),</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>                <span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'Innovations '</span>,omega[t]))))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="ar_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Persistence and decay in an AR(1) model</figcaption>
+</figure>
+</div>
+</div>
+</div>
 
 
 </section>
@@ -859,13 +964,13 @@ Note
   </script>
 <nav class="page-navigation column-body">
   <div class="nav-page nav-page-previous">
-      <a href="./whitenoise.html" class="pagination-link" aria-label="White noise">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">White noise</span></span>
+      <a href="./codingbasicsinr.html" class="pagination-link" aria-label="Coding it up in R">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Coding it up in R</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./stationarity.html" class="pagination-link" aria-label="Stationarity">
-        <span class="nav-page-text"><span class="chapter-title">Stationarity</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./ma.html" class="pagination-link" aria-label="MA models">
+        <span class="nav-page-text"><span class="chapter-title">MA models</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

@@ -348,134 +348,134 @@
     ]
   },
   {
-    "objectID": "armodels.html",
-    "href": "armodels.html",
+    "objectID": "ar.html",
+    "href": "ar.html",
     "title": "AR models",
     "section": "",
     "text": "AR(1) process\nOne building block of statistical time series analysis is the autoregressive (AR) model. As the name implies, an AR model presumes that past values of the series can be used to directly predict current values using a regression-like structure:\n\\[Y_t = \\beta_0 + \\beta_1 Y_{t-1} + \\beta_2 Y_{t-2} + \\ldots + \\varepsilon_t\\]\nI wrote the equation above using the notation of linear regression. We will be expressing the same concept using slightly different notation below.\nLet’s take the simplest case, where each value of the series is predicted only by the previous value. We would name this an autoregressive model with order 1 or AR(1) model.\nIn theory, the exact properties of an AR(1) process depend on both the autoregressive parameter \\(\\phi\\) as well as the specific type of white noise process denoted by \\(\\boldsymbol{\\omega}\\). In practice, we often assume \\(\\boldsymbol{\\omega}\\) to be Gaussian white noise, leaving \\(\\phi\\) as the only input which needs estimation.\nCode\npar(mfrow=c(3,3),mar=c(3.1,3.1,3.1,1.1))\nset.seed(0106)\nw &lt;- rnorm(100)\nphivec &lt;- c(-1.5,-1.0,-0.5,0,0.3,0.6,0.9,1.0,1.5)\nY &lt;- t(rep(w[1],9))\nfor (i in 2:100){Y &lt;- rbind(Y, t(rep(w[i],9)+phivec*Y[i-1,]))}\nfor (j in 1:9) plot(Y[,j],main=bquote(phi==.(phivec[j])),\n                    type='l',xlab=NA,ylab=NA,sub=NA)\n\n\n\n\n\nNine AR(1) processes with the same innovations\nThe plots above provide examples of some specific properties of AR(1) processes:",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>7</span>  <span class='chapter-title'>AR models</span>"
     ]
   },
   {
-    "objectID": "armodels.html#ar1-process",
-    "href": "armodels.html#ar1-process",
+    "objectID": "ar.html#ar1-process",
+    "href": "ar.html#ar1-process",
     "title": "AR models",
     "section": "",
     "text": "Note\n\n\n\nLet \\(\\boldsymbol{Y}\\) be a time series random variable observed at regular time periods \\(T = \\{1, 2, \\ldots, n\\}\\). Let \\(\\boldsymbol{\\omega}\\) be a white noise process observed at the same time periods. If,\n\\[Y_t = \\phi Y_{t-1} + \\omega_t\\]\nFor some \\(\\phi \\in \\mathbb{R}\\) and all \\(t \\in T\\), then we say that \\(\\boldsymbol{Y}\\) is an autoregressive process with order 1\n\n\n\n\n\n\nWhen \\(\\phi \\gt 1\\) or \\(\\phi \\lt -1\\), we say the process is explosive. After a short-to-moderate ‘fuse’, the innovations begin to cumulate exponentially, rapidly heading toward infinity.\nWhen \\(\\phi = 1\\), we say that the process is a random walk, since we now have the familiar model \\(Y_t = Y_{t-1} + \\omega_t\\). When \\(\\phi = -1\\) we have a variant on a random walk in which both the odd and even observations begin closely-related random walks headed in opposite directions.\nWhen \\(-1 \\lt \\phi \\lt 1\\) we observe a stationary process. This includes the case where \\(\\phi = 0\\) (pure white noise), but also other series with noticeable positive or negative autocorrelation. Despite the autocorrelation, the mean and variance of the unconditional variables \\(Y_t\\) (that is, without knowing the past values of \\(\\boldsymbol{Y}\\)) remain the same, and the autocorrelation of two values depends only on their lag distance, not their time index values.",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>7</span>  <span class='chapter-title'>AR models</span>"
     ]
   },
   {
-    "objectID": "armodels.html#generalizing-to-arp",
-    "href": "armodels.html#generalizing-to-arp",
+    "objectID": "ar.html#generalizing-to-arp",
+    "href": "ar.html#generalizing-to-arp",
     "title": "AR models",
     "section": "Generalizing to AR(p)",
     "text": "Generalizing to AR(p)\nNow we may complicate the scenario, by allowing the current value \\(Y_t\\) to have several, different relationships with arbitrary past lags of the series.\n\n\n\n\n\n\nNote\n\n\n\nLet \\(\\boldsymbol{Y}\\) be a time series random variable observed at regular time periods \\(T = \\{1, 2, \\ldots, n\\}\\). Let \\(\\boldsymbol{\\omega}\\) be a white noise process observed at the same time periods. If,\n\\[Y_t = \\phi_1 Y_{t-1} + \\phi_2 Y_{t-2} + \\ldots + \\phi_p Y_{t-p} + \\omega_t\\]\nFor some \\((\\phi_1, \\phi_2, \\ldots, \\phi_p) \\in \\mathbb{R}^p\\) and all \\(t \\in T\\), then we say that \\(\\boldsymbol{Y}\\) is an autoregressive model with order p.\n\n\nThese AR(p) processes can be difficult to visually distinguish because of the more complicated autocorrelation patterns.\n\n\nCode\npar(mfrow=c(3,3),mar=c(3.1,3.1,3.1,1.1))\nset.seed(0107)\nw &lt;- rnorm(100)\nphi1vec &lt;- c(0.5,0.7, 0.7,0.6,0,  -1.6,0.5,0.3,0)\nphi2vec &lt;- c(0.5,0.7,-0.7,0.2,0.5, 0.8,0.4,0.2,0)\nphi3vec &lt;- c(0,  0,   0,  0,  0,   0,  0.3,0.1,1)\nY &lt;- t(rep(w[1],9))\nY &lt;- rbind(Y, t(rep(w[2],9)+phi1vec*Y[1,]))\nY &lt;- rbind(Y, t(rep(w[3],9)+phi1vec*Y[2,]+phi2vec*Y[1,]))\nfor (i in 4:100){Y &lt;- rbind(Y,\n  t(rep(w[i],9)+phi1vec*Y[i-1,]+phi2vec*Y[i-2,]+phi3vec*Y[i-3,]))}\nfor (j in 1:9) plot(Y[,j],main=bquote(\n  bold(phi) == list(.(phi1vec[j]),.(phi2vec[j]),.(phi3vec[j]))),\n  type='l',xlab=NA,ylab=NA,sub=NA)\n\n\n\n\n\nNine AR(2) and AR(3) processes with the same innovations",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>7</span>  <span class='chapter-title'>AR models</span>"
     ]
   },
   {
-    "objectID": "armodels.html#recognizing-an-ar-process-from-its-acf-plot",
-    "href": "armodels.html#recognizing-an-ar-process-from-its-acf-plot",
+    "objectID": "ar.html#recognizing-an-ar-process-from-its-acf-plot",
+    "href": "ar.html#recognizing-an-ar-process-from-its-acf-plot",
     "title": "AR models",
     "section": "Recognizing an AR process from its ACF plot",
     "text": "Recognizing an AR process from its ACF plot\nAn autocorrelation function (ACF) plot will sometimes provide helpful summary or diagnostic information about an AR(p) model. In the simplest case of AR(1), the height of the ACF plot at the first lag will be equal to p, and the remaining lags will scale geometrically downward. For example, when \\(p=0.8\\), the second lag will have an autocorrelation of roughly 0.64, and the third lag will have autocorrelation of roughly 0.512\n\n\nCode\npar(mfrow=c(1,2),mar=c(3.1,3.1,3.1,1.1))\nset.seed(0108)\nar08 &lt;- arima.sim(list(ar=0.8),n=1000)\narneg05 &lt;- arima.sim(list(ar=-0.5),n=1000)\n\nacf(ar08,main=expression(paste('ACF when ',phi == 0.8)),lag.max=15)\nacf(arneg05,main=expression(paste('ACF when ',phi == -0.5)),lag.max=15)\n\n\n\n\n\nTwo AR(1) processes and their ACF plots, 1000 obs each\n\n\n\n\nMore complex AR models have correspondingly complex ACF plots, and you will not always be able to easily diagnose the order and coefficient sizes:\n\n\nCode\npar(mfrow=c(1,2),mar=c(3.1,3.1,3.1,1.1))\nset.seed(0109)\nar08neg05 &lt;- arima.sim(list(ar=c(0.8,-0.5)),n=1000)\narneg05neg04 &lt;- arima.sim(list(ar=c(-0.5,-0.4)),n=1000)\n\nacf(ar08neg05,main=expression(paste('ACF when ',phi == list(0.8,-0.5))),lag.max=15)\nacf(arneg05neg04,main=expression(paste('ACF when ',phi == list(-0.5,-0.4))),lag.max=15)\n\n\n\n\n\nTwo AR(2) processes and their ACF plots, 1000 obs each\n\n\n\n\nYou do not need to be able to spot a complex AR model from a brief inspection of its time series or its ACF plot. However, you should know that complex behavior can be very accurately fit by a relatively simple AR model.",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>7</span>  <span class='chapter-title'>AR models</span>"
     ]
   },
   {
-    "objectID": "armodels.html#which-ar-processes-are-stationary",
-    "href": "armodels.html#which-ar-processes-are-stationary",
+    "objectID": "ar.html#which-ar-processes-are-stationary",
+    "href": "ar.html#which-ar-processes-are-stationary",
     "title": "AR models",
     "section": "Which AR processes are stationary",
     "text": "Which AR processes are stationary\nWe will learn more about this elsewhere, when we discuss unit roots. For now, I will leave you with a simple set of guidelines:\n\nAR(1) processes are stationary when \\(|\\phi_1| \\lt 1\\)\nAR(2) processes are stationary when three conditions are met:\n\n\\[\\begin{aligned}(1) \\qquad & |\\phi_2| \\lt 1 \\\\ (2) \\qquad & \\phi_1 + \\phi_2 \\lt 1 \\\\ (3) \\qquad & \\phi_1 - \\phi_2 \\lt 1 \\end{aligned}\\]\nRepresenting the two parameters \\(phi_1\\) and \\(\\phi_2\\) on the coördinate plane, we would say any process with its parameters inside the shaded region is stationary:\n\n\nCode\nplot(c(-2.25,2.25),c(-1.25,1.25),type='n',main=NA,sub=NA,\n     ylab=expression(phi[2]),xlab=expression(phi[1]),asp=1)\npolygon(x=c(-2,0,2),y=c(-1,1,-1),lty=1,lwd=2,density=-1,col='#0000ff7f')\nabline(h=0,v=0,lty=2,col='#7f7f7f')\n\n\n\n\n\nStationary sets of AR(2) parameters\n\n\n\n\n\nFor AR(3) and higher processes, stationarity will depend upon the roots of the characteristic polynomial, which can be calculated with a unit root test.",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>7</span>  <span class='chapter-title'>AR models</span>"
     ]
   },
   {
-    "objectID": "armodels.html#ar-model-responses-to-system-shocks",
-    "href": "armodels.html#ar-model-responses-to-system-shocks",
+    "objectID": "ar.html#ar-model-responses-to-system-shocks",
+    "href": "ar.html#ar-model-responses-to-system-shocks",
     "title": "AR models",
     "section": "AR model responses to system shocks",
     "text": "AR model responses to system shocks\nAR models translate one-time system shocks into persistent, slowly-decaying signals. Consider a simple AR(1) model which processes a fairly quiet series of innovations, interrupted irregularly by a much larger signal:\n\n\nCode\nset.seed(0110)\nw &lt;- runif(100,-1,1)\nw[8] &lt;- 10; w[15] &lt;- 10; w[25] &lt;- -10; w[45] &lt;- -10;\nar &lt;- arima.sim(list(ar=0.9),n=100,innov=w)\nplot(15+ar,type='s',lwd=2,ylim=c(-10,27),ylab=NA)\nlines(w,type='h',col='#0000ff',lwd=2)\nabline(h=15,lty=2,col='#7f7f7f')\nlegend(x='topright',lwd=2,col=c('#000000','#0000ff'),bty='n',\n       legend=c(expression(paste('Time series ',Y[t])),\n                expression(paste('Innovations ',omega[t]))))\n\n\n\n\n\nPersistence and decay in an AR(1) model",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>7</span>  <span class='chapter-title'>AR models</span>"
     ]
   },
   {
-    "objectID": "mamodels.html",
-    "href": "mamodels.html",
+    "objectID": "ma.html",
+    "href": "ma.html",
     "title": "MA models",
     "section": "",
     "text": "MA(1) process\nA second building block of statistical time series analysis is the moving average (MA) model. Moving average models are not well-named: rather than predicting \\(Y_t\\) as a weighted average of its past values (which is what AR models can do), MA models predict \\(Y_t\\) using a weighted average of the unobserved innovations:\n\\[Y_t = \\beta_0 + \\beta_1 \\varepsilon_{t-1} + \\beta_2 \\varepsilon_{t-2} + \\ldots + \\varepsilon_t\\]\nOnce again I have sketched this idea using the terminology familiar to us from linear regression, but below I will redefine this idea using our new time series notation.\nLet’s take the simplest case, where each value of the series averages only the current and immediate previous innovation. We would name this an moving average model with order 1 or MA(1) model.\nIn theory, the exact properties of a MA(1) process depend on both the moving average parameter \\(\\theta\\) as well as the specific type of white noise process denoted by \\(\\boldsymbol{\\omega}\\). In practice, we often assume \\(\\boldsymbol{\\omega}\\) to be Gaussian white noise, leaving \\(\\theta\\) as the only input which needs estimation.\nCode\npar(mfrow=c(3,3),mar=c(3.1,3.1,3.1,1.1))\nset.seed(0106)\nw &lt;- rnorm(20)\nthetavec &lt;- c(-2,-1,-.6,-.3,0,.3,.6,1,2)\nY &lt;- t(rep(w[1],9))\nfor (i in 2:20){Y &lt;- rbind(Y, t(rep(w[i],9)+thetavec*w[i-1]))}\nfor (j in 1:9) {plot(Y[,j],main=bquote(theta==.(thetavec[j])),\n                     type='l',xlab=NA,ylab=NA,sub=NA)\n  lines(1:20,Y[,5],col='#0000ff',lty=2)}\n\n\n\n\n\nNine MA(1) processes with the same innovations\nIn the plots above, we see that MA processes are a little more subtle than AR processes:\nThe properties and utility of MA models are perhaps better described with higher-order processes.",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>8</span>  <span class='chapter-title'>MA models</span>"
     ]
   },
   {
-    "objectID": "mamodels.html#ma1-process",
-    "href": "mamodels.html#ma1-process",
+    "objectID": "ma.html#ma1-process",
+    "href": "ma.html#ma1-process",
     "title": "MA models",
     "section": "",
     "text": "Note\n\n\n\nLet \\(\\boldsymbol{Y}\\) be a time series random variable observed at regular time periods \\(T = \\{1, 2, \\ldots, n\\}\\). Let \\(\\boldsymbol{\\omega}\\) be a white noise process observed at the same time periods. If,\n\\[Y_t = \\omega_t + \\theta \\omega_{t-1}\\]\nFor some \\(\\theta \\in \\mathbb{R}\\) and all \\(t \\in T\\), then we say that \\(\\boldsymbol{Y}\\) is an moving average process with order 1\n\n\n\n\n\n\nMA(1) processes remain stationary for any finite value of \\(\\theta\\), even large positive or negative values. (The weighted sum of any two zero-mean random variables still has a mean of zero.)\nPositive and negative values of \\(\\theta\\) produce similar patterns, with no parameter choice creating the alternating series seen in the AR(1) models.",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>8</span>  <span class='chapter-title'>MA models</span>"
     ]
   },
   {
-    "objectID": "mamodels.html#generalizing-to-maq",
-    "href": "mamodels.html#generalizing-to-maq",
+    "objectID": "ma.html#generalizing-to-maq",
+    "href": "ma.html#generalizing-to-maq",
     "title": "MA models",
     "section": "Generalizing to MA(q)",
     "text": "Generalizing to MA(q)\nNow we may complicate the scenario, by allowing the current value \\(Y_t\\) to average several, different past innovations of the series.\n\n\n\n\n\n\nNote\n\n\n\nLet \\(\\boldsymbol{Y}\\) be a time series random variable observed at regular time periods \\(T = \\{1, 2, \\ldots, n\\}\\). Let \\(\\boldsymbol{\\omega}\\) be a white noise process observed at the same time periods. If,\n\\[Y_t = \\omega_t + \\theta_1 \\omega_{t-1} + \\theta_2 \\omega_{t-2} + \\ldots + \\theta_q \\omega_{t-q}\\]\nFor some \\((\\theta_1, \\theta_2, \\ldots, \\theta_q) \\in \\mathbb{R}^q\\) and all \\(t \\in T\\), then we say that \\(\\boldsymbol{Y}\\) is an moving average model with order q.\n\n\nMA(q) effects tend to become more pronounced at higher orders. For many combinations of parameters \\(\\theta_1, \\ldots, \\theta_q\\), the general effect is a smoothing filter which highlights consecutive large innovations but minimizes single innovations, and preserves no memory of the past beyond its averaging:\n\n\nCode\npar(mfrow=c(3,3),mar=c(3.1,3.1,3.1,1.1))\nset.seed(0107)\nw &lt;- rnorm(50)\ntheta &lt;- list(c(1,1),c(1,1,1,1),c(1,1,1,1,1,1),\n              c(0.8,0.6,0.4,0.2),c(0.4,0.3,0.2,0.1),c(0,0,0,1),\n              c(2,4,2,1),c(0,-1),c(-1,-1,-1,-1))\nY &lt;- matrix(nrow=50,ncol=9)\nfor (i in 1:9) Y[,i] &lt;- arima.sim(list(ma=theta[[i]]),n=50,innov=w)\nfor (j in 1:9) plot(Y[,j],main=bquote(theta==.(paste(theta[[j]],collapse=','))),\n  type='l',xlab=NA,ylab=NA,sub=NA)\n\n\n\n\n\nNine MA processes with the same innovations",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>8</span>  <span class='chapter-title'>MA models</span>"
     ]
   },
   {
-    "objectID": "mamodels.html#recognizing-a-ma-process-from-its-acf-plot",
-    "href": "mamodels.html#recognizing-a-ma-process-from-its-acf-plot",
+    "objectID": "ma.html#recognizing-a-ma-process-from-its-acf-plot",
+    "href": "ma.html#recognizing-a-ma-process-from-its-acf-plot",
     "title": "MA models",
     "section": "Recognizing a MA process from its ACF plot",
     "text": "Recognizing a MA process from its ACF plot\nAn autocorrelation function (ACF) plot will always provide helpful summary or diagnostic information about a MA(q) model. In the simplest case of MA(1), the height of the ACF plot at the first lag will be equal to \\(q/(1+q^2)\\), and the remaining lags will show little or no autocorrelation at all. For example, when \\(p=0.8\\), the first lag will have an autocorrelation of roughly \\(0.8/(1+0.64) \\approx 0.49\\), and all other lags will show only minimal autocorrelation:\n\n\nCode\npar(mfrow=c(1,2),mar=c(3.1,3.1,3.1,1.1))\nset.seed(0108)\nma08 &lt;- arima.sim(list(ma=0.8),n=1000)\nma080706 &lt;- arima.sim(list(ma=c(0.8,0.7,0.6)),n=1000)\n\nacf(ma08,main=expression(paste('ACF when ',theta == 0.8)),lag.max=15)\nacf(ma080706,main=expression(paste('ACF when ',theta == list(0.8,0.7,0.6))),lag.max=15)\n\n\n\n\n\nTwo MA processes and their ACF plots, 1000 obs each\n\n\n\n\nThe key feature here is that for values \\(s \\lt (t - q)\\), \\(Y_t\\) and \\(Y_s\\) have no elements in common and are completely independent. Any small sample autocorrelation is purely spurious.",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>8</span>  <span class='chapter-title'>MA models</span>"
     ]
   },
   {
-    "objectID": "mamodels.html#all-ma-processes-are-stationary",
-    "href": "mamodels.html#all-ma-processes-are-stationary",
+    "objectID": "ma.html#all-ma-processes-are-stationary",
+    "href": "ma.html#all-ma-processes-are-stationary",
     "title": "MA models",
     "section": "All MA processes are stationary",
     "text": "All MA processes are stationary\nSince MA processes are simply weighted sums of zero-mean white noise, they themselves are zero-mean and meet all the requirements for weak stationarity, no matter the choice(s) of \\(\\boldsymbol{\\theta}\\). In the equations which follow, assume that \\(\\mathbb{E}[\\omega_t] = 0\\) and \\(\\mathbb{V}[\\omega_t] = \\sigma^2\\):\n\\[\\begin{aligned} (1) \\qquad \\mathbb{E}[Y_t] &= \\mathbb{E}[\\omega_t + \\sum_{i=1}^q \\theta_i \\omega_{t-i}] = 0 + \\sum_{i=1}^q \\theta_i \\mathbb{E}[\\omega_{t-i}] = 0 + \\sum_{i=1}^q 0 = 0 \\\\  \\\\ (2) \\qquad \\mathbb{V}[Y_t] &= \\mathbb{V}[\\omega_t + \\sum_{i=1}^q \\theta_i \\omega_{t-i}] = \\sigma^2 + \\sum_{i=1}^q \\theta^2_i \\mathbb{V}[\\omega_{t-i}] = \\left(1 + \\sum_i \\theta_i^2 \\right) \\sigma^2 \\\\ \\\\ (3) \\qquad \\gamma_{st} &= \\textrm{Cov}\\left(\\omega_s + \\sum_{i=1}^q \\theta_i \\omega_{s-i},\\, \\omega_t + \\sum_{i=1}^q \\theta_i \\omega_{t-i} \\right) \\\\ &= \\left\\{ \\begin{array}{ll} 0 & \\textrm{if} \\; |s - t| \\gt q \\\\ \\theta_q \\sigma^2 & \\textrm{if} \\; |s - t| = q \\\\ (\\theta_{q-1} + \\theta_2 \\theta_q) \\sigma^2 & \\textrm{if} \\; |s - t| = q - 1 \\\\ \\cdots & \\cdots \\end{array} \\right\\}\\end{aligned}\\]\nWe can see from the above that the mean and variance are constant and that the autocovariance of two entries depends only on the lag between them, which are the requirements of weak stationarity.",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>8</span>  <span class='chapter-title'>MA models</span>"
     ]
   },
   {
-    "objectID": "mamodels.html#ma-model-responses-to-system-shocks",
-    "href": "mamodels.html#ma-model-responses-to-system-shocks",
+    "objectID": "ma.html#ma-model-responses-to-system-shocks",
+    "href": "ma.html#ma-model-responses-to-system-shocks",
     "title": "MA models",
     "section": "MA model responses to system shocks",
     "text": "MA model responses to system shocks\nMA models dampen one-time system shocks by averaging them among the other innovations, and after the moving average window has passed, the system shock disappears entirely from the series. Consider a MA(3) model which processes a fairly quiet series of innovations, interrupted irregularly by a much larger signal:\n\n\nCode\nset.seed(0110)\nw &lt;- runif(100,-1,1)\nw[8] &lt;- 10; w[15] &lt;- 10; w[25] &lt;- -10; w[45] &lt;- -10;\nma &lt;- arima.sim(list(ma=c(0.9,0.6,0.3)),n=100,innov=w)\nplot(15+ma,type='s',lwd=2,ylim=c(-10,27),ylab=NA)\nlines(w,type='h',col='#0000ff',lwd=2)\nabline(h=15,lty=2,col='#7f7f7f')\nlegend(x='topright',lwd=2,col=c('#000000','#0000ff'),bty='n',\n       legend=c(expression(paste('Time series ',Y[t])),\n                expression(paste('Innovations ',omega[t]))))\n\n\n\n\n\nPersistence and decay in an MA(0.9,0.6,0.3) model",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>8</span>  <span class='chapter-title'>MA models</span>"
     ]
   },
@@ -486,7 +486,7 @@
     "section": "",
     "text": "The backshift operator\nWhen we learned linear regression techniques, it was convenient to move away from an arithmetic expansion such as:\n\\[y_i = \\beta_0 + \\beta_1 x_{1,i} + \\beta_2 x_{2,i} + \\beta_k x_{k,i} + \\varepsilon_i\\]\nAnd instead move toward a matrix representation, such as:\n\\[\\boldsymbol{y} = \\mathbf{X}\\boldsymbol{\\beta} + \\boldsymbol{\\varepsilon}\\]\nWe will now learn a similar technique for time series analysis, which collapses all lags and their coefficients using the backshift operator.\nWritten thus, we can treat \\(B\\) almost as a separate variable,1 and use it to remove lagged terms from our equations:\n\\[\\begin{aligned} & \\, Y_t = 1.3\\,Y_{t-1} - 0.36\\,Y_{t-2} + \\omega_t \\\\ \\\\ \\Longrightarrow & \\,Y_t = 1.3\\,B\\,Y_t - 0.36\\,B^2\\,Y_t + \\omega_t \\\\ \\\\ \\Longrightarrow & \\, Y_t = Y_t(0.5B - 0.36B^2) + \\omega_t \\\\ \\\\ \\Longrightarrow & \\,\\omega_t = Y_t(1 - 1.3B + 0.36B^2)  \\end{aligned}\\]\nThe model above was an AR(2) process, but we can equally use this notation with MA models:\n\\[\\begin{aligned} & \\, Y_t = \\omega_t + 0.8\\,\\omega_{t-1} + 0.16\\,\\omega_{t-2} \\\\ \\\\ \\Longrightarrow & \\,Y_t = \\omega_t + 0.8\\,B\\,\\omega_t + 0.16\\,B^2\\,\\omega_t \\\\ \\\\ \\Longrightarrow & \\, Y_t = \\omega_t(1 + 0.8B + 0.16B^2) \\end{aligned}\\]",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>9</span>  <span class='chapter-title'>Backshift notation</span>"
     ]
   },
@@ -497,7 +497,7 @@
     "section": "",
     "text": "Note\n\n\n\nLet \\(\\boldsymbol{Y}\\) be a time series random variable observed at regular time periods \\(T = \\{1, 2, \\ldots, n\\}\\). Then the unary operator \\(B\\) (backshift) is defined as follows:\n\\[B \\, Y_t = Y_{t-1}\\]\n\\[B^k \\, Y_t = Y_{t-k}\\]",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>9</span>  <span class='chapter-title'>Backshift notation</span>"
     ]
   },
@@ -508,7 +508,7 @@
     "section": "The AR and MA characteristic polynomials",
     "text": "The AR and MA characteristic polynomials\nSo far, this hasn’t seemed to save much space or offer us any new possibilities. We can bring it altogether by introducing two characteristic polynomials. These equations aren’t any sort of theorem or result, just a definition:\n\n\n\n\n\n\nNote\n\n\n\nThe characteristic polynomial of an AR process of order p is defined as follows:\n\\[\\Phi(B) = 1 - \\phi_1 B - \\phi_2 B^2 - ... - \\phi_p B^p\\]\nThe characteristic polynomial of an MA process of order q is defined as follows:\n\\[\\Theta(B) = 1 + \\theta_1 B + \\theta_2 B^2 + ... + \\theta_q B^q\\]\n\n\nWith these two “shortcuts” we can represent every AR process as follows:\n\\[\\omega_t = \\Phi(B) \\cdot Y_t\\]\nAnd we can represent every MA process as follows:\n\\[Y_t = \\Theta(B) \\cdot \\omega_t\\]",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>9</span>  <span class='chapter-title'>Backshift notation</span>"
     ]
   },
@@ -519,7 +519,7 @@
     "section": "Roots of the characteristic polynomials",
     "text": "Roots of the characteristic polynomials\nIn the examples I gave above, we could say that for the AR(2) process,\n\\[\\Phi(B) = 1 - 1.3B + 0.36B^2\\]\nKeen-eyed mathemagicians might have already noticed that we can factor and solve for the roots of this equation:\n\\[\\Phi(B) = (1 - 0.4B)(1 - 0.9B)\\]\n\\[\\Phi(B) = 0 \\iff B \\in \\{2.5, 1.111\\ldots\\}\\]\nLikewise, we could solve for the roots of the MA(2) characteristic polynomial\n\\[\\Theta(B) = 1 + 0.8B + 0.16B^2\\]\n\\[\\Theta(B) = (1 + 0.4B)^2\\]\n\\[\\Theta(B) = 0 \\iff B = -2.5\\]\nThe dramatic reveal of why we would want to solve the roots of these polynomials must wait for the next page.",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>9</span>  <span class='chapter-title'>Backshift notation</span>"
     ]
   },
@@ -530,73 +530,73 @@
     "section": "",
     "text": "Not a random variable, but a variable we could solve for, such as \\(x\\) in the equation \\(x^2 - 4x = -3\\)↩︎",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>9</span>  <span class='chapter-title'>Backshift notation</span>"
     ]
   },
   {
-    "objectID": "arimamodels.html",
-    "href": "arimamodels.html",
+    "objectID": "arima.html",
+    "href": "arima.html",
     "title": "ARIMA models",
     "section": "",
     "text": "ARMA models\nHaving learned about AR models and MA models and difference-stationarity we are now ready to bring these pieces together into the first major modeling and forecasting technique: ARIMA models.\nARIMA is in fact an extension of a slightly simpler model called ARMA, which contains both AR and MA components. We will learn about ARMA models first before extending to the full ARIMA model.\nARMA models quite simply combine AR and MA models in one. They allow the current value of the time series (\\(Y_t\\)) to depend both on past values as well as past shocks. Like other time series we have seen, ARMA models are sometimes written as though they are zero-mean, but can also be expressed with a level or a deterministic trend:\n\\[Y_t = c + \\omega_t + \\sum_{i=1}^{p}\\phi_i Y_{t-i} + \\sum_{j=1}^q \\theta_j \\omega_{t-j}\\]\n\\[Y_t = c + \\delta t + \\omega_t + \\sum_{i=1}^{p}\\phi_i Y_{t-i} + \\sum_{j=1}^q \\theta_j \\omega_{t-j}\\]",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>10</span>  <span class='chapter-title'>ARIMA models</span>"
     ]
   },
   {
-    "objectID": "arimamodels.html#arma-models",
-    "href": "arimamodels.html#arma-models",
+    "objectID": "arima.html#arma-models",
+    "href": "arima.html#arma-models",
     "title": "ARIMA models",
     "section": "",
     "text": "Note\n\n\n\nLet \\(\\boldsymbol{Y}\\) be a time series random variable observed at regular time periods \\(T = \\{1, 2, \\ldots, n\\}\\). Let \\(\\boldsymbol{\\omega}\\) be a white noise process observed at the same time periods. If,\n\\[Y_t = \\omega_t + \\sum_{i=1}^{p}\\phi_i Y_{t-i} + \\sum_{j=1}^q \\theta_j \\omega_{t-j}\\]\nFor some \\(\\Phi = (\\phi_1, \\ldots, \\phi_p) \\in \\mathbb{R}^p\\) and some \\(\\Theta = (\\theta_1, \\ldots, \\theta_q) \\in \\mathbb{R}^q\\) and all \\(t \\in T\\), then we say that \\(\\boldsymbol{Y}\\) is an autoregressive and moving average (ARMA) model written ARMA(p,q).",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>10</span>  <span class='chapter-title'>ARIMA models</span>"
     ]
   },
   {
-    "objectID": "arimamodels.html#characteristic-polynomials-their-roots-and-reciprocals",
-    "href": "arimamodels.html#characteristic-polynomials-their-roots-and-reciprocals",
+    "objectID": "arima.html#characteristic-polynomials-their-roots-and-reciprocals",
+    "href": "arima.html#characteristic-polynomials-their-roots-and-reciprocals",
     "title": "ARIMA models",
     "section": "Characteristic polynomials, their roots and reciprocals",
     "text": "Characteristic polynomials, their roots and reciprocals\nUsing the notation developed earlier, we can represent this ARMA model using the characteristic polynomials for the AR and MA components:\n\\[\\begin{aligned} Y_t &= \\omega_t + \\sum_{i=1}^{p}\\phi_{t-i} Y_i + \\sum_{j=1}^q \\theta_j \\omega_{t-j} \\Longrightarrow \\\\ \\\\ Y_t - \\sum_{i=1}^{p}\\phi_i Y_{t-i} &= \\omega_t + \\sum_{j=1}^q \\theta_j \\omega_{t-j} \\Longrightarrow \\\\ \\\\ Y_t \\left(1 - \\sum_{i=1}^{p}\\phi_i B^i \\right) &= \\omega_t \\left(1 + \\sum_{j=1}^{q}\\theta_j B^j \\right) \\Longrightarrow \\\\ \\\\ Y_t \\Phi(B) &= \\omega_t \\Theta(B) \\end{aligned}\\] Each of these two polynomials, \\(\\Phi(B)\\) and \\(\\Theta(B)\\), have real, imaginary, or complex roots. The location of these roots determines the properties of the ARMA series.\nSometimes, we find it mathematically convenient to work with the characteristic polynomials, and other times we find it useful to factor them in a specific way. Consider the AR equation:\n\\[Y_t (1 - \\phi_1 B - \\phi_2 B^2 - \\ldots \\phi_p B^p) = \\omega_t\\]\nWe can solve directly for the real or complex roots \\(B^0_1, \\ldots, B^0_p\\), or we could factor the equation like so:\n\\[Y_t (1 - \\lambda_1B) \\cdot (1 - \\lambda_2B) \\cdot \\ldots \\cdot (1 - \\lambda_pB)\\]\nWhy would we do that? Because of a convenient formula for the sum of an infinite geometric series: For any real or imaginary constant \\(r: |r| \\lt 1\\), we have:\n\\[\\frac{1}{1-r} = 1 + r + r^2 + \\ldots\\] Which means we can write,\n\\[\\begin{aligned} Y_t &= \\omega_t \\frac{1}{(1 - \\lambda_1B) \\cdot (1 - \\lambda_2B) \\cdot \\ldots \\cdot (1 - \\lambda_pB)} \\Longrightarrow \\\\ \\\\ &= \\omega_t \\frac{1}{\\prod_{i=1}^p (1 - \\lambda_i B)} = \\omega_t \\sum_{i=1}^p \\frac{c_i}{1 - \\lambda_i B} = \\omega_t \\sum_{i=1}^p \\sum_{j=1}^\\infty \\lambda_i^j B^j \\end{aligned}\\]\nTherefore, every AR process can be represented by the sum of several infinite series of geometrically dampened shocks from the past innovations. This AR process will have constant variance only if the sum of every geometric series is finite, which means that \\(|\\lambda_i| \\lt 1\\) for each and every \\(\\lambda_i\\).1 Because each \\(\\lambda_i\\) is a reciprocal of the roots of the characteristic polynomial,2, this is equivalent to the condition that each and every root of the characteristic polynomial must lie outside the unit circle.\nA very similar line of reasoning holds with the characteristic polynomial of the MA component, \\(\\Theta(B)\\), and its roots.",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>10</span>  <span class='chapter-title'>ARIMA models</span>"
     ]
   },
   {
-    "objectID": "arimamodels.html#properties-of-an-arma-process",
-    "href": "arimamodels.html#properties-of-an-arma-process",
+    "objectID": "arima.html#properties-of-an-arma-process",
+    "href": "arima.html#properties-of-an-arma-process",
     "title": "ARIMA models",
     "section": "Properties of an ARMA process",
     "text": "Properties of an ARMA process\nThe characteristic polynomials and their roots help us to describe some ARMA processes as having one or more of the following properties.\n\nStationarity (AR)\nAs mentioned above, the roots of the AR characteristic polynomial determine whether the process is stationary or not. Specifically,\n\n\n\n\n\n\nNote\n\n\n\nLet \\(\\boldsymbol{Y}\\) be a time series random variable observed at regular time periods \\(T = \\{1, 2, \\ldots, n\\}\\), and let the generating process for \\(\\boldsymbol{Y}\\) follow an ARMA(p,q) process (where either p or q can be 0).\nLet \\(z_1, z_2, \\ldots, z_p\\) be the (possibly non-unique) real or complex roots of the AR characteristic polynomial:\n\\[\\Phi(z) = 1 - \\phi_1 z - \\ldots - \\phi_p z^p\\]\n\nThe ARMA process \\(\\boldsymbol{Y}\\) is stationary if and only if all AR roots lie outside the unit circle: \\(|z_i| \\gt 1 \\quad \\forall i \\in {1,\\ldots,p}\\)\nThe ARMA process \\(\\boldsymbol{Y}\\) is a random walk if and only if exactly one AR root lies on the unit circle and all others lie outside the unit circle: \\(\\exists \\, i \\in {1,\\ldots,p}: |z_i| = 1\\) and \\(|z_j| \\gt 1 \\quad \\forall j \\in {1,\\ldots,p}: j \\ne i\\)\nThe ARMA process \\(\\boldsymbol{Y}\\) is explosive if any AR roots lie within the unit circle: \\(\\exists \\, i \\in {1,\\ldots,p}: |z_i| \\lt 1\\)\n\n\n\n\n\nInvertibility (MA)\nWe observe the past values \\(Y_1, \\ldots, Y_t\\) — these concrete observations help us to identify and estimate an AR process. However, we do not directly observe the innovations \\(\\omega_1, \\ldots, \\omega_t\\), and have to estimate them from our own (estimated) parameters \\(\\boldsymbol{\\phi} = (\\phi_1, \\ldots, \\phi_p)\\) and \\(\\boldsymbol{\\theta} = (\\theta_1, \\ldots, \\theta_q)\\). The cyclical nature of these estimates often allow multiple MA processes to fit the data equally well.\nFor example, consider the MA(1) series:\n\\[Y_t = \\omega_t + 2 \\omega_{t-1}, \\qquad \\omega_i \\stackrel{iid}{\\sim} \\textrm{Normal}(0,1^2)\\]\nFrom this definition we could calculate the following (stationary) moments:\n\\[\\begin{aligned} \\mathbb{E}[Y_t] &= \\mathbb{E}[\\omega_t] + 2\\mathbb{E}[\\omega_{t-1}] = 0 + 2(0) = 0 \\\\ \\\\ \\mathbb{V}[Y_t] &= \\mathbb{V}[\\omega_t] + 2^2\\mathbb{V}[\\omega_{t-1}] = 1 + 4(1) = 5 \\\\ \\\\ \\gamma_{st} &= \\left\\{\\begin{array}{ll} \\textrm{Cov}(\\omega_t,\\omega_t) + \\textrm{Cov}(2\\omega_{t-1},2\\omega_{t-1}) = 5 & \\textrm{if}\\; s=t \\\\ \\textrm{Cov}(2\\omega_{t-1},\\omega_{t-1}) = 2 & \\textrm{if}\\; |s - t| = 1 \\\\ 0 & \\textrm{else} \\end{array} \\right\\} \\end{aligned}\\]\nHowever, other MA processes would match these same moments, for example:\n\\[Y_t = \\omega_t + 0.5 \\omega_{t-1}, \\qquad \\omega_i \\stackrel{iid}{\\sim} \\textrm{Normal}(0,2^2)\\]\nRecalculating the moments, we would see that:\n\\[\\begin{aligned} \\mathbb{E}[Y_t] &= \\mathbb{E}[\\omega_t] + 0.5\\mathbb{E}[\\omega_{t-1}] = 0 + 0.5(0) = 0 \\\\ \\\\ \\mathbb{V}[Y_t] &= \\mathbb{V}[\\omega_t] + 0.5^2\\mathbb{V}[\\omega_{t-1}] = 4 + 0.25(4) = 5 \\\\ \\\\ \\gamma_{st} &= \\left\\{\\begin{array}{ll} \\textrm{Cov}(\\omega_t,\\omega_t) + \\textrm{Cov}(0.5\\omega_{t-1},0.5\\omega_{t-1}) = 5 & \\textrm{if}\\; s=t \\\\ \\textrm{Cov}(0.5\\omega_{t-1},\\omega_{t-1}) = 2 & \\textrm{if}\\; |s - t| = 1 \\\\ 0 & \\textrm{else} \\end{array} \\right\\} \\end{aligned}\\]\nBecause the first and second moments are the same, any sample of data will support either model equally well.3 So, do we have any reason to prefer one over the other?\nNot to hold you in suspense: yes. We do prefer one over the other. If we adopt the first model, we would write:\n\\[\\begin{aligned} Y_t &= \\omega_t + 2\\omega_{t-1} \\Longrightarrow \\\\ \\omega_t &= Y_t - 2\\omega_{t-1} \\\\ &= Y_t - 2(Y_{t-1} - 2\\omega_{t-2}) \\\\ &= Y_t - 2(Y_{t-1} - 2(Y_{t-1} - 2\\omega_{t-3})) \\\\ & = Y_t - 2Y_{t-1} + 4Y_{t-2} - 8Y_{t-2} + 16Y_{t-4} - \\ldots \\end{aligned}\\]\nIn other words, each current innovation would be dependent upon an explosive series of the past observations of \\(\\boldsymbol{Y}\\). Any small amount of past error (measurement error, misspecification, etc.) would compound to the point where the current values of the series would be effectively arbitrary.\nHowever, if we use the second model — which fits the data equally well — we see that:\n\\[\\begin{aligned} Y_t &= \\omega_t + 0.5\\omega_{t-1} \\Longrightarrow \\\\ \\omega_t &= Y_t - 0.5\\omega_{t-1} \\\\ &= Y_t - 0.5(Y_{t-1} - 0.5\\omega_{t-2}) \\\\ &= Y_t - 0.5(Y_{t-1} - 0.5(Y_{t-1} - 0.5\\omega_{t-3})) \\\\ & = Y_t - 0.5Y_{t-1} + 0.25Y_{t-2} - 0.125Y_{t-2} + 0.0625Y_{t-4} - \\ldots \\end{aligned}\\]\nNow we see that the current innovation can be estimated as a finite, converging sum of all the past values of the series, which soon have vanishingly small effects on the present. Our ability to recover this dampened trend relies upon the roots of the MA characteristic polynomial:\n\n\n\n\n\n\nNote\n\n\n\nLet \\(\\boldsymbol{Y}\\) be a time series random variable observed at regular time periods \\(T = \\{1, 2, \\ldots, n\\}\\), and let the generating process for \\(\\boldsymbol{Y}\\) follow an ARMA(p,q) process (where either p or q can be 0).\nLet \\(z_1, z_2, \\ldots, z_p\\) be the (possibly non-unique) real or complex roots of the MA characteristic polynomial:\n\\[\\Theta(z) = 1 + \\theta_1 z + \\ldots + \\theta_p z^p\\]\n\nThe ARMA process \\(\\boldsymbol{Y}\\) is invertible if and only if all MA roots lie outside the unit circle: \\(|z_i| \\gt 1 \\quad \\forall i \\in {1,\\ldots,q}\\)\nThe ARMA process \\(\\boldsymbol{Y}\\) is non-invertible otherwise.\n\nIf any of the MA roots lie exactly on the unit circle, there exists no alternative invertible representation of \\(\\boldsymbol{Y}\\) with the same first- and second- degree moments.\nIf none of the MA roots lie exactly on the unit circle, an alternative invertible representation of \\(\\boldsymbol{Y}\\) with the same first- and second- degree moments can be found by reciprocating each root within the unit circle: \\(z'_i = \\frac{1}{z_i} \\;\\forall \\; z_i: |z_i| \\lt 1\\)\n\n\n\n\n\n\nReducibility (both)\nThe existence of duplicate AR or MA roots is not generally a problem. For example, consider the AR model:\n\\[Y_t = Y_{t-1} - 0.25Y_{t-2} + \\omega_t\\]\nWhich can be factored as \\(\\omega_t = Y_t(1 - B + 0.25B^2) = Y_t(1 - 0.5B)(1 - 0.5B)\\) meaning that it has a double root at \\(z = 2\\). These roots lie outside the unit circle, the process is stationary, and \\(\\boldsymbol{Y}\\) would be a fine target for further analysis.\nHowever, some ARMA representations reveal one or more identical roots on both the AR and MA sides at once. This situation unnecessarily complicates the model and can mislead the analyst on matters of stationarity, invertibility, or the need for differencing.\nAs an example, consider an ARMA(2,1) model,\n\\[Y_t = 3.5Y_{t-1} - 1.5Y_{t-2} + \\omega_t - 3\\omega_{t-1}\\]\nThis model looks gnarly, with large autoregressive coefficients we would normally associate with explosive behavior. However, note that we can refactor \\(\\boldsymbol{Y}\\) as:\n\\[Y_t(1 - 0.5B)(1 - 3B) = \\omega_t(1 - 3B)\\]\nAnd, canceling out the common terms, arrive at:\n\\[Y_t(1 - 0.5B) = \\omega_t\\]\nWhich expands to \\(Y_t = 0.5Y_{t-1} + \\omega_t\\), a perfectly well-behaved stationary AR(1) model.",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>10</span>  <span class='chapter-title'>ARIMA models</span>"
     ]
   },
   {
-    "objectID": "arimamodels.html#arima-models-and-integration",
-    "href": "arimamodels.html#arima-models-and-integration",
+    "objectID": "arima.html#arima-models-and-integration",
+    "href": "arima.html#arima-models-and-integration",
     "title": "ARIMA models",
     "section": "ARIMA models and integration",
     "text": "ARIMA models and integration\nWhen discussing stationarity and the roots of the AR characteristic polynomial, I left out one possible condition: if the presence of a single root on the unit circle implies a random walk, what happens if multiple roots can be found on the unit circle?\nIf we do observe a random walk, such as the ARMA(1,1) process \\(Y_t = Y_{t-1} + \\omega_t + 0.75\\omega_{t-1}\\), we can always difference to find a stationary model, as described elsewhere:\n\\[\\nabla Y_t = Y_t - Y_{t-1} = \\omega_t + 0.75 \\omega_{t-1}\\]\nSometimes we do see multiple roots on the unit circle, in which case we need to difference multiple times, one for each root, to retrieve a stationary series. Consider the clearly nonstationary AR(3) process \\(Y_t = 2.5Y_{t-1} - 2Y_{t-2} + 0.5Y_{t-3} + \\omega_t\\):\n\n\nCode\nset.seed(0112)\nw &lt;- rnorm(103)\nY &lt;- vector(); Y[1:3] &lt;- w[1:3]\nfor (i in 4:103) Y[i] &lt;- 2.5*Y[i-1] - 2*Y[i-2] + 0.5*Y[i-3] + w[i]\nplot(Y[4:103],type='l',ylab=expression(Y[t]),xlab='Time index t')\n\n\n\n\n\nExplosive AR(3) process before differencing\n\n\n\n\nThis AR model’s characteristic polynomial factors to \\(Y_t(1 - B)(1 - B)(1 - 0.5B) = \\omega_t\\). The difference operator itself can be defined as \\(\\nabla Y_t = Y_t - Y_{t-1} = Y_t(1 - B)\\), and from this we see that the first difference of our AR(3) model would have the factored representation \\(\\nabla Y_t(1 - B)(1 - 0.5B) = \\omega_t\\), or when expanded, \\(\\nabla Y_t = 1.5 \\nabla Y_{t-1} - 0.5 \\nabla Y_{t-2}\\). This AR(2) series is still non-stationary, but no longer explosive!\n\n\nCode\nplot(diff(Y[4:103]),type='l',ylab=expression(nabla*y[t]),xlab='Time index t')\n\n\n\n\n\nExplosive AR(3) process after first differencing\n\n\n\n\nWe can now apply a second round of differencing: \\(\\nabla^2 Y_t = Y_t(1 - B)^2\\), leading to the factored representation \\(\\nabla^2 Y_t (1 - 0.5B) = \\omega_t\\) and the expanded form \\(\\nabla^2 Y_t = 0.5 \\nabla^2 Y_{t-1} + \\omega_t\\), which is a stationary AR(1) series:\n\n\nCode\nplot(diff(Y[4:103],differences=2),type='l',ylab=expression(nabla^2*y[t]),xlab='Time index t')\n\n\n\n\n\nExplosive AR(3) process after twice differencing\n\n\n\n\nWhen one or more exact unit roots create random walk or explosive behavior, we can remove this nonstationary behavior by differencing. We call the amount of differencing the order of integration:\n\n\n\n\n\n\nNote\n\n\n\nLet \\(\\boldsymbol{Y}\\) be a time series random variable observed at regular time periods \\(T = \\{1, 2, \\ldots, n\\}\\), and let the generating process for \\(\\boldsymbol{Y}\\) follow an ARMA(\\(p'\\),\\(q'\\)) process (where either \\(p'\\) or \\(q'\\) can be 0).\n\nIf \\(Y_t\\) is not stationary, but \\(\\nabla^d Y_t\\) is weakly stationary, then we say that \\(\\boldsymbol{Y}\\) is integrated with order d.\nIn which case, if the stationary series \\(\\nabla^d Y_t\\) can be written as an ARMA(p,q) process, we say that \\(\\boldsymbol{Y}\\) follows an autoregressive integrated moving average (ARIMA) model written ARIMA(p,d,q).",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>10</span>  <span class='chapter-title'>ARIMA models</span>"
     ]
   },
   {
-    "objectID": "arimamodels.html#footnotes",
-    "href": "arimamodels.html#footnotes",
+    "objectID": "arima.html#footnotes",
+    "href": "arima.html#footnotes",
     "title": "ARIMA models",
     "section": "",
     "text": "We do know that the AR process is mean-zero since we have now expressed it as a weighted sum of mean-zero innovations.↩︎\nRemember, the characteristic polynomial can be factored into \\(\\Phi(B) = \\prod_i (1 - \\lambda_i B)\\)↩︎\nSo long as we use techniques like Method of Moments, Least Squares, or Maximum Likelihood which rely on first- and second-moment-based estimators.↩︎",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>10</span>  <span class='chapter-title'>ARIMA models</span>"
     ]
   },
@@ -607,7 +607,7 @@
     "section": "",
     "text": "Time series functions used in this document\nIn the table below, packages with italicized names will need to be installed, while the package names in a standard font face can be found in most base R distributions (though they may need to be loaded into your workspace).",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>11</span>  <span class='chapter-title'>ARIMA identification in R</span>"
     ]
   },
@@ -618,7 +618,7 @@
     "section": "",
     "text": "Time series functions used in the code below\n\n\nPackage\nFunction name\nPurpose\n\n\n\n\nzoo\nna.locf\nFill NAs from surrounding values\n\n\nMASS\nboxcox\nSuggest Box-Cox parameter lambda\n\n\ntseries\nadf.test\nADF stationarity test\n\n\ntseries\nkpss.test\nKPSS stationarity test\n\n\nstats\nacf\nCompute and plot autocorrelation\n\n\nstats\npacf\nCompute and plot partial autocor\n\n\nforecast\nauto.arima\nIdentify ARIMA order and coefs\n\n\nstats\narima\nFit a specific ARIMA model\n\n\nforecast\nforecast\nLook-ahead prediction of a ts model\n\n\nstats\nshapiro.test\nTest if data could be normal\n\n\nstats\nks.test\nTest data against a distribution\n\n\nlmtest\ndwtest\nDurbin-Watson test for lag 1 autocor\n\n\nstats\nBox.test\nLjung-Box test for multilag autocor",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>11</span>  <span class='chapter-title'>ARIMA identification in R</span>"
     ]
   },
@@ -629,7 +629,7 @@
     "section": "The Box-Jenkins approach to ARIMA identification",
     "text": "The Box-Jenkins approach to ARIMA identification\nThere are two parts to learning ARIMA identification and estimation: conceptually, you should understand the flowchart of what steps to take at what time, and practically, you should know which commands to run in R and how to use them.\nFor the conceptual part, we will adopt the classic “Box-Jenkins” approach:\n\nRecover a stationary series through reversible transformations\n\nBox-Cox transformations to stabilize the variance and/or linearize a trend\nLinear de-trending\nDifferencing (or multiple differencing), if needed\nSeasonal adjustment (either remove seasonality here or fit it in Step 2)\nYou can move on to the next step when stationarity tests suggest the transformations have been successful (give or take any seasonal effects)\n\nFit an ARIMA or SARIMA model to the transformed series\n\nEstimate the order through examination of the ACF and PACF plots\nRather than fit the differenced data to an ARMA model, explicitly fit a difference through the integration term \\(I=d\\).\nIf using SARIMA terms, fit the seasonal terms first before the main AR and MA terms\nUse AIC (or AICc), the standard errors of the parameters, and domain expertise to reach a stopping point\nYou can move on to the next step when you have a parsimonious, sensical model which ideally possesses both stationarity and invertibility and does not “lose” badly to other models\n\nConfirm the strengths and/or weaknesses of the model\n\nRe-plot the ACF and PACF to examine lingering dependencies or seasonality\nTest the innovations/residuals for autocorrelation or heteroskedasticity\nYou can stop when you are satisfied, or return to Step 1 if you feel a need for further improvement\n\n\nWe will explore a set of practical, functional ways to implement this method below.",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>11</span>  <span class='chapter-title'>ARIMA identification in R</span>"
     ]
   },
@@ -640,7 +640,7 @@
     "section": "Cleaning the data",
     "text": "Cleaning the data\nAs an example, let’s take a daily series of gold prices from the forecast package. The help file does not describe them very well; we know the series is meant to start Jan 1st 1985 and end March 31st 1989. There are a few missing values here, which can complicate any time series analysis.\n\nhelp(gold)\nplot(gold)\n\n\n\n\n\n\n\nsummary(gold)\n\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's \n  285.0   337.7   403.2   392.5   443.7   593.7      34 \n\n\nHow we treat missing values depends on how they appeared in our data. Did we fail to observe these values, or were there no values be observed? Are these weekends, exchange holidays, days where the data firm had a system outage, or records which were later deemed unreliable?\nFor now, we will drag the prices — preserving the last known price across any missing observations until a new price is recorded.\n\ngold.fill &lt;- na.locf(gold)\ngold[61:70]\n\n [1] 329.90 328.75 329.80 324.65 317.00 321.10 317.00     NA     NA 323.10\n\ngold.fill[61:70]\n\n [1] 329.90 328.75 329.80 324.65 317.00 321.10 317.00 317.00 317.00 323.10\n\n\nIn the original plot of the data, we see a very large spike about 2/3 of the way through the series. This could be a useful and interesting (albeit extreme) price movement, or it could be a data error. It’s worth examining, but without a date index it’s hard to know exactly when it happened.\n\n#which observations are we seeing?\ngold.fill[gold.fill&gt;500]\n\n[1] 502.75 593.70\n\n#which index values are they?\n(1:length(gold.fill))[gold.fill&gt;500]\n\n[1] 769 770\n\n#about when does this take place?\nas.Date('1985-01-01') + 769*(7/5)\n\n[1] \"1987-12-13\"\n\n#how big are the changes?\ndiff(gold.fill)[769:770]\n\n[1]   90.95 -106.65\n\n#what are the largest daily changes before and after this?\nrange(diff(gold.fill)[1:768])\n\n[1] -20.85  32.65\n\nrange(diff(gold.fill)[-1:-770])\n\n[1] -12.05  10.40\n\n\nAfter combing through several websites with their own historical gold series and even finding a scanned copy of a same-day newspaper article, I myself am tentatively concluding observavtion 770 ($593.70) to be a bad observation, possibly a finger slip from 9 to 0 ($503.70 fits much better with the historical data). Rather than make the change assuming it to be a typo, I will drag the prior day’s price:\n\ngold.fill[770] &lt;- gold.fill[769]\nplot(gold.fill)",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>11</span>  <span class='chapter-title'>ARIMA identification in R</span>"
     ]
   },
@@ -651,7 +651,7 @@
     "section": "Assessing and recovering stationarity",
     "text": "Assessing and recovering stationarity\nOur work here has already been outlined in one or two previous notes, to which I now refer the reader.\nInspecting the plot above, the gold prices look like they may be a random walk. They certainly don’t look stationary. First, let’s examine whether a Box-Cox transformation might be helpful.\n\n\n\n\n\n\nWarning\n\n\n\nNote that a Box-Cox transformation cannot be applied to series with negative values. Because of this, we usually apply Box-Cox transformations before differencing the data.\n\n\n\nboxcox(gold.fill~1)\n\n\n\n\n\n\n\n\nThe value \\(\\lambda=1\\) is within the confidence interval, suggesting that the variance is already stabilized.1\nWith no need for transformation, we can directly test the hypothesis that the original series is a random walk and the differenced series is stationary:\n\n#testing the original series: 'TRUE' suggests stationarity\nsuppressWarnings(adf.test(gold.fill)$p.value &lt; 0.05)\n\n[1] FALSE\n\nsuppressWarnings(kpss.test(gold.fill)$p.value &gt; 0.05)\n\n[1] FALSE\n\n#testing the first differences: 'TRUE' suggests stationarity\nsuppressWarnings(adf.test(diff(gold.fill))$p.value &lt; 0.05)\n\n[1] TRUE\n\nsuppressWarnings(kpss.test(diff(gold.fill))$p.value &gt; 0.05)\n\n[1] TRUE",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>11</span>  <span class='chapter-title'>ARIMA identification in R</span>"
     ]
   },
@@ -662,7 +662,7 @@
     "section": "Identifying the ARIMA order and estimating the parameters",
     "text": "Identifying the ARIMA order and estimating the parameters\nAlthough automated routines exist to help us identify the ARIMA parameters, they sometimes produce nonsensical or unhelpful results. It’s very useful to first form prior hypotheses about the correct order from domain knowledge and/or diagnostic analysis.\n\nFirst, we will assume that the correct integration order is \\(d=1\\), that is, first differences. From here, we will only be plotting the differenced cleaned data.\nSecond, we will not (at this time) fit any seasonal components. Although the data may suggest a slight seasonality, we will put it aside for now and focus on the main ARMA components.\nThird, we will be open to the possibility of a constant but non-zero mean for the differenced data, which is equivalent to a linear trend in the original undifferenced data.\nFourth, we will view models with high orders (say, \\(p \\gt 4\\) or \\(q \\gt 4\\)) with suspicion. Most processes worth describing with an ARIMA model have fairly low orders for \\(p,d\\) and \\(q\\).\n\nTo explore the AR and MA orders, it’s often helpful to look at an autocorrelation function (ACF) plot and a partial autocorrelation function (PACF) plot.\n\nacf(diff(gold.fill),lag.max=15,main='ACF of gold price changes')\n\n\n\n\n\n\n\npacf(diff(gold.fill),lag.max=15,main='PACF of gold price changes')\n\n\n\n\n\n\n\n\nThe ACF and PACF both show modest but significant correlations and partial correlations at the 1st lag. Beyond that, there are no clear patterns, though perhaps some slight evidence for weekly (lag=5) or bimonthly (lag=11, which accounting for weekends would be 15 days) cycles. As mentioned earlier, we will discard any hypothesis of seasonality at this time.\nTaken together, the ACF and PACF suggest a simple model, where the AR and MA orders are each either 1 or 0. The four models worth exploring, then, are:\n\nARIMA(0,1,0)\nARIMA(1,1,0)\nARIMA(0,1,1)\nARIMA(1,1,1)\n\nLet’s see what R comes up with. Here we will use the automated routine forecast::auto.arima, though readers may prefer the tidyverse alternative fable::ARIMA, both of which are simply convenience wrappers for a lot of tedious fiddling with the base function stats::arima:\n\nauto.arima(gold.fill,d=1,seasonal=FALSE,max.p=4,max.q=4,\n           stepwise=FALSE,approximation=FALSE)\n\nSeries: gold.fill \nARIMA(0,1,1) \n\nCoefficients:\n          ma1\n      -0.1398\ns.e.   0.0297\n\nsigma^2 = 18.45:  log likelihood = -3183.64\nAIC=6371.29   AICc=6371.3   BIC=6381.31\n\n\nR suggests a simple ARIMA(0,1,1) model, meaning that the first difference of the daily gold prices is weakly negatively correlated with each prior day’s innovation: gold prices correct their own shocks to some extent, and if new information causes them to climb or dip one day, they are likely to dip back or climb back (respectively) the next day.2\nThe estimated coefficient on the AR(1) parameter is small, but it’s more than four times its standard error, so we can be fairly sure that it’s a useful and significant modeling term. If we compare the AIC of 6371.56 to the other models, we should find that it’s the best fit (i.e. least AIC) amongst our four candidates:\n\nc(ARIMA011=arima(gold.fill,order=c(0,1,1))$aic,\n  ARIMA110=arima(gold.fill,order=c(1,1,0))$aic,\n  ARIMA111=arima(gold.fill,order=c(1,1,1))$aic,\n  ARIMA010=arima(gold.fill,order=c(0,1,0))$aic)\n\nARIMA011 ARIMA110 ARIMA111 ARIMA010 \n6371.289 6371.555 6373.279 6390.805 \n\n\nWe can tentatively model these daily gold prices with an ARIMA(0,1,1) model, though an inspection of the AICs reveals that an ARIMA(1,1,0) model would work almost as well.",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>11</span>  <span class='chapter-title'>ARIMA identification in R</span>"
     ]
   },
@@ -673,7 +673,7 @@
     "section": "Prediction",
     "text": "Prediction\nSince we choose the ARIMA(0,1,1) representation, we can only meaningfully predict one day into the future. By the time we reach two days into the future, the series will be reacting only to future information (the new innovation at \\(t+2\\) and a small negative weight on the prior innovation at \\(t+1\\), both of which we do not observe and cannot estimate and have expectation 0.)\nIf we instead chose the ARIMA(1,1,0) representation, we could predict further into the future: the price change on day \\(t+2\\) would be weakly correlated with the price change on day \\(t+1\\), which we do not observe but is itself weakly correlated with the price change on day \\(t\\), which we do observe. However, the small AR coefficient and this geometric dampening mean that our forecasts will quickly lose any practical utility.\nStill, for those interested, we can hazard a guess for the first out-of-sample date, April 4th, 1989:\n\ngold.model &lt;- arima(gold.fill,order=c(0,1,1),include.mean=FALSE)\nforecast(gold.model,h=1)\n\n     Point Forecast    Lo 80    Hi 80    Lo 95    Hi 95\n1109       382.5475 377.0459 388.0491 374.1335 390.9615\n\npredict(gold.model,n.ahead=1)\n\n$pred\nTime Series:\nStart = 1109 \nEnd = 1109 \nFrequency = 1 \n[1] 382.5475\n\n$se\nTime Series:\nStart = 1109 \nEnd = 1109 \nFrequency = 1 \n[1] 4.292947\n\n\nI’ve shown the outputs from two different prediction functions, forecast::forecast and stats::predict.arima0, which differ in their presentation of results but, as you can see, recover exactly the same point forecast of $382.5475.\nOne prediction, taken in isolation, is never a great way to judge a model. We will discuss model metrics and model validation techniques later in this course. But as a tiny, tiny weight on the scale, consider the following:\n\nDaily gold prices were shown to be an unforecastable random walk\nDifferences in gold prices were shown to be mean-zero and stationary\nTherefore, we might assume the best prediction for April 3rd, 1989 would be the prior trading day’s price of $382.30 on March 31st, 1989 (call this the “naive” predictor)\nHowever, our ARIMA model suggests that the price will instead ‘correct’ itself slightly to $382.55\nAs it happens, the true closing price on April 3rd, 1989 was $385.30: both our predictions would have been too low, but the ARIMA prediction was somewhat closer than the naive prediction.",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>11</span>  <span class='chapter-title'>ARIMA identification in R</span>"
     ]
   },
@@ -684,7 +684,7 @@
     "section": "Cleanup",
     "text": "Cleanup\nIt’s always best to test your final model against some of your assumptions:\n\n#check for normality of the estimated innovations\n#  (note, only affects standard errors, not main findings)\nshapiro.test(gold.model$residuals)\n\n\n    Shapiro-Wilk normality test\n\ndata:  gold.model$residuals\nW = 0.90507, p-value &lt; 2.2e-16\n\nks.test(gold.model$residuals,pnorm,sd=sd(gold.model$residuals))\n\n\n    Asymptotic one-sample Kolmogorov-Smirnov test\n\ndata:  gold.model$residuals\nD = 0.095658, p-value = 3.124e-09\nalternative hypothesis: two-sided\n\n#check for lingering autocorrelation in the estimated innovations\ndwtest(gold.model$residuals~1)\n\n\n    Durbin-Watson test\n\ndata:  gold.model$residuals ~ 1\nDW = 2.0012, p-value = 0.5081\nalternative hypothesis: true autocorrelation is greater than 0\n\nBox.test(gold.model$residuals,fitdf=1,type='Ljung-Box')\n\n\n    Box-Ljung test\n\ndata:  gold.model$residuals\nX-squared = 0.00053447, df = 0, p-value &lt; 2.2e-16\n\nacf(gold.model$residuals)\n\n\n\n\n\n\n\npacf(gold.model$residuals)\n\n\n\n\n\n\n\n#check for stationarity of the estimated innovations\nsuppressWarnings(adf.test(gold.model$residuals))\n\n\n    Augmented Dickey-Fuller Test\n\ndata:  gold.model$residuals\nDickey-Fuller = -9.1815, Lag order = 10, p-value = 0.01\nalternative hypothesis: stationary\n\nsuppressWarnings(kpss.test(gold.model$residuals))\n\n\n    KPSS Test for Level Stationarity\n\ndata:  gold.model$residuals\nKPSS Level = 0.28653, Truncation lag parameter = 7, p-value = 0.1\n\nplot(gold.model$residuals)\n\n\n\n\n\n\n\nhist(gold.model$residuals)",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>11</span>  <span class='chapter-title'>ARIMA identification in R</span>"
     ]
   },
@@ -695,8 +695,118 @@
     "section": "",
     "text": "Further EDA would actually suggest otherwise, but this teaching example must move forward. Those interested might try plotting a rolling standard deviation calculation.↩︎\nDiscussion point: how would this be different than an ARIMA(1,1,0) model with the same coefficient sign and size?↩︎",
     "crumbs": [
-      "2. AR and MA models",
+      "2. ARIMA models",
       "<span class='chapter-number'>11</span>  <span class='chapter-title'>ARIMA identification in R</span>"
+    ]
+  },
+  {
+    "objectID": "ets.html",
+    "href": "ets.html",
+    "title": "ETS models",
+    "section": "",
+    "text": "Simple exponential smoothing\nHaving learned one major class of time series models — ARIMA models — let’s learn a second class of models to compare and contrast. This new group of models is collectively referred to as exponential smoothing. These models are sometimes also called “ETS” which stands for error, trend, seasonality.\nThe motivation for exponential smoothing is described well by Hyndman and Athansopoulous when they note the usefulness of a middle ground between two simple forecasting methods: dragging the last observations, and averaging the whole series:\nCode\npar(mfrow=c(1,2))\nset.seed(0117)\ny &lt;- arima.sim(list(ar=0.9),50)[5:40]\nplot(y,type='l',xlim=c(0,45),ylab='Y',ylim=c(-3,2),\n     main='Forecasting from last observation')\nlines(x=c(36,45),y=rep(y[36],2),lwd=2,lty=2,col='#0000ff')\npoints(x=36,y=y[36],pch=1,cex=2,col='#7f7f7f',lwd=2)\nplot(y,type='l',xlim=c(0,45),ylab='Y',ylim=c(-3,2),\n     main='Forecasting from series average')\nlines(x=c(36,45),y=rep(mean(y),2),lwd=2,lty=2,col='#0000ff')\nlines(x=c(1,36),y=rep(mean(y),2),col='#7f7f7f',lwd=2,lty=2)\n\n\n\n\n\nSimple forecasting strategies\nThe last observation tends to overfit — time series rarely stay in exactly the same place – and it also ignores the vast majority of the data. The series average tends to underfit — it doesn’t use any time series information at all — and it equally weights observations which may no longer be relevant.\nThere is a middle way. The most recent observation can get the most weight, and yet all observations will get some weight, with older observations receiving exponentially less weight:\n\\[\\hat{y}_{t+1} = \\alpha y_t + \\alpha (1 - \\alpha) y_{t-2} + \\alpha (1 - \\alpha)^2 y_{t-3} + \\ldots\\]\nLet us note a few properties of this equation before going further:\nBy changing \\(\\alpha\\) we can change the “memory” of the equation. Higher values of \\(\\alpha\\) correspond to a short memory, closer to the last observation. Lower values of \\(\\alpha\\) correspond to a long memory, closer to the series average:\nCode\npar(mfrow=c(1,2))\nses80 &lt;- y%*%(0.8*0.2^(35:0))\nses20 &lt;- y%*%(0.2*0.8^(35:0))\nplot(y,type='l',xlim=c(0,45),ylab='Y',ylim=c(-3,2),\n     main=expression(paste('SES using ',alpha == 0.8)))\nlines(x=c(36,45),y=rep(ses80,2),lwd=2,lty=2,col='#0000ff')\nsegments(x0=1:36,y0=-3,y1=2*0.8*0.2^(35:0)-3,col='#0000ff')\ntext(0,-2.8,'Weights',col='#0000ff',pos=4)\nplot(y,type='l',xlim=c(0,45),ylab='Y',ylim=c(-3,2),\n     main=expression(paste('SES using ',alpha == 0.2)))\nlines(x=c(36,45),y=rep(ses20,2),lwd=2,lty=2,col='#0000ff')\nsegments(x0=1:36,y0=-3,y1=2*0.2*0.8^(35:0)-3,col='#0000ff')\ntext(0,-2.8,'Weights',col='#0000ff',pos=4)\n\n\n\n\n\nSimple exponential smoothing models\nHyndman and Athansopoulos reformulate exponential smoothing into two phases. First, they define a smoothing series which iterates over each observation in the data, using the previous smoothing series value to help estimate the next smoothing series value. Second, they define a forecasting equation which uses the smoothing series to predict arbitrarily far into the future from any point.\n(This may feel very anticlimactic or unnecessarily complicated, but it is a scaffolding on which we will build features to capture trend and seasonality.)",
+    "crumbs": [
+      "3. ETS and SARIMA models",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>ETS models</span>"
+    ]
+  },
+  {
+    "objectID": "ets.html#simple-exponential-smoothing",
+    "href": "ets.html#simple-exponential-smoothing",
+    "title": "ETS models",
+    "section": "",
+    "text": "I have written the equation using \\(y_t\\) instead of \\(Y_t\\), signaling to you that we need not associate this time series with probability distributions of a set of random variables. We can view exponential smoothing as a type of machine learning model, not parametric statistical inference.1\nThe sum of the weights, \\(\\sum_{i=0}^\\infty \\alpha (1 - \\alpha)^i\\) will add up to 1 only when \\(\\alpha \\in (0,1)\\) and when the series is truly infinite. However, our sample of data is finite, so the weights of our smoothing will not exactly equal 1.\nAt this time, the equation does not account for any trend over time or any seasonality. In other words, the forecast for all future forecast periods will be equal to the forecast for time \\(t+1\\).\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nLet \\(\\boldsymbol{y}\\) be a time series observed during the regular time periods \\(T = \\{1, 2, \\ldots, n\\}\\). For some parameters \\(\\alpha \\in (0,1)\\) and \\(\\ell_0 \\in \\mathbb{R}\\), iteratively define the smoothing series \\(\\boldsymbol{\\ell}\\) as follows:\n\\[\\ell_t = \\alpha y_t + (1 - \\alpha) \\ell_{t-1}\\]\nAnd for a specific time index \\(\\tau\\) and an integer look-ahead period \\(h\\), define the forecasting series \\(\\hat{y}_{\\tau+h|\\tau}\\) as follows:\n\\[\\hat{y}_{\\tau+h|\\tau} = \\ell_\\tau\\]\nTogether, we refer to these two series as a simple exponential smoothing (SES) model.",
+    "crumbs": [
+      "3. ETS and SARIMA models",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>ETS models</span>"
+    ]
+  },
+  {
+    "objectID": "ets.html#estimating-an-exponential-smoothing-model",
+    "href": "ets.html#estimating-an-exponential-smoothing-model",
+    "title": "ETS models",
+    "section": "Estimating an exponential smoothing model",
+    "text": "Estimating an exponential smoothing model\nRecently, exponential smoothing models have been synthesized with state space models, which allows them to be solved using methods common to the rest of statistical inference: distributional assumptions followed by likelihood optimization (including partial, quasi, or conditional likelihood) via gradient descent or other search techniques.\nHowever, we will discuss more basic techniques here which do not require distributional theory.\nThe forecasting method above suggests an error equation for each observation \\(y_t\\) as compared to its prior-period forecast, \\(\\hat{y}_{t|t-1}\\):\n\\[e_t = y_t - \\hat{y}_{t|t-1}; \\qquad \\textrm{SSE} = \\sum_{t=1}^n e_t^2\\]\nThe two parameters which control this sum of squared errors are \\(\\alpha\\), the smoothing parameter, and \\(\\ell_0\\), the choice of the initial level (recall that each \\(\\ell_i\\) is defined iteratively, and so there is no definition for \\(\\ell_0\\)). Therefore, using a Least Squares solution method, we may estimate:\n\\[\\hat{\\alpha}, \\hat{\\ell}_0 = \\mathop{\\textrm{argmin}}_{\\alpha \\in (0,1); \\ell \\in \\mathbb{R}} \\textrm{SSE}\\]\nAlthough this optimization cannot be solved as easily as OLS equations (we do not have a closed form solution which works for every dataset, such as \\(\\hat{\\boldsymbol{\\beta}} = (\\mathbf{X}^T\\mathbf{X})^{-1}\\mathbf{X}^t\\boldsymbol{y}\\)), we can still solve easily enough with algorithmic techniques.",
+    "crumbs": [
+      "3. ETS and SARIMA models",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>ETS models</span>"
+    ]
+  },
+  {
+    "objectID": "ets.html#adding-a-trend-component",
+    "href": "ets.html#adding-a-trend-component",
+    "title": "ETS models",
+    "section": "Adding a trend component",
+    "text": "Adding a trend component\nWhen our data trend in one direction due to random walk behavior, we should not incorporate the seeming trend into our predictions, but when the data trend due to deterministic drift, then it would make sense to incorporate this trend into our forecasts.\nThe slope of the trend will depend on which observations we use as our training sample. Just as before, we have a choice between using all of the data (underfitting) or only the most recent data (overfitting). And just as before, it makes sense to split the difference with another exponential smoothing filter:2\n\n\n\n\n\n\nNote\n\n\n\nLet \\(\\boldsymbol{y}\\) be a time series observed during the regular time periods \\(T = \\{1, 2, \\ldots, n\\}\\). For some parameters \\(\\alpha, \\beta \\in (0,1)\\) and \\(\\ell_0, b_0 \\in \\mathbb{R}\\), iteratively define the level series \\(\\boldsymbol{\\ell}\\) and the trend series \\(\\boldsymbol{b}\\) as follows:\n\\[\\ell_t = \\alpha y_t + (1 - \\alpha)(\\ell_{t-1} + b_{t-1})\\]\n\\[b_t = \\beta(\\ell_t - \\ell_{t-1}) + (1 - \\beta)b_{t-1}\\]\nAnd for a specific time index \\(\\tau\\) and an integer look-ahead period \\(h\\), define the forecasting series \\(\\hat{y}_{\\tau+h|\\tau}\\) as follows:\n\\[\\hat{y}_{\\tau+h|\\tau} = \\ell_\\tau + hb_t\\]\nTogether, we refer to these three series as an exponential smoothing (SES) model with linear trend.\n\n\nNotice that the new level estimate at each time period is a weighted average between (i) the current observation and (ii) the predicted value of the same observation. Likewise, the new trend estimate at each time period is a weighted average between (i) the most current change in the estimated levels and (ii) the predicted value of the same change in levels.\nTo estimate this model we would solve a least squares equation for \\(\\hat{\\alpha}, \\hat{\\beta}, \\hat{\\ell}_0, \\textrm{and } \\hat{b}_0\\).\n\n\nCode\npar(mfrow=c(1,2))\ntrend1 &lt;- ets(y,model='AAN',damped=FALSE,alpha=0.4,beta=0.3)\ntrend2 &lt;- ets(y,model='AAN',damped=FALSE)\n\nplot(y,type='l',xlim=c(0,45),ylab='Y',ylim=c(-3,2),\n     main=expression(paste('ETS using ',list(alpha == 0.4, beta == 0.3))))\nlines(x=c(37:45),y=forecast(trend1,h=9)$mean,lwd=2,lty=2,col='#7f00ff')\nsegments(x0=-0.2+(1:36),y0=-3,y1=2*0.4*0.6^(35:0)-3,col='#0000ff')\nsegments(x0=0.2+(1:36),y0=-3,y1=2*0.3*0.7^(35:0)-3,col='#ff0000')\ntext(0,-2.4,expression(paste(alpha,' weights')),col='#0000ff',pos=4)\ntext(0,-2.8,expression(paste(beta,' weights')),col='#ff0000',pos=4)\nplot(y,type='l',xlim=c(0,45),ylab='Y',ylim=c(-3,2),\n     main=expression(paste('ETS using ',list(alpha %~~% 0.9, beta &lt; 0.01))))\nlines(x=c(37:45),y=forecast(trend2,h=9)$mean,lwd=2,lty=2,col='#7f00ff')\nsegments(x0=-0.2+(1:36),y0=-3,y1=2*trend2$par[1]*(1-trend2$par[1])^(35:0)-3,col='#0000ff')\nsegments(x0=0.2+(1:36),y0=-3,y1=2*trend2$par[2]*(1-trend2$par[2])^(35:0)-3,col='#ff0000')\ntext(0,-2.4,expression(paste(alpha,' weights')),col='#0000ff',pos=4)\ntext(0,-2.8,expression(paste(beta,' weights')),col='#ff0000',pos=4)\n\n\n\n\n\nExponential smoothing models with trend",
+    "crumbs": [
+      "3. ETS and SARIMA models",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>ETS models</span>"
+    ]
+  },
+  {
+    "objectID": "ets.html#adding-a-damped-trend-component",
+    "href": "ets.html#adding-a-damped-trend-component",
+    "title": "ETS models",
+    "section": "Adding a damped trend component",
+    "text": "Adding a damped trend component\nExtrapolating trends into the future is a dangerous business. My newborn daughter has gained about 30 grams (or 1 ounce) per day over the past two weeks. This trend, well-defined over my entire sampling period, suggests that by the time she’s twenty years old, she will weigh 220 kilograms (or 480 pounds).\nBecause linear extrapolation can so often lead to unrealistic forecasts, sometimes we choose to “dampen” a forecasted trend, meaning that we allow the slope to gradually become flat. The mechanism here will be a new exponential term \\(\\phi\\), which is usually set close to 1. From the equations below you can see that when \\(\\phi \\approx 1\\) it will not greatly change the iterative smoothing series, but that it will increasingly change the forecasted slope when extrapolating to large look-ahead periods \\(h\\):\n\n\n\n\n\n\nNote\n\n\n\nLet \\(\\boldsymbol{y}\\) be a time series observed during the regular time periods \\(T = \\{1, 2, \\ldots, n\\}\\). For some parameters \\(\\alpha, \\beta, \\phi \\in (0,1)\\) and \\(\\ell_0, b_0 \\in \\mathbb{R}\\), iteratively define the level series \\(\\boldsymbol{\\ell}\\) and the trend series \\(\\boldsymbol{b}\\) as follows:\n\\[\\ell_t = \\alpha y_t + (1 - \\alpha)(\\ell_{t-1} + \\phi b_{t-1})\\]\n\\[b_t = \\beta(\\ell_t - \\ell_{t-1}) + (1 - \\beta) \\phi b_{t-1}\\]\nAnd for a specific time index \\(\\tau\\) and an integer look-ahead period \\(h\\), define the forecasting series \\(\\hat{y}_{\\tau+h|\\tau}\\) as follows:\n\\[\\hat{y}_{\\tau+h|\\tau} = \\ell_\\tau + (\\phi + \\phi^2 + \\ldots + \\phi^h)b_t\\]\nTogether, we refer to these three series as an exponential smoothing (SES) model with a damped linear trend.\n\n\n\n\nCode\nrequire(forecast)\npar(mfrow=c(1,2))\ntrend1 &lt;- ets(y,model='AAN',damped=TRUE,alpha=0.8,beta=0.1,phi=0.95)\ntrend2 &lt;- ets(y,model='AAN',damped=TRUE,alpha=0.8,beta=0.1,phi=0.8)\n\nplot(y,type='l',xlim=c(0,45),ylab='Y',ylim=c(-3,2),\n     main=expression(paste('ETS damped with ',phi == 0.95)))\nlines(x=c(37:45),y=forecast(trend1,h=9)$mean,lwd=2,lty=2,col='#7f00ff')\nsegments(x0=37:45,y0=-3,y1=0.95^(1:9)-3,col='#7f00ff')\ntext(10,-2.8,expression(paste('weight on ',b[t])),col='#7f00ff',pos=4)\nplot(y,type='l',xlim=c(0,45),ylab='Y',ylim=c(-3,2),\n     main=expression(paste('ETS damped with ',phi == 0.8)))\nlines(x=c(37:45),y=forecast(trend2,h=9)$mean,lwd=2,lty=2,col='#7f00ff')\nsegments(x0=37:45,y0=-3,y1=0.8^(1:9)-3,col='#7f00ff')\ntext(10,-2.8,expression(paste('weight on ',b[t])),col='#7f00ff',pos=4)\n\n\n\n\n\nExponential smoothing models with trend",
+    "crumbs": [
+      "3. ETS and SARIMA models",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>ETS models</span>"
+    ]
+  },
+  {
+    "objectID": "ets.html#adding-an-additive-seasonal-component-holt-winters-models",
+    "href": "ets.html#adding-an-additive-seasonal-component-holt-winters-models",
+    "title": "ETS models",
+    "section": "Adding an additive seasonal component (Holt-Winters models)",
+    "text": "Adding an additive seasonal component (Holt-Winters models)\nOften the data show such a clear seasonality (let’s say with period \\(m\\)) that it would be foolish not to use this information when performing forecasting or smoothing the historical values. Once again we are confronted with the dilemma of estimating the seasonality from the entire series (which uses more data, but possibly includes stale data), or estimating the seasonality from only the most recent season (which keeps only the freshest values, but might lose helpful historical context). And once again, we thread the needle by exponentially up-weighting the most recent data and down-weighting the oldest data, using a new smoothing parameter which may be estimated from the data.\nExponential smoothing models with seasonal components are sometimes called Holt-Winters models. Let us start by defining an additive seasonal component.3\n\n\n\n\n\n\nNote\n\n\n\nLet \\(\\boldsymbol{y}\\) be a time series observed during the regular time periods \\(T = \\{1, 2, \\ldots, n\\}\\). For some parameters \\(\\alpha, \\beta, \\phi, \\gamma \\in (0,1)\\) and \\(\\ell_0, b_0, s_0, s_{-1}, \\ldots, s_{1-m} \\in \\mathbb{R}\\), iteratively define the level series \\(\\boldsymbol{\\ell}\\), the trend series \\(\\boldsymbol{b}\\), and the seasonal series \\(\\boldsymbol{s}\\) as follows:\n\\[\\ell_t = \\alpha (y_t - s_{t-m}) + (1 - \\alpha)(\\ell_{t-1} + b_{t-1})\\]\n\\[b_t = \\beta(\\ell_t - \\ell_{t-1}) + (1 - \\beta) b_{t-1}\\]\n\\[s_t = \\gamma(y_t - \\ell_t) + (1 - \\gamma) s_{t-m}\\]\nAnd for a specific time index \\(\\tau\\) and an integer look-ahead period \\(h\\), define the forecasting series \\(\\hat{y}_{\\tau+h|\\tau}\\) as follows:\n\\[\\hat{y}_{\\tau+h|\\tau} = \\ell_\\tau + hb_t + s_{\\tau - (h \\,\\textrm{mod}\\, m)}\\]\nTogether, we refer to these four series as a Holt-Winters model with additive seasonality.\n\n\n\n\nCode\nair.ets1 &lt;- ets(AirPassengers,model='AAA',damped=FALSE)\nplot(air.ets1)\n\n\n\n\n\nETS model as a sum of three components\n\n\n\n\nThe plot above shows how an ETS model with trend and seasonality might be fit to a real-world dataset (here, the classic Box-Jenkins dataset of monthly airline passengers). Note that we see signs of an imperfect fit:\n\nLooking at the top plot of the original data, the seasonal variance seems to be growing proportionally with the mean number of passengers.\nLooking at the bottom plot of the estimated seasonal effects, they seem to be nearly constant over time.\nLooking at the second plot of the estimated level, we see that the level has been co-opted into “fixing” the mistakes being made by the seasonal series. In earlier years the level counteracts the seasonality, muting the effects, while in later years the level complements the seasonality, amplifying the effects.\n\nThis model isn’t necessarily bad, but we might be able to improve it.",
+    "crumbs": [
+      "3. ETS and SARIMA models",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>ETS models</span>"
+    ]
+  },
+  {
+    "objectID": "ets.html#exponential-smoothing-models-with-multiplicative-components",
+    "href": "ets.html#exponential-smoothing-models-with-multiplicative-components",
+    "title": "ETS models",
+    "section": "Exponential smoothing models with multiplicative components",
+    "text": "Exponential smoothing models with multiplicative components\nSometimes the seasonality effects on a series are additive/linear: for example, the difference between daytime and nighttime temperatures is fairly steady in Chicago whether it’s January (mean temperature 0 C) or July (mean temperature 30 C).\nOther times the seasonality effects on a series are multiplicative/proportional: for example, a small florist’s shop might notice a +15% revenue increase in February, around Valentine’s Day. This 15% increase might persist as the business grows from monthly revenues of $10,000 to $100,000 to $1,000,000.\nHyndman and Athanasopoulous present the formulae describing multiplicative seasonality and present a taxonomy of ETS models which include multiplicative trend effects as well.\nEven in cases when seasonality looks multiplicative, a logarithmic (or any appropriate Box-Cox) transformation might convert the series back to additive errors and additive seasonality. Compare three models for the classic Box-Jenkins airline passengers data:\n\n\nCode\nair.ets1 &lt;- ets(AirPassengers,model='AAA',damped=FALSE)\nplot(air.ets1)\nlegend(x='topleft',legend=c('Observations','Smoothing fit'),lty=1,col=c('#000000','#0000ff'),bty='n')\n\n\n\n\n\nETS with additive seasonality for original data\n\n\n\n\n\n\nCode\nair.ets2 &lt;- ets(AirPassengers,model='AAA',damped=FALSE,lambda='auto',biasadj=TRUE)\nplot(air.ets2)\nlegend(x='topleft',legend=c('Observations','Smoothing fit'),lty=1,col=c('#000000','#0000ff'),bty='n')\n\n\n\n\n\nETS with additive seasonality for Box-Cox transformed data\n\n\n\n\n\n\nCode\nair.ets3 &lt;- ets(AirPassengers,model='MAM',damped=FALSE)\nplot(air.ets3)\nlegend(x='topleft',legend=c('Observations','Smoothing fit'),lty=1,col=c('#000000','#0000ff'),bty='n')\n\n\n\n\n\nETS with multiplicative trend and seasonality for original data\n\n\n\n\nAlthough all of these models succeed in decomposing or explaining much of the variance in this seasonal time series, we might find ways to choose between them. We could look at which series had the cleanest residual patterns, or best look-ahead forecasting accuracy, or lowest AIC, or (as here) lowest in-sample RMSE:\n\n\nCode\nair.ets.summ &lt;- rbind(sqrt(air.ets1$mse),\n                      sqrt(mean((AirPassengers-air.ets2$fitted)^2)),\n                      sqrt(air.ets3$mse))\ncolnames(air.ets.summ) &lt;- c('In-sample RMSE')\nrownames(air.ets.summ) &lt;- c('AAA, no Box-Cox', 'AAA, w/ Box-Cox', 'MAM, no Box-Cox')\nprint(air.ets.summ)\n\n\n                In-sample RMSE\nAAA, no Box-Cox       17.01495\nAAA, w/ Box-Cox       10.44758\nMAM, no Box-Cox       11.26797",
+    "crumbs": [
+      "3. ETS and SARIMA models",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>ETS models</span>"
+    ]
+  },
+  {
+    "objectID": "ets.html#footnotes",
+    "href": "ets.html#footnotes",
+    "title": "ETS models",
+    "section": "",
+    "text": "I say we can view them as ML techniques, but it’s also possible to frame them as Gaussian state space models with well-defined distributions and likelihood functions.↩︎\nHyndman and Athanasopoulos use an alternative parameterization for \\(\\beta\\) which takes a range of \\((0,\\alpha)\\). What these lecture notes refer to as \\(\\beta\\) is what their textbook refers to as \\(\\beta^*\\).↩︎\nHyndman and Athanasopoulos use an alternative parameterization for \\(\\gamma\\) which takes a range of \\((0,1-\\alpha)\\). What these lecture notes refer to as \\(\\gamma\\) is what their textbook refers to as \\(\\gamma^*\\).↩︎",
+    "crumbs": [
+      "3. ETS and SARIMA models",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>ETS models</span>"
+    ]
+  },
+  {
+    "objectID": "sarima.html",
+    "href": "sarima.html",
+    "title": "SARIMA models",
+    "section": "",
+    "text": "Motivation\nWe have already seen several datasets which display moderate or severe seasonality, but the ARIMA models presented earlier did not explicitly model that seasonality. We can now add that functionality to the basic ARIMA structure, creating a type of ARIMA model often known as seasonal ARIMA or SARIMA.\nLet’s say that we are looking at a new monthly time series for the first time, and try to analyze it using the Box-Jenkins ARIMA modeling approach.\nCode\nset.seed(0120)\ny &lt;- 2+ arima.sim(model=list(ar=c(0.5,rep(0,10),0.3)),n=120)\nplot(y[1:60],type='l')  \nabline(v=0.5+12*(1:4),lty=2,col='#7f7f7f')\ntext(x=12*(0:4),y=0.1,labels=paste('Year',1:5),pos=4,col='#7f7f7f')\n\n\n\n\n\nHypothetical seasonal time series\nEven upon a quick visual inspection, we see some signs of seasonality, with generally two peaks per year. The structure of these internal dependencies become clearer when we inspect the ACF and PACF plots:\nCode\npar(mfrow=c(1,2))\nacf(y,lag.max=25,main='ACF plot',ylab='Autocorrelation')\nmtext(c('1 year','2 years'),side=1,line=0,at=c(12,24),col='#7f7f7f',cex=0.75)\npacf(y,lag.max=25,main='PACF plot',ylab='Partial autocorrelation')\nmtext(c('1 year','2 years'),side=1,line=0,at=c(12,24),col='#7f7f7f',cex=0.75)\n\n\n\n\n\nAutocorrelation structure of a seasonal timeseries\nThe ACF plot shows the persistence typical of an AR process, but rather than scaling geometrically down to zero, we see long-term cyclical behavior with peaks at lags 12 and 24 (1 and 2 years). The PACF plot shows the dramatic dropoff after lag 1 typical of an AR(1) process, but then a second peak at lag 12 (1 year).\nOur conclusion is that this time series process can be at least weakly predicted not only by what happened last month, but also what happened last year at this time. Many real-world datasets display this type of double dependency — for example, my inspiration for this simulated data was rainfall totals. There are wet years and dry years, so knowing if the previous month’s rainfall totals were high or low is often helpful to determining whether this month’s rainfall levels were high or low \\((Y_t \\approx Y_{t-1})\\). But there are also wet months and dry months, so knowing the rainfall levels 12 months ago is also helpful in determining this month’s rainfall levels \\((Y_t \\approx Y_{t-12})\\).\nWe can model this data as a long-order AR process with nonzero coefficients at 1 and 12 lags, something like AR(0.5,0,0,0,0,0,0,0,0,0,0,0.3), but this seems (and is) unnecessarily cumbersome for a data property we expect to encounter again and again. Instead, we will find new efficiencies through the use of the backshift operator.",
+    "crumbs": [
+      "3. ETS and SARIMA models",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>SARIMA models</span>"
+    ]
+  },
+  {
+    "objectID": "sarima.html#motivation",
+    "href": "sarima.html#motivation",
+    "title": "SARIMA models",
+    "section": "",
+    "text": "Note\n\n\n\nLet \\(\\boldsymbol{Y}\\) be a time series random variable observed at regular time periods \\(T = \\{1, 2, \\ldots, n\\}\\), with a known seasonal period of \\(m\\). Let \\(\\boldsymbol{\\omega}\\) be a white noise process observed at the same time periods. If there exist characteristic polynomials \\(\\Phi(B), \\Phi_s(B^m), \\Theta(B), \\Theta_s(B^m)\\) with polynomial power \\(p, P, q, Q\\) respectively, such that the relationship between \\(\\boldsymbol{Y}\\) and \\(\\boldsymbol{\\omega}\\) can be written:\n\\[Y_t \\cdot \\Phi(B) \\cdot \\Phi_s(B^m) (1 - B)^d (1 - B^m)^D= \\omega_t \\cdot \\Theta(B) \\cdot \\Theta_s(B^m)\\]\nThen we say that \\(\\boldsymbol{Y}\\) follows an seasonal autoregressive integrated moving average (SARIMA) model written SARIMA(p,d,q)(P,D,Q)m.",
+    "crumbs": [
+      "3. ETS and SARIMA models",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>SARIMA models</span>"
     ]
   }
 ]
