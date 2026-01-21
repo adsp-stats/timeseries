@@ -1,4 +1,4 @@
-# Coding it up in R
+# Time series basics in R
 
 ```{r}
 #| output: false

@@ -13,7 +13,7 @@ book:
         - whitenoise.qmd
         - randomwalk.qmd
         - stationarity.qmd
-        - codingbasicsinr.qmd
+        - basicsinr.qmd
     - part: "2. ARIMA models"
       chapters:
         - ar.qmd
@@ -25,6 +25,7 @@ book:
       chapters:
         - ets.qmd
         - sarima.qmd
+        - seasonalityinr.qmd
 format:
   html:
     toc: true
