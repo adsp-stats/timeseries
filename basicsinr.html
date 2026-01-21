@@ -148,7 +148,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./whatisatimeseries.html">1. Time series basics</a></li><li class="breadcrumb-item"><a href="./codingbasicsinr.html"><span class="chapter-title">Time series basics in R</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./whatisatimeseries.html">1. Time series basics</a></li><li class="breadcrumb-item"><a href="./basicsinr.html"><span class="chapter-title">Time series basics in R</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -217,7 +217,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./codingbasicsinr.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Time series basics in R</span></a>
+  <a href="./basicsinr.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Time series basics in R</span></a>
   </div>
 </li>
       </ul>
@@ -277,6 +277,11 @@ window.Quarto = {
   <a href="./sarima.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">SARIMA models</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./seasonalityinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Seasonal models in R</span></a>
+  </div>
+</li>
       </ul>
   </li>
     </ul>
@@ -300,7 +305,7 @@ window.Quarto = {
 <!-- main -->
 <main class="content column-body" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./whatisatimeseries.html">1. Time series basics</a></li><li class="breadcrumb-item"><a href="./codingbasicsinr.html"><span class="chapter-title">Time series basics in R</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./whatisatimeseries.html">1. Time series basics</a></li><li class="breadcrumb-item"><a href="./basicsinr.html"><span class="chapter-title">Time series basics in R</span></a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title"><span class="chapter-title">Time series basics in R</span></h1>
 </div>
@@ -485,7 +490,7 @@ Frequency = 1
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="codingbasicsinr_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="basicsinr_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -528,7 +533,7 @@ Frequency = 1
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="codingbasicsinr_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="basicsinr_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -542,7 +547,7 @@ Frequency = 1
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="codingbasicsinr_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="basicsinr_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -580,7 +585,7 @@ KPSS Trend = 0.50099, Truncation lag parameter = 3, p-value = 0.01</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="codingbasicsinr_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="basicsinr_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -591,7 +596,7 @@ KPSS Trend = 0.50099, Truncation lag parameter = 3, p-value = 0.01</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="codingbasicsinr_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="basicsinr_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -628,7 +633,7 @@ KPSS Trend = 0.25322, Truncation lag parameter = 3, p-value = 0.01</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="codingbasicsinr_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="basicsinr_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -654,7 +659,7 @@ KPSS Trend = 0.25322, Truncation lag parameter = 3, p-value = 0.01</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="codingbasicsinr_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="basicsinr_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -666,7 +671,7 @@ KPSS Trend = 0.25322, Truncation lag parameter = 3, p-value = 0.01</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="codingbasicsinr_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="basicsinr_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -675,7 +680,7 @@ KPSS Trend = 0.25322, Truncation lag parameter = 3, p-value = 0.01</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="codingbasicsinr_files/figure-html/unnamed-chunk-12-2.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="basicsinr_files/figure-html/unnamed-chunk-12-2.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -716,7 +721,7 @@ KPSS Trend = 0.25394, Truncation lag parameter = 3, p-value = 0.01</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="codingbasicsinr_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="basicsinr_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>

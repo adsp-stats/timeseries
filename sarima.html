@@ -65,6 +65,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
+<link href="./seasonalityinr.html" rel="next">
 <link href="./ets.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -216,7 +217,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./codingbasicsinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Coding it up in R</span></a>
+  <a href="./basicsinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Time series basics in R</span></a>
   </div>
 </li>
       </ul>
@@ -276,6 +277,11 @@ window.Quarto = {
   <a href="./sarima.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">SARIMA models</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./seasonalityinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Seasonal models in R</span></a>
+  </div>
+</li>
       </ul>
   </li>
     </ul>
@@ -289,6 +295,12 @@ window.Quarto = {
    
   <ul>
   <li><a href="#motivation" id="toc-motivation" class="nav-link active" data-scroll-target="#motivation">Motivation</a></li>
+  <li><a href="#definition" id="toc-definition" class="nav-link" data-scroll-target="#definition">Definition</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a>
+  <ul class="collapse">
+  <li><a href="#hypothetical-monthly-series" id="toc-hypothetical-monthly-series" class="nav-link" data-scroll-target="#hypothetical-monthly-series">Hypothetical monthly series</a></li>
+  <li><a href="#airline-passengers-data" id="toc-airline-passengers-data" class="nav-link" data-scroll-target="#airline-passengers-data">Airline passengers data</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -314,24 +326,29 @@ window.Quarto = {
 </header>
 
 
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forecast,<span class="at">quietly=</span><span class="cn">TRUE</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS,<span class="at">quietly=</span><span class="cn">TRUE</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tseries,<span class="at">quietly=</span><span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 <p>We have already seen several datasets which display moderate or severe seasonality, but <a href="./arima.html">the ARIMA models presented earlier</a> did not explicitly model that seasonality. We can now add that functionality to the basic ARIMA structure, creating a type of ARIMA model often known as <em>seasonal ARIMA</em> or <em>SARIMA</em>.</p>
 <section id="motivation" class="level2">
 <h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
-<p>Let’s say that we are looking at a new monthly time series for the first time, and try to analyze it using the Box-Jenkins ARIMA modeling approach.</p>
+<p>Let’s say that we are looking at a new monthly time series for the first time, and try to analyze it using the Box-Jenkins ARIMA modeling approach. The first five years of a ten-year dataset are plotted below:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0120</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">+</span> <span class="fu">arima.sim</span>(<span class="at">model=</span><span class="fu">list</span>(<span class="at">ar=</span><span class="fu">c</span>(<span class="fl">0.5</span>,<span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">10</span>),<span class="fl">0.3</span>)),<span class="at">n=</span><span class="dv">120</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y[<span class="dv">1</span><span class="sc">:</span><span class="dv">60</span>],<span class="at">type=</span><span class="st">'l'</span>)  </span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fl">0.5</span><span class="sc">+</span><span class="dv">12</span><span class="sc">*</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>),<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'#7f7f7f'</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="dv">12</span><span class="sc">*</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>),<span class="at">y=</span><span class="fl">0.1</span>,<span class="at">labels=</span><span class="fu">paste</span>(<span class="st">'Year'</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>),<span class="at">pos=</span><span class="dv">4</span>,<span class="at">col=</span><span class="st">'#7f7f7f'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0120</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">+</span> <span class="fu">arima.sim</span>(<span class="at">model=</span><span class="fu">list</span>(<span class="at">ar=</span><span class="fu">c</span>(<span class="fl">0.5</span>,<span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">10</span>),<span class="fl">0.3</span>)),<span class="at">n=</span><span class="dv">120</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y[<span class="dv">1</span><span class="sc">:</span><span class="dv">60</span>],<span class="at">type=</span><span class="st">'l'</span>,<span class="at">ylab=</span><span class="fu">expression</span>(Y[t]),<span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">6</span>))  </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fl">0.5</span><span class="sc">+</span><span class="dv">12</span><span class="sc">*</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>),<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'#7f7f7f'</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="dv">12</span><span class="sc">*</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>),<span class="at">y=</span><span class="fl">0.1</span>,<span class="at">labels=</span><span class="fu">paste</span>(<span class="st">'Year'</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>),<span class="at">pos=</span><span class="dv">4</span>,<span class="at">col=</span><span class="st">'#7f7f7f'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="sarima_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Hypothetical seasonal time series</figcaption>
+<p><img src="sarima_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>First five years of a seasonal time series</figcaption>
 </figure>
 </div>
 </div>
@@ -340,16 +357,16 @@ window.Quarto = {
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(y,<span class="at">lag.max=</span><span class="dv">25</span>,<span class="at">main=</span><span class="st">'ACF plot'</span>,<span class="at">ylab=</span><span class="st">'Autocorrelation'</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="fu">c</span>(<span class="st">'1 year'</span>,<span class="st">'2 years'</span>),<span class="at">side=</span><span class="dv">1</span>,<span class="at">line=</span><span class="dv">0</span>,<span class="at">at=</span><span class="fu">c</span>(<span class="dv">12</span>,<span class="dv">24</span>),<span class="at">col=</span><span class="st">'#7f7f7f'</span>,<span class="at">cex=</span><span class="fl">0.75</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">pacf</span>(y,<span class="at">lag.max=</span><span class="dv">25</span>,<span class="at">main=</span><span class="st">'PACF plot'</span>,<span class="at">ylab=</span><span class="st">'Partial autocorrelation'</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="fu">c</span>(<span class="st">'1 year'</span>,<span class="st">'2 years'</span>),<span class="at">side=</span><span class="dv">1</span>,<span class="at">line=</span><span class="dv">0</span>,<span class="at">at=</span><span class="fu">c</span>(<span class="dv">12</span>,<span class="dv">24</span>),<span class="at">col=</span><span class="st">'#7f7f7f'</span>,<span class="at">cex=</span><span class="fl">0.75</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(y,<span class="at">lag.max=</span><span class="dv">25</span>,<span class="at">main=</span><span class="st">'ACF plot'</span>,<span class="at">ylab=</span><span class="st">'Autocorrelation'</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="fu">c</span>(<span class="st">'1 year'</span>,<span class="st">'2 years'</span>),<span class="at">side=</span><span class="dv">1</span>,<span class="at">line=</span><span class="dv">0</span>,<span class="at">at=</span><span class="fu">c</span>(<span class="dv">12</span>,<span class="dv">24</span>),<span class="at">col=</span><span class="st">'#7f7f7f'</span>,<span class="at">cex=</span><span class="fl">0.75</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">pacf</span>(y,<span class="at">lag.max=</span><span class="dv">25</span>,<span class="at">main=</span><span class="st">'PACF plot'</span>,<span class="at">ylab=</span><span class="st">'Partial autocorrelation'</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="fu">c</span>(<span class="st">'1 year'</span>,<span class="st">'2 years'</span>),<span class="at">side=</span><span class="dv">1</span>,<span class="at">line=</span><span class="dv">0</span>,<span class="at">at=</span><span class="fu">c</span>(<span class="dv">12</span>,<span class="dv">24</span>),<span class="at">col=</span><span class="st">'#7f7f7f'</span>,<span class="at">cex=</span><span class="fl">0.75</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="sarima_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="sarima_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
 <figcaption>Autocorrelation structure of a seasonal timeseries</figcaption>
 </figure>
 </div>
@@ -358,6 +375,9 @@ window.Quarto = {
 <p>The ACF plot shows the persistence typical of an AR process, but rather than scaling geometrically down to zero, we see long-term cyclical behavior with peaks at lags 12 and 24 (1 and 2 years). The PACF plot shows the dramatic dropoff after lag 1 typical of an AR(1) process, but then a second peak at lag 12 (1 year).</p>
 <p>Our conclusion is that this time series process can be at least weakly predicted not only by what happened last <em>month</em>, but also what happened last <em>year</em> at this time. Many real-world datasets display this type of double dependency — for example, my inspiration for this simulated data was rainfall totals. There are wet years and dry years, so knowing if the previous month’s rainfall totals were high or low is often helpful to determining whether this month’s rainfall levels were high or low <span class="math inline">\((Y_t \approx Y_{t-1})\)</span>. But there are also wet months and dry months, so knowing the rainfall levels 12 months ago is also helpful in determining this month’s rainfall levels <span class="math inline">\((Y_t \approx Y_{t-12})\)</span>.</p>
 <p>We can model this data as a long-order AR process with nonzero coefficients at 1 and 12 lags, something like AR(0.5,0,0,0,0,0,0,0,0,0,0,0.3), but this seems (and is) unnecessarily cumbersome for a data property we expect to encounter again and again. Instead, we will find new efficiencies through the use of <a href="./backshift.html">the backshift operator</a>.</p>
+</section>
+<section id="definition" class="level2">
+<h2 class="anchored" data-anchor-id="definition">Definition</h2>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -368,13 +388,187 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>, with a known seasonal period of <span class="math inline">\(m\)</span>. Let <span class="math inline">\(\boldsymbol{\omega}\)</span> be a white noise process observed at the same time periods. If there exist characteristic polynomials <span class="math inline">\(\Phi(B), \Phi_s(B^m), \Theta(B), \Theta_s(B^m)\)</span> with polynomial power <span class="math inline">\(p, P, q, Q\)</span> respectively, such that the relationship between <span class="math inline">\(\boldsymbol{Y}\)</span> and <span class="math inline">\(\boldsymbol{\omega}\)</span> can be written:</p>
-<p><span class="math display">\[Y_t \cdot \Phi(B) \cdot \Phi_s(B^m) (1 - B)^d (1 - B^m)^D= \omega_t \cdot \Theta(B) \cdot \Theta_s(B^m)\]</span></p>
+<p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>, with a known seasonal period of <span class="math inline">\(m\)</span>. Let <span class="math inline">\(\boldsymbol{\omega}\)</span> be a white noise process observed at the same time periods. If there exist characteristic polynomials <span class="math inline">\(\Phi(B),\varPhi_s(B^m), \Theta(B), \varTheta_s(B^m)\)</span> with polynomial power <span class="math inline">\(p, P, q, Q\)</span> respectively, such that the relationship between <span class="math inline">\(\boldsymbol{Y}\)</span> and <span class="math inline">\(\boldsymbol{\omega}\)</span> can be written:</p>
+<p><span class="math display">\[Y_t \cdot \Phi(B) \cdot \varPhi_s(B^m) (1 - B)^d (1 - B^m)^D= \omega_t \cdot \Theta(B) \cdot \varTheta_s(B^m)\]</span></p>
 <p>Then we say that <span class="math inline">\(\boldsymbol{Y}\)</span> follows an <strong>seasonal autoregressive integrated moving average (SARIMA) model</strong> written SARIMA(<em>p</em>,<em>d</em>,<em>q</em>)(<em>P</em>,<em>D</em>,<em>Q</em>)<sub>m</sub>.</p>
 </div>
 </div>
+<p>That equation looks menacingly dense, so maybe we can tease it apart:</p>
+<p><span class="math display">\[Y_t \cdot \Phi(B) = 1 - \phi_1Y_{t-1} - \phi_2Y_{t-2} - \ldots - \phi_pY_{t-p}\]</span></p>
+<p>The first polynomial <span class="math inline">\(\Phi(B)\)</span> describes autocorrelation between <span class="math inline">\(Y_t\)</span> and its immediate lags.</p>
+<p><span class="math display">\[Y_t \cdot \varPhi_s(B^m) = 1 - \varphi_1Y_{t-m} - \varphi_2Y_{t-2m} - \ldots - \varphi_PY_{t-Pm}\]</span></p>
+<p>The second polynomial <span class="math inline">\(\varPhi_s(B)\)</span> describes autocorrelation between <span class="math inline">\(Y_t\)</span> and its same-season values in each prior cycle.</p>
+<p><span class="math display">\[Y_t \cdot (1 - B)^d = (Y_t - Y_{t-1})(1 - B)^{d-1} \ldots = \nabla^dY_t\]</span></p>
+<p>The third polynomial <span class="math inline">\((1 - B)^d\)</span> differences the series <span class="math inline">\(d\)</span> times to achieve stationarity.</p>
+<p><span class="math display">\[Y_t \cdot (1 - B^m)^D = (Y_t - Y_{t-m})(1 - B)^{D-1} \ldots = \nabla^{Dm}Y_t\]</span></p>
+<p>The fourth polynomial <span class="math inline">\((1 - B^m)^D\)</span> shifts the analysis to differences (or second differences, etc.) from same-period values in the past seasonal periods.</p>
+<p>_t (B) _s(B^m)</p>
+<p><span class="math display">\[\omega_t \cdot \Theta(B) = 1 + \theta_1\omega_{t-1} + \theta_2\omega_{t-2} + \ldots + \theta_q\omega_{t-q}\]</span></p>
+<p>The fifth polynomial <span class="math inline">\(\Theta(B)\)</span> describes correlation between <span class="math inline">\(Y_t\)</span> and the immediate prior innovations in the times series.</p>
+<p><span class="math display">\[\omega_t \cdot \varTheta_s(B^m) = 1 + \vartheta_1\omega_{t-m} + \vartheta_2\omega_{t-2m} + \ldots + \vartheta_q\omega_{t-Qm}\]</span></p>
+<p>The sixth polynomial <span class="math inline">\(\varTheta_s(B^m)\)</span> describes correlation between <span class="math inline">\(Y_t\)</span> and the same-season innovations in each prior cycle.</p>
+</section>
+<section id="examples" class="level2">
+<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<section id="hypothetical-monthly-series" class="level3">
+<h3 class="anchored" data-anchor-id="hypothetical-monthly-series">Hypothetical monthly series</h3>
+<p>Let’s return to our hypothetical monthly dataset. We saw the first five years above. Let’s plot the last three years, with room for forecasting:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">84</span>),y[<span class="dv">85</span><span class="sc">:</span><span class="dv">120</span>]),<span class="at">type=</span><span class="st">'l'</span>,<span class="at">ylab=</span><span class="fu">expression</span>(Y[t]),<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">85</span>,<span class="dv">132</span>),<span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">6</span>))  </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fl">0.5</span><span class="sc">+</span><span class="dv">12</span><span class="sc">*</span>(<span class="dv">8</span><span class="sc">:</span><span class="dv">10</span>),<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'#7f7f7f'</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="dv">12</span><span class="sc">*</span>(<span class="dv">7</span><span class="sc">:</span><span class="dv">10</span>),<span class="at">y=</span><span class="fl">0.1</span>,<span class="at">labels=</span><span class="fu">paste</span>(<span class="st">'Year'</span>,<span class="dv">8</span><span class="sc">:</span><span class="dv">11</span>),<span class="at">pos=</span><span class="dv">4</span>,<span class="at">col=</span><span class="st">'#7f7f7f'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="sarima_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Last three years of a seasonal time series</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Notice that the seasonal pattern has shifted. Instead of two peaks in spring and autumn, we now see one valley in summer and one peak in winter (this change began as early as Year 5, if you compare with the plot above). Has this wrecked the seasonality of the series? No! In a SARIMA model, all we require is that there be some correlation with the past same-season values, not that the first full period looks just like the last.</p>
+<p>Although we could let an automated routine pick our model for us, based on the ACF and PACF plots above we might feel comfortable diagnosing a SARIMA(1,0,0)(1,0,0)<sub>12</sub>:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>(y.sar <span class="ot">&lt;-</span> <span class="fu">arima</span>(y,<span class="at">order=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>),<span class="at">seasonal=</span><span class="fu">list</span>(<span class="at">order=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>),<span class="at">period=</span><span class="dv">12</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+arima(x = y, order = c(1, 0, 0), seasonal = list(order = c(1, 0, 0), period = 12))
+
+Coefficients:
+         ar1    sar1  intercept
+      0.5146  0.3706     2.5023
+s.e.  0.0803  0.0897     0.2888
+
+sigma^2 estimated as 1.06:  log likelihood = -174.84,  aic = 357.67</code></pre>
+</div>
+</div>
+<p>We can plot the forecast of this SARIMA model and, since ARIMA models are based in distributional theory and an assumption of Gaussian white noise, we can plot an 80% confidence region for our predictions:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">forecast</span>(y.sar,<span class="at">h=</span><span class="dv">12</span>),<span class="at">include=</span><span class="dv">36</span>,<span class="at">ylab=</span><span class="fu">expression</span>(Y[t]),<span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">6</span>),</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">fcol=</span><span class="st">'#0000ff'</span>,<span class="at">pi.col=</span><span class="st">'#0000ff7f'</span>,<span class="at">xlab=</span><span class="st">'Index'</span>)  </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fl">0.5</span><span class="sc">+</span><span class="dv">12</span><span class="sc">*</span>(<span class="dv">8</span><span class="sc">:</span><span class="dv">10</span>),<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'#7f7f7f'</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="dv">12</span><span class="sc">*</span>(<span class="dv">7</span><span class="sc">:</span><span class="dv">10</span>),<span class="at">y=</span><span class="fl">0.1</span>,<span class="at">labels=</span><span class="fu">paste</span>(<span class="st">'Year'</span>,<span class="dv">8</span><span class="sc">:</span><span class="dv">11</span>),<span class="at">pos=</span><span class="dv">4</span>,<span class="at">col=</span><span class="st">'#7f7f7f'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="sarima_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>12-month lookahead forecasts from SARIMA model</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="airline-passengers-data" class="level3">
+<h3 class="anchored" data-anchor-id="airline-passengers-data">Airline passengers data</h3>
+<p>We also examined this data when learning about <a href="./ets.html">exponential smoothing models</a>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(AirPassengers)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="sarima_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Box-Jenkins airline passenger data</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The data show both clear seasonality as well as clear non-stationarity. A Box-Cox transform might help:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">boxcox</span>(AirPassengers<span class="sc">~</span><span class="dv">1</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'Likelihoods for Box-Cox '</span>,lambda)))</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">log</span>(AirPassengers))</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'Box-Cox transformed data, '</span>,lambda <span class="sc">==</span> <span class="dv">0</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sarima_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We seem to have reached trend stationarity. Tests will confirm:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">adf.test</span>(<span class="fu">log</span>(AirPassengers)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Augmented Dickey-Fuller Test
+
+data:  log(AirPassengers)
+Dickey-Fuller = -6.4215, Lag order = 5, p-value = 0.01
+alternative hypothesis: stationary</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">kpss.test</span>(<span class="fu">log</span>(AirPassengers),<span class="at">null=</span><span class="st">'Trend'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    KPSS Test for Trend Stationarity
+
+data:  log(AirPassengers)
+KPSS Trend = 0.11267, Truncation lag parameter = 4, p-value = 0.1</code></pre>
+</div>
+</div>
+<p>We are ready to fit a SARIMA model:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>air.sarima <span class="ot">&lt;-</span> <span class="fu">auto.arima</span>(AirPassengers,<span class="at">lambda=</span><span class="dv">0</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(air.sarima)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Series: AirPassengers 
+ARIMA(0,1,1)(0,1,1)[12] 
+Box Cox transformation: lambda= 0 
+
+Coefficients:
+          ma1     sma1
+      -0.4018  -0.5569
+s.e.   0.0896   0.0731
+
+sigma^2 = 0.001371:  log likelihood = 244.7
+AIC=-483.4   AICc=-483.21   BIC=-474.77
+
+Training set error measures:
+                     ME     RMSE      MAE          MPE     MAPE     MASE
+Training set 0.05140415 10.15504 7.357553 -0.004079018 2.623636 0.229706
+                    ACF1
+Training set -0.03689682</code></pre>
+</div>
+</div>
+<p>Notice that although the series has a clear nonzero mean and a clear deterministic trend, neither effect appears in the model summary! We will explore this more in a moment.</p>
+<p>We see a sensible model with few parameters, each with estimates several times larger than their standard errors, which is usually comforting to a statistician. This SARIMA(0,1,1)(0,1,1)<sub>12</sub> model suggests the following:</p>
+<ul>
+<li><p>First, we are looking at a <em>double-differenced</em> model: once differenced against its first lag, and then re-differenced against its 12<sup>th</sup> lag. The double differencing is why we do not need to estimate a mean/level or a trend/slope: the double difference of a linear trend is zero.</p></li>
+<li><p>Second, there are no AR terms or seasonal AR terms (somewhat surprisingly!), only MA and seasonal MA terms. Rather than creating an echoing chain of dependency across months and across years, we will simply focus on what happened last month and what happened 12 months ago.</p></li>
+<li><p>Third, the MA(1) term and seasonal MA(1) term are negative, meaning that we see some degree of error correction. If the innovation from last month was estimated to be extreme, then we will <em>partially</em> ignore it when modeling this month’s difference. If the innovation from 13 months ago was estimated to be extreme, then we will <em>partially</em> ignore it when constructing the year-ago monthly difference which becomes the reference point for this month’s difference.</p></li>
+<li><p>Fourth, consider that this model implies the following approximate equivalency: <span class="math inline">\(\log Y_t - \log Y_{t-1} \approx \log Y_{t-12} - Y_{t-13}\)</span>. We can re-arrange terms to say that:</p></li>
+</ul>
+<p><span class="math display">\[Y_t = e^{\log Y_{t-1} + \log(Y_{t-12}/Y_{t-13})} = Y_{t-1} + \frac{Y_{t-12}}{Y_{t-13}}\]</span></p>
+<p>In other words, our model suggests that the best prediction of this month’s airline passenger volume is equal to last month’s volume, plus the prior-year proportional increase between the same two months, plus or minus some error correction which is meant to mute the effect of one-off shocks and unusually large innovations. Between a log-transform and the two types of differencing, we were able to describe a multiplicative growth and multiplicative seasonality model using a representation intended for linear, stationary time series!</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -824,6 +1018,9 @@ Note
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="./seasonalityinr.html" class="pagination-link" aria-label="Seasonal models in R">
+        <span class="nav-page-text"><span class="chapter-title">Seasonal models in R</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->

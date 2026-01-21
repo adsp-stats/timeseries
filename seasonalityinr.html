@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>AR models – Forecasting Essentials and Notes: Online Resource</title>
+<title>Seasonal models in R – Forecasting Essentials and Notes: Online Resource</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -65,8 +65,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./ma.html" rel="next">
-<link href="./basicsinr.html" rel="prev">
+<link href="./sarima.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -148,7 +147,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ar.html">2. ARIMA models</a></li><li class="breadcrumb-item"><a href="./ar.html"><span class="chapter-title">AR models</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ets.html">3. ETS and SARIMA models</a></li><li class="breadcrumb-item"><a href="./seasonalityinr.html"><span class="chapter-title">Seasonal models in R</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -233,7 +232,7 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ar.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">AR models</span></a>
+  <a href="./ar.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">AR models</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -279,7 +278,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./seasonalityinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Seasonal models in R</span></a>
+  <a href="./seasonalityinr.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Seasonal models in R</span></a>
   </div>
 </li>
       </ul>
@@ -294,20 +293,23 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#ar1-process" id="toc-ar1-process" class="nav-link active" data-scroll-target="#ar1-process">AR(1) process</a></li>
-  <li><a href="#generalizing-to-arp" id="toc-generalizing-to-arp" class="nav-link" data-scroll-target="#generalizing-to-arp">Generalizing to AR(<em>p</em>)</a></li>
-  <li><a href="#recognizing-an-ar-process-from-its-acf-plot" id="toc-recognizing-an-ar-process-from-its-acf-plot" class="nav-link" data-scroll-target="#recognizing-an-ar-process-from-its-acf-plot">Recognizing an AR process from its ACF plot</a></li>
-  <li><a href="#which-ar-processes-are-stationary" id="toc-which-ar-processes-are-stationary" class="nav-link" data-scroll-target="#which-ar-processes-are-stationary">Which AR processes are stationary</a></li>
-  <li><a href="#ar-model-responses-to-system-shocks" id="toc-ar-model-responses-to-system-shocks" class="nav-link" data-scroll-target="#ar-model-responses-to-system-shocks">AR model responses to system shocks</a></li>
+  <li><a href="#time-series-functions-used-in-this-document" id="toc-time-series-functions-used-in-this-document" class="nav-link active" data-scroll-target="#time-series-functions-used-in-this-document">Time series functions used in this document</a></li>
+  <li><a href="#fitting-ets-models-in-r" id="toc-fitting-ets-models-in-r" class="nav-link" data-scroll-target="#fitting-ets-models-in-r">Fitting ETS models in R</a>
+  <ul class="collapse">
+  <li><a href="#fitting-an-additive-only-model-with-a-box-cox-transformation" id="toc-fitting-an-additive-only-model-with-a-box-cox-transformation" class="nav-link" data-scroll-target="#fitting-an-additive-only-model-with-a-box-cox-transformation">Fitting an additive-only model with a Box-Cox transformation</a></li>
+  <li><a href="#fitting-a-multiplicative-model-without-box-cox-transformation" id="toc-fitting-a-multiplicative-model-without-box-cox-transformation" class="nav-link" data-scroll-target="#fitting-a-multiplicative-model-without-box-cox-transformation">Fitting a multiplicative model without Box-Cox transformation</a></li>
+  <li><a href="#letting-r-decide" id="toc-letting-r-decide" class="nav-link" data-scroll-target="#letting-r-decide">Letting R decide</a></li>
+  </ul></li>
+  <li><a href="#fitting-sarima-models-in-r" id="toc-fitting-sarima-models-in-r" class="nav-link" data-scroll-target="#fitting-sarima-models-in-r">Fitting SARIMA models in R</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content column-body" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ar.html">2. ARIMA models</a></li><li class="breadcrumb-item"><a href="./ar.html"><span class="chapter-title">AR models</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ets.html">3. ETS and SARIMA models</a></li><li class="breadcrumb-item"><a href="./seasonalityinr.html"><span class="chapter-title">Seasonal models in R</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-title">AR models</span></h1>
+<h1 class="title"><span class="chapter-title">Seasonal models in R</span></h1>
 </div>
 
 
@@ -324,207 +326,355 @@ window.Quarto = {
 </header>
 
 
-<p>One building block of statistical time series analysis is the <em>autoregressive (AR) model</em>. As the name implies, an AR model presumes that past values of the series can be used to directly predict current values using a regression-like structure:</p>
-<p><span class="math display">\[Y_t = \beta_0 + \beta_1 Y_{t-1} + \beta_2 Y_{t-2} + \ldots + \varepsilon_t\]</span></p>
-<p>I wrote the equation above using the notation of linear regression. We will be expressing the same concept using slightly different notation below.</p>
-<section id="ar1-process" class="level2">
-<h2 class="anchored" data-anchor-id="ar1-process">AR(1) process</h2>
-<p>Let’s take the simplest case, where each value of the series is predicted only by the previous value. We would name this an <em>autoregressive model with order 1</em> or <em>AR(1) model</em>.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>. Let <span class="math inline">\(\boldsymbol{\omega}\)</span> be a white noise process observed at the same time periods. If,</p>
-<p><span class="math display">\[Y_t = \phi Y_{t-1} + \omega_t\]</span></p>
-<p>For some <span class="math inline">\(\phi \in \mathbb{R}\)</span> and all <span class="math inline">\(t \in T\)</span>, then we say that <span class="math inline">\(\boldsymbol{Y}\)</span> is an <strong>autoregressive process with order 1</strong></p>
-</div>
-</div>
-<p>In theory, the exact properties of an AR(1) process depend on both the autoregressive parameter <span class="math inline">\(\phi\)</span> as well as the specific type of white noise process denoted by <span class="math inline">\(\boldsymbol{\omega}\)</span>. In practice, we often assume <span class="math inline">\(\boldsymbol{\omega}\)</span> to be Gaussian white noise, leaving <span class="math inline">\(\phi\)</span> as the only input which needs estimation.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">1.1</span>))</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0106</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>phivec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.5</span>,<span class="sc">-</span><span class="fl">1.0</span>,<span class="sc">-</span><span class="fl">0.5</span>,<span class="dv">0</span>,<span class="fl">0.3</span>,<span class="fl">0.6</span>,<span class="fl">0.9</span>,<span class="fl">1.0</span>,<span class="fl">1.5</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">rep</span>(w[<span class="dv">1</span>],<span class="dv">9</span>))</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">100</span>){Y <span class="ot">&lt;-</span> <span class="fu">rbind</span>(Y, <span class="fu">t</span>(<span class="fu">rep</span>(w[i],<span class="dv">9</span>)<span class="sc">+</span>phivec<span class="sc">*</span>Y[i<span class="dv">-1</span>,]))}</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) <span class="fu">plot</span>(Y[,j],<span class="at">main=</span><span class="fu">bquote</span>(phi<span class="sc">==</span>.(phivec[j])),</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                    <span class="at">type=</span><span class="st">'l'</span>,<span class="at">xlab=</span><span class="cn">NA</span>,<span class="at">ylab=</span><span class="cn">NA</span>,<span class="at">sub=</span><span class="cn">NA</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="ar_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Nine AR(1) processes with the same innovations</figcaption>
-</figure>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forecast)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tseries)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</div>
-</div>
-<p>The plots above provide examples of some specific properties of AR(1) processes:</p>
-<ul>
-<li><p>When <span class="math inline">\(\phi \gt 1\)</span> or <span class="math inline">\(\phi \lt -1\)</span>, we say the process is <strong>explosive.</strong> After a short-to-moderate ‘fuse’, the innovations begin to cumulate exponentially, rapidly heading toward infinity.</p></li>
-<li><p>When <span class="math inline">\(\phi = 1\)</span>, we say that the process is a <em>random walk</em>, since we now have the familiar model <span class="math inline">\(Y_t = Y_{t-1} + \omega_t\)</span>. When <span class="math inline">\(\phi = -1\)</span> we have a variant on a random walk in which both the odd and even observations begin closely-related random walks headed in opposite directions.</p></li>
-<li><p>When <span class="math inline">\(-1 \lt \phi \lt 1\)</span> we observe a <em>stationary process</em>. This includes the case where <span class="math inline">\(\phi = 0\)</span> (pure white noise), but also other series with noticeable positive or negative autocorrelation. Despite the autocorrelation, the mean and variance of the unconditional variables <span class="math inline">\(Y_t\)</span> (that is, without knowing the past values of <span class="math inline">\(\boldsymbol{Y}\)</span>) remain the same, and the autocorrelation of two values depends only on their lag distance, not their time index values.</p></li>
-</ul>
+<section id="time-series-functions-used-in-this-document" class="level2">
+<h2 class="anchored" data-anchor-id="time-series-functions-used-in-this-document">Time series functions used in this document</h2>
+<p>In the table below, packages with <em>italicized</em> names will need to be installed, while the package names in a standard font face can be found in most base R distributions (though they may need to be loaded into your workspace).</p>
+<table class="caption-top table">
+<caption>Time series functions used in the code below</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Package</th>
+<th style="text-align: left;">Function name</th>
+<th style="text-align: left;">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">stats</td>
+<td style="text-align: left;">window</td>
+<td style="text-align: left;">Subset a time series</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><em>forecast</em></td>
+<td style="text-align: left;">ets</td>
+<td style="text-align: left;">Fit exponential smoothing models</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><em>forecast</em></td>
+<td style="text-align: left;">forecast</td>
+<td style="text-align: left;">Look-ahead prediction of a ts model</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><em>tseries</em></td>
+<td style="text-align: left;">adf.test</td>
+<td style="text-align: left;">ADF stationarity test</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><em>tseries</em></td>
+<td style="text-align: left;">kpss.test</td>
+<td style="text-align: left;">KPSS stationarity test</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><em>forecast</em></td>
+<td style="text-align: left;">plot.Arima</td>
+<td style="text-align: left;">Plot the inverse AR and MA roots</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><em>forecast</em></td>
+<td style="text-align: left;">plot.forecast</td>
+<td style="text-align: left;">Plot predictions from a ts model</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">stats</td>
+<td style="text-align: left;">Box.test</td>
+<td style="text-align: left;">Box-Ljung test for autocorrelation</td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="generalizing-to-arp" class="level2">
-<h2 class="anchored" data-anchor-id="generalizing-to-arp">Generalizing to AR(<em>p</em>)</h2>
-<p>Now we may complicate the scenario, by allowing the current value <span class="math inline">\(Y_t\)</span> to have <em>several, different</em> relationships with <em>arbitrary</em> past lags of the series.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>. Let <span class="math inline">\(\boldsymbol{\omega}\)</span> be a white noise process observed at the same time periods. If,</p>
-<p><span class="math display">\[Y_t = \phi_1 Y_{t-1} + \phi_2 Y_{t-2} + \ldots + \phi_p Y_{t-p} + \omega_t\]</span></p>
-<p>For some <span class="math inline">\((\phi_1, \phi_2, \ldots, \phi_p) \in \mathbb{R}^p\)</span> and all <span class="math inline">\(t \in T\)</span>, then we say that <span class="math inline">\(\boldsymbol{Y}\)</span> is an <strong>autoregressive model with order</strong> <strong><em>p</em></strong>.</p>
-</div>
-</div>
-<p>These AR(<em>p</em>) processes can be difficult to visually distinguish because of the more complicated autocorrelation patterns.</p>
+<section id="fitting-ets-models-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="fitting-ets-models-in-r">Fitting ETS models in R</h2>
+<p>The workhorse function <code>forecast::ets</code> (or its tidyverse equivalent, <code>fable::ETS</code>) can fit any of the exponential smoothing models described in Forecasting: Principles and Practice <a href="https://otexts.com/fpp2/">2<sup>nd</sup> edition</a> or <a href="https://otexts.com/fpp3/">3<sup>rd</sup> edition</a>, respectively.</p>
+<p>Let’s apply it to a quarterly series of UK quarterly gas consumption:<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
 <div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">1.1</span>))</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0107</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>phi1vec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>,<span class="fl">0.7</span>, <span class="fl">0.7</span>,<span class="fl">0.6</span>,<span class="dv">0</span>,  <span class="sc">-</span><span class="fl">1.6</span>,<span class="fl">0.5</span>,<span class="fl">0.3</span>,<span class="dv">0</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>phi2vec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>,<span class="fl">0.7</span>,<span class="sc">-</span><span class="fl">0.7</span>,<span class="fl">0.2</span>,<span class="fl">0.5</span>, <span class="fl">0.8</span>,<span class="fl">0.4</span>,<span class="fl">0.2</span>,<span class="dv">0</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>phi3vec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>,  <span class="dv">0</span>,   <span class="dv">0</span>,  <span class="dv">0</span>,  <span class="dv">0</span>,   <span class="dv">0</span>,  <span class="fl">0.3</span>,<span class="fl">0.1</span>,<span class="dv">1</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">rep</span>(w[<span class="dv">1</span>],<span class="dv">9</span>))</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">rbind</span>(Y, <span class="fu">t</span>(<span class="fu">rep</span>(w[<span class="dv">2</span>],<span class="dv">9</span>)<span class="sc">+</span>phi1vec<span class="sc">*</span>Y[<span class="dv">1</span>,]))</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">rbind</span>(Y, <span class="fu">t</span>(<span class="fu">rep</span>(w[<span class="dv">3</span>],<span class="dv">9</span>)<span class="sc">+</span>phi1vec<span class="sc">*</span>Y[<span class="dv">2</span>,]<span class="sc">+</span>phi2vec<span class="sc">*</span>Y[<span class="dv">1</span>,]))</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">4</span><span class="sc">:</span><span class="dv">100</span>){Y <span class="ot">&lt;-</span> <span class="fu">rbind</span>(Y,</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">t</span>(<span class="fu">rep</span>(w[i],<span class="dv">9</span>)<span class="sc">+</span>phi1vec<span class="sc">*</span>Y[i<span class="dv">-1</span>,]<span class="sc">+</span>phi2vec<span class="sc">*</span>Y[i<span class="dv">-2</span>,]<span class="sc">+</span>phi3vec<span class="sc">*</span>Y[i<span class="dv">-3</span>,]))}</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) <span class="fu">plot</span>(Y[,j],<span class="at">main=</span><span class="fu">bquote</span>(</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bold</span>(phi) <span class="sc">==</span> <span class="fu">list</span>(.(phi1vec[j]),.(phi2vec[j]),.(phi3vec[j]))),</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">type=</span><span class="st">'l'</span>,<span class="at">xlab=</span><span class="cn">NA</span>,<span class="at">ylab=</span><span class="cn">NA</span>,<span class="at">sub=</span><span class="cn">NA</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(UKgas)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure class="figure">
-<p><img src="ar_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Nine AR(2) and AR(3) processes with the same innovations</figcaption>
+<p><img src="seasonalityinr_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>gas.train <span class="ot">&lt;-</span> <span class="fu">window</span>(UKgas,<span class="at">end=</span><span class="fl">1985.25</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>gas.test <span class="ot">&lt;-</span> <span class="fu">window</span>(UKgas,<span class="at">start=</span><span class="fl">1985.5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The data are clearly non-stationary, with a multiplicative seasonality (perhaps corresponding to a growing population). We might be able to control this multiplicative effect with a Box-Cox transformation, or through the explicit use of multiplicative errors and seasonal effects. Let’s examine those two options, holding the last six quarters back as a prediction testbed.</p>
+<section id="fitting-an-additive-only-model-with-a-box-cox-transformation" class="level3">
+<h3 class="anchored" data-anchor-id="fitting-an-additive-only-model-with-a-box-cox-transformation">Fitting an additive-only model with a Box-Cox transformation</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ets.aaa <span class="ot">&lt;-</span> <span class="fu">ets</span>(gas.train,<span class="at">model=</span><span class="st">'AAA'</span>,<span class="at">lambda=</span><span class="st">'auto'</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ets.aaa)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>ETS(A,Ad,A) 
+
+Call:
+ets(y = gas.train, model = "AAA", lambda = "auto")
+
+  Box-Cox transformation: lambda= -0.4329 
+
+  Smoothing parameters:
+    alpha = 0.0306 
+    beta  = 0.0281 
+    gamma = 0.5365 
+    phi   = 0.98 
+
+  Initial states:
+    l = 2.0142 
+    b = 6e-04 
+    s = -3e-04 -0.0452 0.0084 0.0371
+
+  sigma:  0.0102
+
+      AIC      AICc       BIC 
+-453.1036 -450.6861 -426.8539 
+
+Training set error measures:
+                   ME     RMSE      MAE       MPE     MAPE      MASE       ACF1
+Training set 3.536558 30.18087 19.39172 0.5496738 6.064928 0.7319039 -0.1072051</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ets.aaa)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="seasonalityinr_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
+<p>The low values of the smoothing parameters <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> suggest that long-ago observations are still quite useful in setting the level and the trend for the current quarter’s gas prices. In contrast, the relatively high value of the smoothing parameter <span class="math inline">\(\gamma\)</span> suggests that the most recent seasonal pattern is more helpfully informative than prior years’ seasonal patterns.</p>
+<p>A damped trend was selected over an undamped trend — we can manually change this with the <code>damped=FASE</code> argument, or keep it. Since the damping parameter <span class="math inline">\(\phi\)</span> is 0.98, the difference between the two models will be relatively small.</p>
+<p>Note the significant transformation achieved with the Box-Cox transformation (where <span class="math inline">\(\lambda \approx -0.43\)</span>), which changes the series to something more closely approximating trend-stationarity. And yet, the seasonal plot still shows nonconstant variance (which is likely why the parameter <span class="math inline">\(\gamma\)</span> is relatively high). It’s hard to know whether this is a bug or a feature, <em>i.e.</em> whether a transformation could draw useful more information out of the past or not.</p>
 </section>
-<section id="recognizing-an-ar-process-from-its-acf-plot" class="level2">
-<h2 class="anchored" data-anchor-id="recognizing-an-ar-process-from-its-acf-plot">Recognizing an AR process from its ACF plot</h2>
-<p>An autocorrelation function (ACF) plot will sometimes provide helpful summary or diagnostic information about an AR(<em>p</em>) model. In the simplest case of AR(1), the height of the ACF plot at the first lag will be equal to <em>p</em>, and the remaining lags will scale geometrically downward. For example, when <span class="math inline">\(p=0.8\)</span>, the second lag will have an autocorrelation of roughly 0.64, and the third lag will have autocorrelation of roughly 0.512</p>
+<section id="fitting-a-multiplicative-model-without-box-cox-transformation" class="level3">
+<h3 class="anchored" data-anchor-id="fitting-a-multiplicative-model-without-box-cox-transformation">Fitting a multiplicative model without Box-Cox transformation</h3>
 <div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">1.1</span>))</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0108</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>ar08 <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ar=</span><span class="fl">0.8</span>),<span class="at">n=</span><span class="dv">1000</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>arneg05 <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ar=</span><span class="sc">-</span><span class="fl">0.5</span>),<span class="at">n=</span><span class="dv">1000</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(ar08,<span class="at">main=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'ACF when '</span>,phi <span class="sc">==</span> <span class="fl">0.8</span>)),<span class="at">lag.max=</span><span class="dv">15</span>)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(arneg05,<span class="at">main=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'ACF when '</span>,phi <span class="sc">==</span> <span class="sc">-</span><span class="fl">0.5</span>)),<span class="at">lag.max=</span><span class="dv">15</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>ets.zam <span class="ot">&lt;-</span> <span class="fu">ets</span>(gas.train,<span class="at">model=</span><span class="st">'ZAM'</span>,<span class="at">lambda=</span><span class="cn">NULL</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ets.zam)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>ETS(M,A,M) 
+
+Call:
+ets(y = gas.train, model = "ZAM", lambda = NULL)
+
+  Smoothing parameters:
+    alpha = 0.0279 
+    beta  = 0.0277 
+    gamma = 0.5994 
+
+  Initial states:
+    l = 123.9697 
+    b = 0.7846 
+    s = 0.9453 0.6771 1.0464 1.3312
+
+  sigma:  0.1164
+
+     AIC     AICc      BIC 
+1170.080 1172.037 1193.705 
+
+Training set error measures:
+                   ME     RMSE     MAE        MPE     MAPE     MASE       ACF1
+Training set 3.835205 30.89018 20.1769 0.06514202 6.418552 0.761539 -0.1309169</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ets.zam)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure class="figure">
-<p><img src="ar_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Two AR(1) processes and their ACF plots, 1000 obs each</figcaption>
+<p><img src="seasonalityinr_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>More complex AR models have correspondingly complex ACF plots, and you will not always be able to easily diagnose the order and coefficient sizes:</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">1.1</span>))</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0109</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>ar08neg05 <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ar=</span><span class="fu">c</span>(<span class="fl">0.8</span>,<span class="sc">-</span><span class="fl">0.5</span>)),<span class="at">n=</span><span class="dv">1000</span>)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>arneg05neg04 <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ar=</span><span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.5</span>,<span class="sc">-</span><span class="fl">0.4</span>)),<span class="at">n=</span><span class="dv">1000</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(ar08neg05,<span class="at">main=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'ACF when '</span>,phi <span class="sc">==</span> <span class="fu">list</span>(<span class="fl">0.8</span>,<span class="sc">-</span><span class="fl">0.5</span>))),<span class="at">lag.max=</span><span class="dv">15</span>)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(arneg05neg04,<span class="at">main=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'ACF when '</span>,phi <span class="sc">==</span> <span class="fu">list</span>(<span class="sc">-</span><span class="fl">0.5</span>,<span class="sc">-</span><span class="fl">0.4</span>))),<span class="at">lag.max=</span><span class="dv">15</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="ar_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Two AR(2) processes and their ACF plots, 1000 obs each</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p>You do <em>not</em> need to be able to spot a complex AR model from a brief inspection of its time series or its ACF plot. However, you <em>should</em> know that complex behavior can be very accurately fit by a relatively simple AR model.</p>
+<p>By using the argument ‘Z’, we can tell the <code>ets()</code> function to choose additive, multiplicative, or none for each component. In this case, I was sure about requesting an additive trend (<code>ets()</code> won’t actually fit most multiplicative trends), and a multiplicative seasonality, but was unsure about whether the error process was best viewed as additive or multiplicative. R chose multiplicative.</p>
+<p>However, the summary is disappointing. This looks like a strictly worse version of our earlier model. Similar smoothing parameters, similar (but worse) model metrics, and a more chaotic slope plot which suggests that the model is trying to cram a lot of information into a slope in order to incorporate large and unexpected changes in the series. Let’s try restoring the Box-Cox transformation.</p>
 </section>
-<section id="which-ar-processes-are-stationary" class="level2">
-<h2 class="anchored" data-anchor-id="which-ar-processes-are-stationary">Which AR processes are stationary</h2>
-<p>We will learn more about this elsewhere, when we discuss unit roots. For now, I will leave you with a simple set of guidelines:</p>
-<ul>
-<li><p>AR(1) processes are stationary when <span class="math inline">\(|\phi_1| \lt 1\)</span></p></li>
-<li><p>AR(2) processes are stationary when three conditions are met:</p></li>
-</ul>
-<p><span class="math display">\[\begin{aligned}(1) \qquad &amp; |\phi_2| \lt 1 \\ (2) \qquad &amp; \phi_1 + \phi_2 \lt 1 \\ (3) \qquad &amp; \phi_1 - \phi_2 \lt 1 \end{aligned}\]</span></p>
-<p>Representing the two parameters <span class="math inline">\(phi_1\)</span> and <span class="math inline">\(\phi_2\)</span> on the coördinate plane, we would say any process with its parameters inside the shaded region is stationary:</p>
+<section id="letting-r-decide" class="level3">
+<h3 class="anchored" data-anchor-id="letting-r-decide">Letting R decide</h3>
 <div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="fl">2.25</span>,<span class="fl">2.25</span>),<span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.25</span>,<span class="fl">1.25</span>),<span class="at">type=</span><span class="st">'n'</span>,<span class="at">main=</span><span class="cn">NA</span>,<span class="at">sub=</span><span class="cn">NA</span>,</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="fu">expression</span>(phi[<span class="dv">2</span>]),<span class="at">xlab=</span><span class="fu">expression</span>(phi[<span class="dv">1</span>]),<span class="at">asp=</span><span class="dv">1</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">polygon</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="dv">0</span>,<span class="dv">2</span>),<span class="at">y=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>),<span class="at">lty=</span><span class="dv">1</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">density=</span><span class="sc">-</span><span class="dv">1</span>,<span class="at">col=</span><span class="st">'#0000ff7f'</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="dv">0</span>,<span class="at">v=</span><span class="dv">0</span>,<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'#7f7f7f'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ets.zzz <span class="ot">&lt;-</span> <span class="fu">ets</span>(gas.train,<span class="at">model=</span><span class="st">'ZZZ'</span>,<span class="at">lambda=</span><span class="st">'auto'</span>,<span class="at">biasadj=</span><span class="cn">TRUE</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ets.zzz)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>ETS(A,Ad,A) 
+
+Call:
+ets(y = gas.train, model = "ZZZ", lambda = "auto", biasadj = TRUE)
+
+  Box-Cox transformation: lambda= -0.4329 
+
+  Smoothing parameters:
+    alpha = 0.0306 
+    beta  = 0.0281 
+    gamma = 0.5365 
+    phi   = 0.98 
+
+  Initial states:
+    l = 2.0142 
+    b = 6e-04 
+    s = -3e-04 -0.0452 0.0084 0.0371
+
+  sigma:  0.0102
+
+      AIC      AICc       BIC 
+-453.1036 -450.6861 -426.8539 
+
+Training set error measures:
+                    ME     RMSE      MAE        MPE     MAPE      MASE
+Training set -1.311548 30.33744 19.56546 -0.5017562 6.134186 0.7384615
+                    ACF1
+Training set -0.08345354</code></pre>
+</div>
+</div>
+<p>R confirms our earlier choice of the additive Holt-Winters model with damped trend. By using the <code>biasadj=TRUE</code> argument, we can remove bias from our forecast estimates (after Box-Cox transforming the data to fit the model, the inverse-Box-Cox forecasts will be for the median value of <span class="math inline">\(\hat{y}_t\)</span>, not the mean).</p>
+<p>How would this model finish out our series?</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">forecast</span>(ets.zzz,<span class="at">h=</span><span class="dv">6</span>),<span class="at">include=</span><span class="dv">12</span>,<span class="at">PI=</span><span class="cn">FALSE</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(gas.test)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure class="figure">
-<p><img src="ar_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Stationary sets of AR(2) parameters</figcaption>
+<p><img src="seasonalityinr_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<ul>
-<li>For AR(3) and higher processes, stationarity will depend upon the roots of the characteristic polynomial, which can be calculated with a unit root test.</li>
-</ul>
+<p>In the code above I’ve set <code>h=6</code> to define the number of forecasted periods, <code>include=12</code> to limit how much of the prior oobserved series appears on the plot, and <code>PI=FALSE</code> to remove the prediction intervals (which rely upon distributional theory we have not yet decided to use).</p>
+<p>On balance, I would say these predictions are quite good! The seasonal cycle and past exponential growth both carry forward well into 1986.</p>
 </section>
-<section id="ar-model-responses-to-system-shocks" class="level2">
-<h2 class="anchored" data-anchor-id="ar-model-responses-to-system-shocks">AR model responses to system shocks</h2>
-<p>AR models translate one-time system shocks into persistent, slowly-decaying signals. Consider a simple AR(1) model which processes a fairly quiet series of innovations, interrupted irregularly by a much larger signal:</p>
+</section>
+<section id="fitting-sarima-models-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="fitting-sarima-models-in-r">Fitting SARIMA models in R</h2>
+<p>We can try to fit a SARIMA model to the same dataset. Because ARIMA models assume a stationary series, we will first have to do what we can to achieve stationarity:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0110</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">100</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>w[<span class="dv">8</span>] <span class="ot">&lt;-</span> <span class="dv">10</span>; w[<span class="dv">15</span>] <span class="ot">&lt;-</span> <span class="dv">10</span>; w[<span class="dv">25</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">10</span>; w[<span class="dv">45</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">10</span>;</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>ar <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ar=</span><span class="fl">0.9</span>),<span class="at">n=</span><span class="dv">100</span>,<span class="at">innov=</span>w)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">15</span><span class="sc">+</span>ar,<span class="at">type=</span><span class="st">'s'</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">10</span>,<span class="dv">27</span>),<span class="at">ylab=</span><span class="cn">NA</span>)</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(w,<span class="at">type=</span><span class="st">'h'</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">lwd=</span><span class="dv">2</span>)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="dv">15</span>,<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'#7f7f7f'</span>)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topright'</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#0000ff'</span>),<span class="at">bty=</span><span class="st">'n'</span>,</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend=</span><span class="fu">c</span>(<span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'Time series '</span>,Y[t])),</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>                <span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'Innovations '</span>,omega[t]))))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>gas.sarima <span class="ot">&lt;-</span> <span class="fu">auto.arima</span>(gas.train,<span class="at">approximation=</span><span class="cn">FALSE</span>,<span class="at">stepwise=</span><span class="cn">FALSE</span>,<span class="at">seasonal=</span><span class="cn">TRUE</span>,<span class="at">lambda=</span><span class="st">'auto'</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(gas.sarima)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Series: gas.train 
+ARIMA(2,0,2)(0,1,1)[4] with drift 
+Box Cox transformation: lambda= -0.4328729 
+
+Coefficients:
+         ar1      ar2      ma1     ma2     sma1   drift
+      1.4412  -0.4796  -1.6261  0.7314  -0.4244  0.0013
+s.e.  0.1918   0.1956   0.1498  0.1548   0.1151  0.0004
+
+sigma^2 = 9.742e-05:  log likelihood = 316.18
+AIC=-618.37   AICc=-617.12   BIC=-600.27
+
+Training set error measures:
+                    ME    RMSE    MAE        MPE     MAPE      MASE      ACF1
+Training set -1.358139 30.5077 19.739 -0.3803901 6.282248 0.7450115 0.1790798</code></pre>
+</div>
+</div>
+<p>By using the arguments <code>approximation=FALSE</code> and <code>stepwise=FALSE</code>, I ensure that R takes its time to fully calculate every reasonable model before choosing the best one. These arguments may be inconvenient or even impossible with large datasets or with long-period seasonality, where R may take several minutes to find the best model.</p>
+<p>R returns a reasonable idea: The changes in gas prices vs.&nbsp;the same quarter last year are weakly mean-reverting around an exponential drift, but with some persistence (when this quarter’s year-over-year change is negative or positive, the next one will likely be similar) and some error correction (unexpected anomalies rarely happen in consecutive years). But is it a reasonable model?</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gas.sarima)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure class="figure">
-<p><img src="ar_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Persistence and decay in an AR(1) model</figcaption>
+<p><img src="seasonalityinr_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gas.sarima<span class="sc">$</span>residuals)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="seasonalityinr_files/figure-html/unnamed-chunk-8-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">adf.test</span>(gas.sarima<span class="sc">$</span>residuals))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Augmented Dickey-Fuller Test
+
+data:  gas.sarima$residuals
+Dickey-Fuller = -3.6612, Lag order = 4, p-value = 0.03112
+alternative hypothesis: stationary</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">kpss.test</span>(gas.sarima<span class="sc">$</span>residuals))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    KPSS Test for Level Stationarity
+
+data:  gas.sarima$residuals
+KPSS Level = 0.19341, Truncation lag parameter = 4, p-value = 0.1</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Box.test</span>(gas.sarima<span class="sc">$</span>residuals,<span class="at">type=</span><span class="st">'Ljung'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Box-Ljung test
+
+data:  gas.sarima$residuals
+X-squared = 0.041022, df = 1, p-value = 0.8395</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(gas.sarima<span class="sc">$</span>residuals)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">pacf</span>(gas.sarima<span class="sc">$</span>residuals)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="seasonalityinr_files/figure-html/unnamed-chunk-8-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We see that none of the roots are perilously close to the edge of the unit circle, which is a good sign (R will always try to estimate a stationary ARIMA model, so when the roots are very close to the unit circle we have some evidence that the true process is actually nonstationary). We also see that the estimated innovations are relatively “clean” (stationary, no signs of remaining autocorrelation).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">forecast</span>(gas.sarima,<span class="at">h=</span><span class="dv">6</span>),<span class="at">include=</span><span class="dv">12</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(gas.test)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="seasonalityinr_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Our predictions are very good with this method too! We should not really be surprised: as <a href="https://otexts.com/fpp3/arima-ets.html">described by Hyndman and Athanasopoulos</a>, purely additive ETS models can be represented as ARIMA models and <em>vice versa</em>. Although the exact form of our chosen ETS model and our SARIMA model are not equivalent, they are close.</p>
+<p>Note that these predictions come with confidence intervals, since ARIMA models suppose a Gaussian white noise error process. We can recover these intervals and/or select new ones using the <code>forecast</code> function or alternatively with the <code>predict.Arima</code> function.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">forecast</span>(gas.sarima,<span class="at">h=</span><span class="dv">6</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        Point Forecast    Lo 80     Hi 80    Lo 95     Hi 95
+1985 Q3       240.4994 210.7762  276.6159 197.1367  298.9494
+1985 Q4       785.2351 630.3943 1000.9633 565.6710 1150.9506
+1986 Q1      1163.0804 898.4302 1555.4689 792.2109 1843.8957
+1986 Q2       561.4655 463.5813  691.9078 421.4312  779.1419
+1986 Q3       252.2123 214.0962  300.8558 197.1917  332.2017
+1986 Q4       851.1074 649.1042 1156.9429 569.1086 1386.0739</code></pre>
+</div>
+</div>
+<p>Which model we use, ETS or SARIMA, is a judgment call at this point: neither model is terribly flawed nor much better or worse than the other. We might prioritize in-sample RMSE, out-of-sample RMSE, other measures such as MAE, domain expertise, parsimony, prior literature, etc. We should not use AIC or other likelihood-based techniques, as these are sensitive to how we represent Y, which can change with orders of differencing or model classes.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co">#ETS metrics</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">is.rmse=</span><span class="fu">sqrt</span>(<span class="fu">mean</span>((gas.train<span class="sc">-</span>ets.zzz<span class="sc">$</span>fitted)<span class="sc">^</span><span class="dv">2</span>)),</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">oos.rmse=</span><span class="fu">sqrt</span>(<span class="fu">mean</span>((gas.test<span class="sc">-</span><span class="fu">forecast</span>(ets.zzz,<span class="at">h=</span><span class="dv">6</span>)<span class="sc">$</span>mean)<span class="sc">^</span><span class="dv">2</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> is.rmse oos.rmse 
+30.33744 54.96811 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">#SARIMA metrics</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">is.rmse=</span><span class="fu">sqrt</span>(<span class="fu">mean</span>((gas.train<span class="sc">-</span>gas.sarima<span class="sc">$</span>fitted)<span class="sc">^</span><span class="dv">2</span>)),</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">oos.rmse=</span><span class="fu">sqrt</span>(<span class="fu">mean</span>((gas.test<span class="sc">-</span><span class="fu">forecast</span>(gas.sarima,<span class="at">h=</span><span class="dv">6</span>)<span class="sc">$</span>mean)<span class="sc">^</span><span class="dv">2</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> is.rmse oos.rmse 
+30.50770 54.93136 </code></pre>
 </div>
 </div>
 
 
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>Gas here meaning natural gas, and not gasoline, which in the UK would be called petrol.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
 </section>
 
 </main> <!-- /main -->
@@ -969,14 +1119,11 @@ Note
   </script>
 <nav class="page-navigation column-body">
   <div class="nav-page nav-page-previous">
-      <a href="./basicsinr.html" class="pagination-link" aria-label="Time series basics in R">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Time series basics in R</span></span>
+      <a href="./sarima.html" class="pagination-link" aria-label="SARIMA models">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">SARIMA models</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./ma.html" class="pagination-link" aria-label="MA models">
-        <span class="nav-page-text"><span class="chapter-title">MA models</span></span> <i class="bi bi-arrow-right-short"></i>
-      </a>
   </div>
 </nav>
 </div> <!-- /content -->
