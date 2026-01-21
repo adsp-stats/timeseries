@@ -116,7 +116,7 @@ plot(gold.fill)
 
 ## Assessing and recovering stationarity
 
-Our work here has already been outlined in [one](stationarity.qmd) or [two](codingbasicsinr.qmd) previous notes, to which I now refer the reader.
+Our work here has already been outlined in [one](stationarity.qmd) or [two](basicsinr.qmd) previous notes, to which I now refer the reader.
 
 Inspecting the plot above, the gold prices *look* like they may be a random walk. They certainly don't look stationary. First, let's examine whether a Box-Cox transformation might be helpful.
 
