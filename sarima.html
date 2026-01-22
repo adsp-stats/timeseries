@@ -400,8 +400,8 @@ Note
 <p>The second polynomial <span class="math inline">\(\varPhi_s(B)\)</span> describes autocorrelation between <span class="math inline">\(Y_t\)</span> and its same-season values in each prior cycle.</p>
 <p><span class="math display">\[Y_t \cdot (1 - B)^d = (Y_t - Y_{t-1})(1 - B)^{d-1} \ldots = \nabla^dY_t\]</span></p>
 <p>The third polynomial <span class="math inline">\((1 - B)^d\)</span> differences the series <span class="math inline">\(d\)</span> times to achieve stationarity.</p>
-<p><span class="math display">\[Y_t \cdot (1 - B^m)^D = (Y_t - Y_{t-m})(1 - B)^{D-1} \ldots = \nabla^{Dm}Y_t\]</span></p>
-<p>The fourth polynomial <span class="math inline">\((1 - B^m)^D\)</span> shifts the analysis to differences (or second differences, etc.) from same-period values in the past seasonal periods.</p>
+<p><span class="math display">\[Y_t \cdot (1 - B^m)^D = (Y_t - Y_{t-m})(1 - B)^{D-1} \ldots = \nabla^D_mY_t\]</span></p>
+<p>The fourth polynomial <span class="math inline">\((1 - B^m)^D\)</span> shifts the analysis to differences (or second differences, etc.) from same-period values in the past seasonal periods.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
 <p><span class="math display">\[\omega_t \cdot \Theta(B) = 1 + \theta_1\omega_{t-1} + \theta_2\omega_{t-2} + \ldots + \theta_q\omega_{t-q}\]</span></p>
 <p>The fifth polynomial <span class="math inline">\(\Theta(B)\)</span> describes correlation between <span class="math inline">\(Y_t\)</span> and the immediate prior innovations in the times series.</p>
 <p><span class="math display">\[\omega_t \cdot \varTheta_s(B^m) = 1 + \vartheta_1\omega_{t-m} + \vartheta_2\omega_{t-2m} + \ldots + \vartheta_q\omega_{t-Qm}\]</span></p>
@@ -568,6 +568,12 @@ Training set -0.03689682</code></pre>
 
 
 </section>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>Recall that <span class="math inline">\(\nabla^D\)</span> represents the <em>D</em><sup>th</sup>-order difference, while <span class="math inline">\(\nabla_m\)</span> represents the first-order difference between <span class="math inline">\(Y_t\)</span> and its <em>m</em><sup>th</sup> lag <span class="math inline">\(Y_{t-m}\)</span>, so <span class="math inline">\(\nabla^D_m\)</span> is the <em>D</em><sup>th</sup>-order difference using the <em>m</em><sup>th</sup> lag.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
 </section>
 
 </main> <!-- /main -->
