@@ -72,8 +72,6 @@ $$Y_t \cdot (1 - B^m)^D = (Y_t - Y_{t-m})(1 - B)^{D-1} \ldots = \nabla^{Dm}Y_t$$
 
 The fourth polynomial $(1 - B^m)^D$ shifts the analysis to differences (or second differences, etc.) from same-period values in the past seasonal periods.
 
-\omega_t \cdot \Theta(B) \cdot \varTheta_s(B^m)
-
 $$\omega_t \cdot \Theta(B) = 1 + \theta_1\omega_{t-1} + \theta_2\omega_{t-2} + \ldots + \theta_q\omega_{t-q}$$
 
 The fifth polynomial $\Theta(B)$ describes correlation between $Y_t$ and the immediate prior innovations in the times series.
@@ -165,7 +163,7 @@ We see a sensible model with few parameters, each with estimates several times l
   
   * Fourth, consider that this model implies the following approximate equivalency: $\log Y_t - \log Y_{t-1} \approx \log Y_{t-12} - Y_{t-13}$. We can re-arrange terms to say that:
   
-  $$Y_t = e^{\log Y_{t-1} + \log(Y_{t-12}/Y_{t-13})} = Y_{t-1} + \frac{Y_{t-12}}{Y_{t-13}}$$
+  $$Y_t = e^{\log Y_{t-1} + \log(Y_{t-12}/Y_{t-13})} = Y_{t-1} \times \frac{Y_{t-12}}{Y_{t-13}}$$
   
 In other words, our model suggests that the best prediction of this month's airline passenger volume is equal to last month's volume, plus the prior-year proportional increase between the same two months, plus or minus some error correction which is meant to mute the effect of one-off shocks and unusually large innovations. Between a log-transform and the two types of differencing, we were able to describe a multiplicative growth and multiplicative seasonality model using a representation intended for linear, stationary time series!
 
