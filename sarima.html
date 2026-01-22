@@ -402,7 +402,6 @@ Note
 <p>The third polynomial <span class="math inline">\((1 - B)^d\)</span> differences the series <span class="math inline">\(d\)</span> times to achieve stationarity.</p>
 <p><span class="math display">\[Y_t \cdot (1 - B^m)^D = (Y_t - Y_{t-m})(1 - B)^{D-1} \ldots = \nabla^{Dm}Y_t\]</span></p>
 <p>The fourth polynomial <span class="math inline">\((1 - B^m)^D\)</span> shifts the analysis to differences (or second differences, etc.) from same-period values in the past seasonal periods.</p>
-<p>_t (B) _s(B^m)</p>
 <p><span class="math display">\[\omega_t \cdot \Theta(B) = 1 + \theta_1\omega_{t-1} + \theta_2\omega_{t-2} + \ldots + \theta_q\omega_{t-q}\]</span></p>
 <p>The fifth polynomial <span class="math inline">\(\Theta(B)\)</span> describes correlation between <span class="math inline">\(Y_t\)</span> and the immediate prior innovations in the times series.</p>
 <p><span class="math display">\[\omega_t \cdot \varTheta_s(B^m) = 1 + \vartheta_1\omega_{t-m} + \vartheta_2\omega_{t-2m} + \ldots + \vartheta_q\omega_{t-Qm}\]</span></p>
@@ -564,7 +563,7 @@ Training set -0.03689682</code></pre>
 <li><p>Third, the MA(1) term and seasonal MA(1) term are negative, meaning that we see some degree of error correction. If the innovation from last month was estimated to be extreme, then we will <em>partially</em> ignore it when modeling this month’s difference. If the innovation from 13 months ago was estimated to be extreme, then we will <em>partially</em> ignore it when constructing the year-ago monthly difference which becomes the reference point for this month’s difference.</p></li>
 <li><p>Fourth, consider that this model implies the following approximate equivalency: <span class="math inline">\(\log Y_t - \log Y_{t-1} \approx \log Y_{t-12} - Y_{t-13}\)</span>. We can re-arrange terms to say that:</p></li>
 </ul>
-<p><span class="math display">\[Y_t = e^{\log Y_{t-1} + \log(Y_{t-12}/Y_{t-13})} = Y_{t-1} + \frac{Y_{t-12}}{Y_{t-13}}\]</span></p>
+<p><span class="math display">\[Y_t = e^{\log Y_{t-1} + \log(Y_{t-12}/Y_{t-13})} = Y_{t-1} \times \frac{Y_{t-12}}{Y_{t-13}}\]</span></p>
 <p>In other words, our model suggests that the best prediction of this month’s airline passenger volume is equal to last month’s volume, plus the prior-year proportional increase between the same two months, plus or minus some error correction which is meant to mute the effect of one-off shocks and unusually large innovations. Between a log-transform and the two types of differencing, we were able to describe a multiplicative growth and multiplicative seasonality model using a representation intended for linear, stationary time series!</p>
 
 
