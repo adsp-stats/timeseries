@@ -68,9 +68,9 @@ $$Y_t \cdot (1 - B)^d = (Y_t - Y_{t-1})(1 - B)^{d-1} \ldots = \nabla^dY_t$$
 
 The third polynomial $(1 - B)^d$ differences the series $d$ times to achieve stationarity.
 
-$$Y_t \cdot (1 - B^m)^D = (Y_t - Y_{t-m})(1 - B)^{D-1} \ldots = \nabla^{Dm}Y_t$$
+$$Y_t \cdot (1 - B^m)^D = (Y_t - Y_{t-m})(1 - B)^{D-1} \ldots = \nabla^D_mY_t$$
 
-The fourth polynomial $(1 - B^m)^D$ shifts the analysis to differences (or second differences, etc.) from same-period values in the past seasonal periods.
+The fourth polynomial $(1 - B^m)^D$ shifts the analysis to differences (or second differences, etc.) from same-period values in the past seasonal periods.^[Recall that $\nabla^D$ represents the *D*^th^-order difference, while $\nabla_m$ represents the first-order difference between $Y_t$ and its *m*^th^ lag $Y_{t-m}$, so $\nabla^D_m$ is the *D*^th^-order difference using the *m*^th^ lag.]
 
 $$\omega_t \cdot \Theta(B) = 1 + \theta_1\omega_{t-1} + \theta_2\omega_{t-2} + \ldots + \theta_q\omega_{t-q}$$
 
