@@ -26,6 +26,11 @@ book:
         - ets.qmd
         - sarima.qmd
         - seasonalityinr.qmd
+    - part: "4. Forecasting and validation"
+      chapters:
+        - forecasts.qmd
+        - validation.qmd
+        - validationinr.qmd
 format:
   html:
     toc: true

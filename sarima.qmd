@@ -161,7 +161,7 @@ We see a sensible model with few parameters, each with estimates several times l
   
   * Third, the MA(1) term and seasonal MA(1) term are negative, meaning that we see some degree of error correction. If the innovation from last month was estimated to be extreme, then we will *partially* ignore it when modeling this month's difference. If the innovation from 13 months ago was estimated to be extreme, then we will *partially* ignore it when constructing the year-ago monthly difference which becomes the reference point for this month's difference.
   
-  * Fourth, consider that this model implies the following approximate equivalency: $\log Y_t - \log Y_{t-1} \approx \log Y_{t-12} - Y_{t-13}$. We can re-arrange terms to say that:
+  * Fourth, consider that this model implies the following approximate equivalency: $\log Y_t - \log Y_{t-1} \approx \log Y_{t-12} - \log Y_{t-13}$. We can re-arrange terms to say that:
   
   $$Y_t = e^{\log Y_{t-1} + \log(Y_{t-12}/Y_{t-13})} = Y_{t-1} \times \frac{Y_{t-12}}{Y_{t-13}}$$
   
