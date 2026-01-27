@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Forecast strategies – Forecasting Essentials and Notes: Online Resource</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./validation.html" rel="next">
+<link href="./seasonalityinr.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-635ebee939b5a5ef3c54ffc98530d095.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./forecasts.html">4. Forecasting and validation</a></li><li class="breadcrumb-item"><a href="./forecasts.html"><span class="chapter-title">Forecast strategies</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Forecasting Essentials and Notes: Online Resource</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Introduction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">1. Time series basics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./whatisatimeseries.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">What is a time series?</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./autocovariance.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Autocovariance and autocorrelation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./whitenoise.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">White noise</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./randomwalk.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Random walks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stationarity.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Stationarity</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./basicsinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Time series basics in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">2. ARIMA models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ar.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">AR models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ma.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">MA models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./backshift.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Backshift notation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arima.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">ARIMA models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./identificationinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">ARIMA identification in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">3. ETS and SARIMA models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ets.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">ETS models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sarima.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">SARIMA models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./seasonalityinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Seasonal models in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">4. Forecasting and validation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./forecasts.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Forecast strategies</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./validation.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Model validation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./validationinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Validation in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#notation" id="toc-notation" class="nav-link active" data-scroll-target="#notation">Notation</a></li>
+  <li><a href="#recursive-forecasting" id="toc-recursive-forecasting" class="nav-link" data-scroll-target="#recursive-forecasting">Recursive forecasting</a>
+  <ul class="collapse">
+  <li><a href="#theory" id="toc-theory" class="nav-link" data-scroll-target="#theory">Theory</a></li>
+  <li><a href="#example-ar2-model" id="toc-example-ar2-model" class="nav-link" data-scroll-target="#example-ar2-model">Example: AR(2) model</a></li>
+  <li><a href="#properties" id="toc-properties" class="nav-link" data-scroll-target="#properties">Properties</a></li>
+  </ul></li>
+  <li><a href="#direct-forecasting" id="toc-direct-forecasting" class="nav-link" data-scroll-target="#direct-forecasting">Direct forecasting</a>
+  <ul class="collapse">
+  <li><a href="#theory-1" id="toc-theory-1" class="nav-link" data-scroll-target="#theory-1">Theory</a></li>
+  <li><a href="#example-non-exponential-smoothing" id="toc-example-non-exponential-smoothing" class="nav-link" data-scroll-target="#example-non-exponential-smoothing">Example: Non-exponential smoothing</a></li>
+  <li><a href="#properties-1" id="toc-properties-1" class="nav-link" data-scroll-target="#properties-1">Properties</a></li>
+  </ul></li>
+  <li><a href="#multiple-input-multiple-output-mimo-forecasting" id="toc-multiple-input-multiple-output-mimo-forecasting" class="nav-link" data-scroll-target="#multiple-input-multiple-output-mimo-forecasting">Multiple-input multiple-output (MIMO) forecasting</a>
+  <ul class="collapse">
+  <li><a href="#theory-2" id="toc-theory-2" class="nav-link" data-scroll-target="#theory-2">Theory</a></li>
+  <li><a href="#example-transit-state-space-modeling" id="toc-example-transit-state-space-modeling" class="nav-link" data-scroll-target="#example-transit-state-space-modeling">Example: Transit state-space modeling</a></li>
+  <li><a href="#properties-2" id="toc-properties-2" class="nav-link" data-scroll-target="#properties-2">Properties</a></li>
+  </ul></li>
+  <li><a href="#hybrid-strategies" id="toc-hybrid-strategies" class="nav-link" data-scroll-target="#hybrid-strategies">Hybrid strategies</a>
+  <ul class="collapse">
+  <li><a href="#dirrec" id="toc-dirrec" class="nav-link" data-scroll-target="#dirrec">DirRec</a></li>
+  <li><a href="#dirmo" id="toc-dirmo" class="nav-link" data-scroll-target="#dirmo">DIRMO</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./forecasts.html">4. Forecasting and validation</a></li><li class="breadcrumb-item"><a href="./forecasts.html"><span class="chapter-title">Forecast strategies</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-title">Forecast strategies</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta column-body">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>So far we’ve learned about two classes of time series models: <a href="./arima.html">ARIMA</a> (including variants like <a href="./sarima.html">SARIMA</a>), and <a href="./ets.html">exponential smoothing models</a>. Both of these models describe a data generating process in which each new observation evolves from an iterative calculation dependent upon the immediate prior observation(s).</p>
+<p>Forecasting both of these models involves “walking” or “unfolding” the process forward, one step at a time. The easiest way to understand our projection for <span class="math inline">\(\hat{y}_{t+2}\)</span> from the information gathered at time <span class="math inline">\(t\)</span> is to first compute our projection for <span class="math inline">\(\hat{y}_{t+1} | y_t\)</span>, and then continue to calculate <span class="math inline">\(\hat{y}_{t+2} | y_t, \hat{y}_{t+1}\)</span>.</p>
+<p>This is a very intuitive idea, and for many datasets it produces effective results with relatively modest compute and memory requirements. In the right contexts, however, alternative strategies will outcompete these models. We will learn a little more about the different strategies available to us below.</p>
+<section id="notation" class="level2">
+<h2 class="anchored" data-anchor-id="notation">Notation</h2>
+<p>In all of the discussion on this page, I will try to keep to the following notation, as similar as possible to what we have already been using, and as similar as possible to the discussion found in <a href="https://www.sciencedirect.com/science/article/abs/pii/S0957417412000528">Ben Taieb, <em>et al.</em> (2012)</a>.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 91%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Term</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(y_1, \ldots, y_N\)</span></td>
+<td style="text-align: left;">The training data used to build all models</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(y_N\)</span></td>
+<td style="text-align: left;">The last observation in the training data</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(y_t\)</span></td>
+<td style="text-align: left;">Any generic observation (<em>not</em> necesarily the last observation)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\hat{y}_{N+t}\)</span></td>
+<td style="text-align: left;">Any generic forecasted future observation</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(f\)</span></td>
+<td style="text-align: left;">A conceptual model of the data generating process</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(w\)</span></td>
+<td style="text-align: left;">A “fudge factor” including all noise, anomalies, and modeling error</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\hat{f}\)</span></td>
+<td style="text-align: left;">A “one-ahead” forecasting function, prefit using all training data</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\hat{f_h}\)</span></td>
+<td style="text-align: left;">An “<em>h</em>-ahead” forecasting function, prefit using all training data</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(d\)</span></td>
+<td style="text-align: left;">The embedding dimension (how many past observations are used as forecasting inputs)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(H\)</span></td>
+<td style="text-align: left;">The maximum number of periods for which a forecast is needed</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\boldsymbol{w}\)</span></td>
+<td style="text-align: left;">A vectorized “fudge factor”, <span class="math inline">\(\boldsymbol{w} \in \mathbb{R}^H\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(F\)</span></td>
+<td style="text-align: left;">A multivariate model of the data generating process, <span class="math inline">\(F:\mathbb{R}^d \rightarrow \mathbb{R}^H\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\hat{F}\)</span></td>
+<td style="text-align: left;">A multivariate forecasting function, prefit using all training data</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(I\)</span></td>
+<td style="text-align: left;">The number of forecasting “blocks” in a DIRMO strategy</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(s\)</span></td>
+<td style="text-align: left;">The size of each forecasting “block” in a DIRMO strategy</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="recursive-forecasting" class="level2">
+<h2 class="anchored" data-anchor-id="recursive-forecasting">Recursive forecasting</h2>
+<section id="theory" class="level3">
+<h3 class="anchored" data-anchor-id="theory">Theory</h3>
+<p>This strategy is the first we have learned, and applies to ARIMA models, ETS models, state space models, some KNN (<em>k</em>-nearest neighbor) models, and some RNN (recursive neural network) models, among others.</p>
+<p>All of these models use a data generating process which can be expressed as follows:</p>
+<p><span class="math display">\[y_t = f(y_{t-d}, \ldots, y_{t-1}) + w\]</span></p>
+<p>Note that the true data generating process <span class="math inline">\(f\)</span> is not itself data-dependent. For example, if we are studying an ARMA(1,2) process, the true parameters <span class="math inline">\(\phi_1, \theta_1, \theta_2\)</span> are fixed in stone (yet usually unknown). The data may guide us close to them or wildly mislead us, but <span class="math inline">\(\phi_1, \theta_1, \theta_2\)</span> do not change when we observe our sample.</p>
+<p>However, even though the nature of the function itself is not data-dependent, the specific outputs of any function depend on the inputs, and if we were again considering an ARMA(1,2) process (where <span class="math inline">\(d=2\)</span>) we could say that <span class="math inline">\(y_t\)</span> is a function of <span class="math inline">\(y_{t-1}\)</span> and <span class="math inline">\(y_{t-2}\)</span> plus some white noise, misspecification, parameter drift, <em>etc.</em>, which we can aggregate into the error term <span class="math inline">\(w\)</span>.</p>
+<p>Forecasting from this model involves estimating the data generating process <span class="math inline">\(f\)</span> from the data, resulting in the forecasting function <span class="math inline">\(\hat{f}_h\)</span> for any observation <span class="math inline">\(h\)</span> steps into the future. The inputs to this function are all “real” observations, all “forecasts”, or a mix of the two, depending on the embedding dimension <span class="math inline">\(d\)</span> and the forecast horizon <span class="math inline">\(h\)</span>:</p>
+<p><span class="math display">\[\hat{y}_{N+h} = \left\{ \begin{array}{ll} \hat{f}(y_{N-d+1}, \ldots, y_N) &amp; \textrm{if} \; h=1 \\ \hat{f}(y_{N-d+h}, \ldots, y_N,\hat{y}_{N+1}, \ldots, \hat{y}_{N+h-1}) &amp; \textrm{if} \; h=2,\ldots,d \\ \hat{f}(\hat{y}_{N+h-d}, \ldots, \hat{y}_{N+h-1}) &amp; \textrm{if} \; h \gt d \end{array} \right\}\]</span></p>
+</section>
+<section id="example-ar2-model" class="level3">
+<h3 class="anchored" data-anchor-id="example-ar2-model">Example: AR(2) model</h3>
+<p>Suppose we model a time series sample (with 100 observations) using an AR(2) process. That is, we believe the embedding dimension <span class="math inline">\(d=2\)</span>, and that:</p>
+<p><span class="math display">\[\begin{aligned} y_t &amp;= \phi_1 y_{t-1} + \phi_2 y_{t-2} + \omega_t \\ \\ &amp;= f(y_{t-1},y_{t-2}) + w \end{aligned}\]</span></p>
+<p>Using all 100 observations, we train our model and conclude that <span class="math inline">\(\phi_1 = 0.5\)</span> and <span class="math inline">\(\phi_2 = 0.4\)</span>. This allows us to use a resursive forecast function to define forecasts for time indices 101, 102, and 103:</p>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">1.8</span>, <span class="fl">2.5</span>, <span class="fl">2.1</span>, <span class="fl">3.0</span>, <span class="fl">2.0</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>yhat <span class="ot">&lt;-</span>    <span class="fl">0.5</span><span class="sc">*</span>y[<span class="dv">5</span>]    <span class="sc">+</span> <span class="fl">0.4</span><span class="sc">*</span>y[<span class="dv">4</span>]</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>yhat[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="fl">0.5</span><span class="sc">*</span>yhat[<span class="dv">1</span>] <span class="sc">+</span> <span class="fl">0.4</span><span class="sc">*</span>y[<span class="dv">5</span>]</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>yhat[<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="fl">0.5</span><span class="sc">*</span>yhat[<span class="dv">2</span>] <span class="sc">+</span> <span class="fl">0.4</span><span class="sc">*</span>yhat[<span class="dv">1</span>]</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">96</span><span class="sc">:</span><span class="dv">100</span>,y,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">96</span>,<span class="dv">103</span>),<span class="at">pch=</span><span class="dv">19</span>,<span class="at">type=</span><span class="st">'b'</span>,<span class="at">xlab=</span><span class="st">'Time index'</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="dv">99</span><span class="sc">:</span><span class="dv">100</span>,y[<span class="dv">4</span><span class="sc">:</span><span class="dv">5</span>],<span class="at">pch=</span><span class="dv">0</span>,<span class="at">cex=</span><span class="fl">1.5</span>,<span class="at">col=</span><span class="st">'#ff0000'</span>,<span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="dv">101</span>,yhat[<span class="dv">1</span>],<span class="at">pch=</span><span class="dv">17</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topright'</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Observations'</span>,<span class="st">'Forecasting inputs'</span>,<span class="st">'Forecasts'</span>),<span class="at">bty=</span><span class="st">'n'</span>,<span class="at">pch=</span><span class="fu">c</span>(<span class="dv">19</span>,<span class="dv">0</span>,<span class="dv">17</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#ff0000'</span>,<span class="st">'#0000ff'</span>))</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">96</span><span class="sc">:</span><span class="dv">100</span>,y,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">96</span>,<span class="dv">103</span>),<span class="at">pch=</span><span class="dv">19</span>,<span class="at">type=</span><span class="st">'b'</span>,<span class="at">xlab=</span><span class="st">'Time index'</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="dv">100</span><span class="sc">:</span><span class="dv">101</span>,<span class="fu">c</span>(y[<span class="dv">5</span>],yhat[<span class="dv">1</span>]),<span class="at">pch=</span><span class="dv">0</span>,<span class="at">cex=</span><span class="fl">1.5</span>,<span class="at">col=</span><span class="st">'#ff0000'</span>,<span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="dv">101</span><span class="sc">:</span><span class="dv">102</span>,yhat[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>],<span class="at">pch=</span><span class="dv">17</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topright'</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Observations'</span>,<span class="st">'Forecasting inputs'</span>,<span class="st">'Forecasts'</span>),<span class="at">bty=</span><span class="st">'n'</span>,<span class="at">pch=</span><span class="fu">c</span>(<span class="dv">19</span>,<span class="dv">0</span>,<span class="dv">17</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#ff0000'</span>,<span class="st">'#0000ff'</span>))</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">96</span><span class="sc">:</span><span class="dv">100</span>,y,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">96</span>,<span class="dv">103</span>),<span class="at">pch=</span><span class="dv">19</span>,<span class="at">type=</span><span class="st">'b'</span>,<span class="at">xlab=</span><span class="st">'Time index'</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="dv">101</span><span class="sc">:</span><span class="dv">102</span>,yhat[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>],<span class="at">pch=</span><span class="dv">0</span>,<span class="at">cex=</span><span class="fl">1.5</span>,<span class="at">col=</span><span class="st">'#ff0000'</span>,<span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="dv">101</span><span class="sc">:</span><span class="dv">103</span>,yhat[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>],<span class="at">pch=</span><span class="dv">17</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topright'</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Observations'</span>,<span class="st">'Forecasting inputs'</span>,<span class="st">'Forecasts'</span>),<span class="at">bty=</span><span class="st">'n'</span>,<span class="at">pch=</span><span class="fu">c</span>(<span class="dv">19</span>,<span class="dv">0</span>,<span class="dv">17</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#ff0000'</span>,<span class="st">'#0000ff'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell quarto-layout-panel" data-layout-ncol="1">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="forecasts_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Recursive forecast for h=1</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="forecasts_files/figure-html/unnamed-chunk-1-2.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Recursive forecast for h=2</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="forecasts_files/figure-html/unnamed-chunk-1-3.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Recursive forecast for h=3</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="properties" class="level3">
+<h3 class="anchored" data-anchor-id="properties">Properties</h3>
+<p>Strengths of recursive forecasting:</p>
+<ul>
+<li><p><strong>Intuitive:</strong> For models like ARIMA and ETS, the forecasting method matches the data generation process. For all recursive forecasting, we predict by simulating an evolving world one step at a time, matching our own experience of reality.</p></li>
+<li><p><strong>Preserves time-dependency:</strong> Autocorrelations and other dependencies between observations are preserved over a multi-period forecast.</p></li>
+<li><p><strong>Lightweight:</strong> Neither the model nor the forecasting function need to be re-fit, simply re-applied in a single loop.</p></li>
+<li><p><strong>User-proof:</strong> No hyperparameters mean that nothing that can be set “wrong”.</p></li>
+</ul>
+<p>Weaknesses of recursive forecasting:</p>
+<ul>
+<li><p><strong>Compounding errors:</strong> Small errors in each period’s forecast usually aggregate and get fixed into future-period forecasting, dragging later forecasts far from their actual values.</p></li>
+<li><p><strong>Strong assumptions:</strong> Recursive models imply that the data generating process is constant (or at least similarly parameterized) throughout the past and future. They are less effective in the face of mixture models, high volatility, structural breaks, etc.</p></li>
+</ul>
+</section>
+</section>
+<section id="direct-forecasting" class="level2">
+<h2 class="anchored" data-anchor-id="direct-forecasting">Direct forecasting</h2>
+<section id="theory-1" class="level3">
+<h3 class="anchored" data-anchor-id="theory-1">Theory</h3>
+<p>Rather than understanding future time period <span class="math inline">\(N+2\)</span> as a function of the current time period <span class="math inline">\(N\)</span> and the next time period <span class="math inline">\(N+1\)</span>, we could simply create a new forecasting function <span class="math inline">\(\hat{f_2}\)</span> custom-built for <em>two</em>-ahead prediction. This new forecasting function would not need the prediction <span class="math inline">\(\hat{y}_{N+1}\)</span> as an input.</p>
+<p>This forecasting method matches well with neural networks, some KNN models, and many series displaying weak time-series behavior which might otherwise be modeled with time-invariant techniques such as regression.</p>
+<p>Even if the “true” data generating process evolves iteratively, direct forecasting strategies believe that each observation <span class="math inline">\(y_t\)</span> can be usefully modeled by several <em>different</em> functions, each of which use a different set of prior values:</p>
+<p><span class="math display">\[\begin{aligned} y_t &amp;= f_1(y_{t-d}, \ldots, y_{t-1}) + w \\ y_t &amp;= f_2(y_{t-d-1}, \ldots, y_{t-2}) + w \\ \vdots &amp; \\ y_t &amp;= f_H(y_{t-d-H+1}, \ldots, y_{t-H}) + w \end{aligned}\]</span></p>
+<p>This structure allows us to estimate a set of forecasting functions, which use only observed values <span class="math inline">\(y_t\)</span> as inputs:</p>
+<p><span class="math display">\[\hat{y}_{N+h} = \hat{f_h}(y_{N-d+1}, \ldots, y_N)\]</span></p>
+</section>
+<section id="example-non-exponential-smoothing" class="level3">
+<h3 class="anchored" data-anchor-id="example-non-exponential-smoothing">Example: Non-exponential smoothing</h3>
+<p>Suppose an economist is making predictions about future inflation rates. They know that inflation has averaged 2% per annum over the last several decades, and they also know that, in the short-term, the inflation rate this quarter is a good predictor of the inflation next quarter. They devise the following forecast models:</p>
+<p><span class="math display">\[\begin{aligned} \hat{y}_{N+1} = {f_1}(y_N) = 0.8y_N + 0.2(0.02) \\ \hat{y}_{N+2} = {f_2}(y_N) = 0.6y_N + 0.4(0.02) \\ \hat{y}_{N+3} = {f_3}(y_N) = 0.4y_N + 0.6(0.02) \\ \hat{y}_{N+4} = {f_4}(y_N) = 0.2y_N + 0.8(0.02) \end{aligned}\]</span></p>
+<p>(Implicitly, we might add that <span class="math inline">\(\hat{y}_{N+h} = 0.02\)</span> for any <span class="math inline">\(h \gt 4\)</span>). This model shows a mean reversion from the current value which could also be modeled with an AR(1) process; however, the AR decay is exponential and our economist may have empirical evidence to suggest that inflation rates revert to the mean at a steadier pace.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.021</span>, <span class="fl">0.02</span>, <span class="fl">0.03</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>yhat <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.8</span>,<span class="fl">0.6</span>,<span class="fl">0.4</span>,<span class="fl">0.2</span>)<span class="sc">*</span>y[<span class="dv">4</span>] <span class="sc">+</span> <span class="fu">c</span>(<span class="fl">0.2</span>,<span class="fl">0.4</span>,<span class="fl">0.6</span>,<span class="fl">0.8</span>)<span class="sc">*</span><span class="fl">0.02</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>,y,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">8</span>),<span class="at">pch=</span><span class="dv">19</span>,<span class="at">type=</span><span class="st">'b'</span>,<span class="at">xlab=</span><span class="st">'Quarter'</span>,<span class="at">ylab=</span><span class="st">'Inflation rate'</span>,<span class="at">xaxt=</span><span class="st">'n'</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="at">side=</span><span class="dv">1</span>,<span class="at">at=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>,<span class="at">labels=</span><span class="fu">c</span>(<span class="fu">paste0</span>(<span class="st">'2025Q'</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>),<span class="fu">paste0</span>(<span class="st">'2026Q'</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>)))</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="dv">4</span>,y[<span class="dv">4</span>],<span class="at">pch=</span><span class="dv">0</span>,<span class="at">cex=</span><span class="fl">1.5</span>,<span class="at">col=</span><span class="st">'#ff0000'</span>,<span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="dv">5</span><span class="sc">:</span><span class="dv">8</span>,yhat,<span class="at">pch=</span><span class="dv">17</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topleft'</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Observations'</span>,<span class="st">'Forecasting inputs'</span>,<span class="st">'Forecasts'</span>),<span class="at">bty=</span><span class="st">'n'</span>,<span class="at">pch=</span><span class="fu">c</span>(<span class="dv">19</span>,<span class="dv">0</span>,<span class="dv">17</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#ff0000'</span>,<span class="st">'#0000ff'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="forecasts_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Direct forecasts for h=1,2,3,4</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="properties-1" class="level3">
+<h3 class="anchored" data-anchor-id="properties-1">Properties</h3>
+<p>Strengths of direct forecasting:</p>
+<ul>
+<li><p><strong>Robust:</strong> By fitting separate models for each time horizon, we stop large errors in one forecast from contaminating future-period forecasts.</p></li>
+<li><p><strong>Only uses observed data:</strong> Conceptually, these models do not need any “guesses” about an intermediate future state in order to make their forecasts.</p></li>
+<li><p><strong>Resource needs independent of forecast horizon:</strong> Generally, a forecast for time <span class="math inline">\(N+100\)</span> requires the same amount of resources as the forecast for time <span class="math inline">\(N+1\)</span>, unlike recursive models which must simulate 99 additional steps.</p></li>
+</ul>
+<p>Weaknesses of direct forecasting:</p>
+<ul>
+<li><p><strong>Erases interdependence between forecast values:</strong> The forecasts are all conditionally independent of each other, and so direct forecasts for adjacent time periods might suggest improbable or nonsensical single-period changes, or ignore useful information from intermediate forecast periods.</p></li>
+<li><p><strong>More resource-intensive:</strong> Separate models must be trained and stored for each forecast horizon.</p></li>
+</ul>
+</section>
+</section>
+<section id="multiple-input-multiple-output-mimo-forecasting" class="level2">
+<h2 class="anchored" data-anchor-id="multiple-input-multiple-output-mimo-forecasting">Multiple-input multiple-output (MIMO) forecasting</h2>
+<section id="theory-2" class="level3">
+<h3 class="anchored" data-anchor-id="theory-2">Theory</h3>
+<p>Both of the strategies described above forecast a <em>single</em> future period; that is, each forecasting model <span class="math inline">\(\hat{f}\)</span> or <span class="math inline">\(\hat{f_h}\)</span> is a real-valued function of one or more inputs which produces one output, our forecast <span class="math inline">\(\hat{y}_{N+h}\)</span>.</p>
+<p>One tension between these two strategies is that recursive forecasts understands the interdependency between different forecast points, but is prone to accumulate and amplify forecasting error. Contrariwise, direct forecasting avoids the compounding errors by destroying the links between forecasted values.</p>
+<p>Multiple-input multiple-output (MIMO) forecasting attempts to resolve this tension by forecasting all future periods within the time horizon <span class="math inline">\(H\)</span> at once. No matter how the current values of the series evolved, any subset of <span class="math inline">\(H\)</span> observations can be usefully modeled <em>en masse</em> by the <span class="math inline">\(d\)</span> prior values:</p>
+<p><span class="math display">\[(y_{t-H+1}, \ldots, y_t) = F(y_{t-d-H+1}, \ldots, y_{t-H}) + \boldsymbol{w}\]</span></p>
+<p>This structure allows us to estimate a multivariate forecasting function which will allow us to predict the entire forecasting horizon at once:</p>
+<p><span class="math display">\[(\hat{y}_{N+1}, \ldots, \hat{y}_{N+h}) = \hat{F}(y_{N-d+1}, \ldots, y_N)\]</span></p>
+<p>The outputs of these models can display correlations and other dependencies (like recursive forecasting), while imposing set-level constraints which discourage one unusual forecast from unduly influencing the other forecasts.</p>
+<p>These forecasting strategies appear commonly in transformer-based architectures, which seek to predict the next several tokens/events at the same time, using a shared representation space for all of the tokens/events. MIMO strategies also do very well in <em>probabilistic forecasting</em>, which does not seek to predict the future mean of a series, but instead allows for probabilistic statements about how likely certain combinations of future events will be.</p>
+</section>
+<section id="example-transit-state-space-modeling" class="level3">
+<h3 class="anchored" data-anchor-id="example-transit-state-space-modeling">Example: Transit state-space modeling</h3>
+<p>Suppose a bus route through town is served by five buses. The bus route is a circuit which takes roughly 50 minutes to complete, and so the average wait time for a bus at any given stop is roughly 10 minutes.</p>
+<p>We could try to predict the arrival time for the next few buses at any given stop from the arrival times of the prior buses at that same stop. Our knowledge of the real world constraints and goals of the bus drivers can help us model complex behavior:</p>
+<ul>
+<li><p>If the last arrival time <span class="math inline">\(y_t\)</span> was five minutes ago, the next one would be expected in five minutes and the one after that in fifteen minutes (ten minutes more).</p></li>
+<li><p>If the last arrival time <span class="math inline">\(y_t\)</span> was fifteen minutes ago, the next one is probably due very soon, and the one after that is <em>also</em> due very soon (bunching.)</p></li>
+<li><p>Five buses should make a stop within roughly 50 minutes of the most recent bus stop.</p></li>
+</ul>
+<p>This behavior can be well-approximated using a <em>state space model</em>, which we will learn about later. Given this setup, we would do well to forecast the next five bus stops from the times of the previous five bus stops:</p>
+<p><span class="math display">\[(\hat{y}_{N+1}, \ldots, \hat{y}_{N+5}) = \hat{F}(\hat{y}_{N-4}, \ldots, \hat{y}_{N})\]</span></p>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">60</span>,<span class="sc">-</span><span class="dv">55</span>,<span class="sc">-</span><span class="dv">48</span>,<span class="sc">-</span><span class="dv">33</span>,<span class="sc">-</span><span class="dv">30</span>,<span class="sc">-</span><span class="dv">19</span>,<span class="sc">-</span><span class="dv">5</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>yhat <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">15</span>,<span class="dv">25</span>,<span class="dv">35</span>,<span class="dv">45</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y,<span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">7</span>),<span class="at">xlim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">75</span>,<span class="dv">50</span>),<span class="at">pch=</span><span class="dv">19</span>,<span class="at">type=</span><span class="st">'p'</span>,<span class="at">xlab=</span><span class="st">'Arrival time (min)'</span>,<span class="at">ylab=</span><span class="cn">NA</span>,<span class="at">yaxt=</span><span class="st">'n'</span>,<span class="at">xaxt=</span><span class="st">'n'</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">3</span>))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="at">side=</span><span class="dv">1</span>,<span class="at">at=</span><span class="fu">seq</span>(<span class="sc">-</span><span class="dv">75</span>,<span class="dv">50</span>,<span class="dv">25</span>),<span class="at">labels=</span><span class="cn">TRUE</span>,<span class="at">pos=</span><span class="sc">-</span><span class="fl">0.25</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(y[<span class="dv">3</span><span class="sc">:</span><span class="dv">7</span>],<span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">5</span>),<span class="at">pch=</span><span class="dv">0</span>,<span class="at">cex=</span><span class="fl">1.5</span>,<span class="at">col=</span><span class="st">'#ff0000'</span>,<span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(yhat,<span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">5</span>),<span class="at">pch=</span><span class="dv">17</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topleft'</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Observations'</span>,<span class="st">'Forecasting inputs'</span>,<span class="st">'Forecasts'</span>),<span class="at">bty=</span><span class="st">'n'</span>,<span class="at">pch=</span><span class="fu">c</span>(<span class="dv">19</span>,<span class="dv">0</span>,<span class="dv">17</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#ff0000'</span>,<span class="st">'#0000ff'</span>))</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">70</span>,<span class="sc">-</span><span class="dv">55</span>,<span class="sc">-</span><span class="dv">43</span>,<span class="sc">-</span><span class="dv">38</span>,<span class="sc">-</span><span class="dv">35</span>,<span class="sc">-</span><span class="dv">26</span>,<span class="sc">-</span><span class="dv">22</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>yhat <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">4</span>,<span class="dv">10</span>,<span class="dv">27</span>,<span class="dv">47</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(y,<span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">7</span>),<span class="at">xlim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">75</span>,<span class="dv">50</span>),<span class="at">pch=</span><span class="dv">19</span>,<span class="at">type=</span><span class="st">'p'</span>,<span class="at">xlab=</span><span class="st">'Arrival time (min)'</span>,<span class="at">ylab=</span><span class="cn">NA</span>,<span class="at">yaxt=</span><span class="st">'n'</span>,<span class="at">xaxt=</span><span class="st">'n'</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">3</span>))</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="at">side=</span><span class="dv">1</span>,<span class="at">at=</span><span class="fu">seq</span>(<span class="sc">-</span><span class="dv">75</span>,<span class="dv">50</span>,<span class="dv">25</span>),<span class="at">labels=</span><span class="cn">TRUE</span>,<span class="at">pos=</span><span class="sc">-</span><span class="fl">0.25</span>)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(y[<span class="dv">3</span><span class="sc">:</span><span class="dv">7</span>],<span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">5</span>),<span class="at">pch=</span><span class="dv">0</span>,<span class="at">cex=</span><span class="fl">1.5</span>,<span class="at">col=</span><span class="st">'#ff0000'</span>,<span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(yhat,<span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">5</span>),<span class="at">pch=</span><span class="dv">17</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topleft'</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Observations'</span>,<span class="st">'Forecasting inputs'</span>,<span class="st">'Forecasts'</span>),<span class="at">bty=</span><span class="st">'n'</span>,<span class="at">pch=</span><span class="fu">c</span>(<span class="dv">19</span>,<span class="dv">0</span>,<span class="dv">17</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#ff0000'</span>,<span class="st">'#0000ff'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell quarto-layout-panel" data-layout-ncol="1">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="forecasts_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>MIMO forecasts for one set of bus arrivals</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="forecasts_files/figure-html/unnamed-chunk-3-2.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>MIMO forecasts for a second set of bus arrivals</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="properties-2" class="level3">
+<h3 class="anchored" data-anchor-id="properties-2">Properties</h3>
+<p>Strengths of MIMO forecasting:</p>
+<ul>
+<li><p><strong>Safely handles complexity:</strong> Can learn and replicate intricate dependencies between the forecasts without compounding errors.</p></li>
+<li><p><strong>Only uses observed data:</strong> Conceptually, these models do not need any “guesses” about an intermediate future state in order to make their forecasts.</p></li>
+</ul>
+<p>Weaknesses of MIMO forecasting:</p>
+<ul>
+<li><p><strong>Imposes one model across entire forecast period:</strong> For large values of <span class="math inline">\(H\)</span> (the maximum forecast period), MIMO methods force a single function (or state space, or “worldview”) to describe the whole forecast range. Long-term forecasts are allowed to differ from near-term forecasts, but they must both arise from the same model.</p></li>
+<li><p><strong>Heavily resource-intensive:</strong> Multivariate outputs usually require more estimation and more compute/memory resources.</p></li>
+<li><p><strong>Burns through training data quickly:</strong> Relatedly, these models do not converge quickly and often require large amounts of data for effective accuracy, <em>especially</em> for large values of <span class="math inline">\(d\)</span> and/or <span class="math inline">\(H\)</span>.</p></li>
+</ul>
+</section>
+</section>
+<section id="hybrid-strategies" class="level2">
+<h2 class="anchored" data-anchor-id="hybrid-strategies">Hybrid strategies</h2>
+<p>Forecasters have explored techniques which combine these three strategies, with the goal of preserving the strengths of each stratgy while mitigating the weaknesses.</p>
+<section id="dirrec" class="level3">
+<h3 class="anchored" data-anchor-id="dirrec">DirRec</h3>
+<p>One of these hybrids is called “DirRec” (<strong>Dir</strong>ect + <strong>Rec</strong>ursive), which outperforms both direct <em>and</em> recursive strategies on some real-world datasets — which should immediately raise suspicions of <a href="https://en.wikipedia.org/wiki/Selection_bias">selection bias</a>, <a href="https://en.wikipedia.org/wiki/Confirmation_bias">confirmation bias</a>, and <a href="https://en.wikipedia.org/wiki/Publication_bias">publication bias</a>.</p>
+<p>In DirRec forecasting, each future period <span class="math inline">\(h\)</span> is modeled with a separate function (similar to direct forecasting), but the inputs to later forecast periods include the estimated forecasts from earlier periods (similar to recursive forecasting). In other words, observations from the series can be represented as outputs from several possible generating functions, each incorporating more and more lags:</p>
+<p><span class="math display">\[\begin{aligned} y_t &amp;= f_1(y_{t-d}, \ldots, y_{t-1}) + w \\ y_t &amp;= f_2(y_{t-d-1}, \ldots, y_{t-1}) + w \\ \vdots &amp; \\ y_t &amp;= f_H(y_{t-d-H+1}, \ldots, y_{t-1}) + w \end{aligned}\]</span></p>
+<p>Which in turn suggest forecasting functions which need to be defined and estimated iteratively:</p>
+<p><span class="math display">\[\hat{y}_{N+h} = \left\{ \begin{array}{ll} \hat{f_1}(y_{N-d+1}, \ldots, y_N) &amp; \textrm{if} \; h=1 \\ \hat{f_h}(y_{N-d+1}, \ldots, y_N,\hat{y}_{N+1}, \ldots, \hat{y}_{N+h-1}) &amp; \textrm{if} \; 2 \le h \le H \end{array} \right\}\]</span></p>
+<p>Strengths of DirRec forecasting:</p>
+<ul>
+<li><p><strong>Implicit dependency between forecasts:</strong> Although each forecast period is modeled with a separate function, which removes explicit recursive dependencies, the presence of early forecasts among the inputs to later forecasts allows the forecasting model to re-learn those dependencies.</p></li>
+<li><p><strong>Sensible constraints on forecast outputs:</strong> The use of forecasted values as inputs can propagate errors, but since each period’s forecast function is trained separately, extreme forecasts arising from compounded errors are usually penalized and avoided.</p></li>
+</ul>
+<p>Weaknesses of DirRec forecasting:</p>
+<ul>
+<li><p><strong>Heavily resource-intensive:</strong> To make a set of <span class="math inline">\(1 - H\)</span>-step ahead forecasts, we must train <span class="math inline">\(H\)</span> different models, and the later models require earlier model outputs as their inputs, complicating and lengthening the training process.</p></li>
+<li><p><strong>Loss-minimizing, not truth-seeking:</strong> Rather than seeking to parametrically understand and describe the linkages between forecast periods, DirRec locally approximates each transition.</p></li>
+</ul>
+</section>
+<section id="dirmo" class="level3">
+<h3 class="anchored" data-anchor-id="dirmo">DIRMO</h3>
+<p>A second hybrid is called “DIRMO” (<strong>Dir</strong>ect + <strong>M</strong>ultiple <strong>O</strong>utput), which establishes a spectrum of models bounded by the direct and MIMO approaches described above.</p>
+<p>In MIMO forecasting we modeled the entire horizon of <span class="math inline">\(h \in \{1, \ldots, H\}\)</span> with a single multivariate forecasting function <span class="math inline">\(\hat{F}\)</span>. In DIRMO forecasting, we instead split the horizon into <span class="math inline">\(I\)</span> blocks, each of size <span class="math inline">\(s: 1 \le s \le H\)</span>. The future observations in each of these blocks will be forecasted with a separate forecasting function:</p>
+<p><span class="math display">\[\begin{aligned} (\hat{y}_{N+1}, \ldots, \hat{y}_{N+s}) &amp;= \hat{F_1}(y_{N-d+1}, \ldots, y_N) \\ &amp;\vdots \\ (\hat{y}_{N+s(i-1)+1}, \ldots, \hat{y}_{N+si}) &amp;= \hat{F_i}(y_{N-d+1}, \ldots, y_N) \\ &amp;\vdots \\ (\hat{y}_{N+H-s+1}, \ldots, \hat{y}_{N+H}) &amp;= \hat{F_I}(y_{N-d+1}, \ldots, y_N) \end{aligned}\]</span></p>
+<p>Where for each <span class="math inline">\(i \in \{1, \ldots, I\}\)</span>, the forecast function <span class="math inline">\(\hat{F_i}: \mathbb{R}^d \rightarrow \mathbb{R}^s\)</span>.</p>
+<p>Note two important edge cases. When <span class="math inline">\(s=H\)</span>, then we have only a single forecasting function, and return to MIMO forecasting. When <span class="math inline">\(s=1\)</span>, then each forecasting function returns only a single output, and we have returned to direct forecasting.</p>
+<p>Strengths of DIRMO forecasting:</p>
+<ul>
+<li><p><strong>Loses nothing:</strong> The framework above could collapse to either MIMO or direct forcasting if and when those techniques fit the data best, or it could suggest a new approach at an optimal balance point between the two techniques.</p></li>
+<li><p><strong>Allows the far future to differ mechanically from the near future:</strong> By breaking the MIMO horizon into blocks, we allow the rules which govern far-future blocks to be different than those which estimate the near-future blocks.</p></li>
+</ul>
+<p>Weaknesses of DIRMO forecasting:</p>
+<ul>
+<li><p><strong>Heavily resource-intensive:</strong> We now need to estimate multiple multivariate functions, and in fact will need to repeat this many times if we are optimizing the choice of block size <span class="math inline">\(s\)</span>.</p></li>
+<li><p><strong>Parameter-dependent</strong> The block size <span class="math inline">\(s\)</span> will affect our explanatory power and model metrics, and different datasets will benefit from different sizes of <span class="math inline">\(s\)</span> in ways which can’t easily be predicted and will be subject to overfitting when estimated from our dataset.</p></li>
+</ul>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        const annoteTargets = window.document.querySelectorAll('.code-annotation-anchor');
+        for (let i=0; i<annoteTargets.length; i++) {
+          const annoteTarget = annoteTargets[i];
+          const targetCell = annoteTarget.getAttribute("data-target-cell");
+          const targetAnnotation = annoteTarget.getAttribute("data-target-annotation");
+          const contentFn = () => {
+            const content = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+            if (content) {
+              const tipContent = content.cloneNode(true);
+              tipContent.classList.add("code-annotation-tip-content");
+              return tipContent.outerHTML;
+            }
+          }
+          const config = {
+            allowHTML: true,
+            content: contentFn,
+            onShow: (instance) => {
+              selectCodeLines(instance.reference);
+              instance.reference.classList.add('code-annotation-active');
+              window.tippy.hideAll();
+            },
+            onHide: (instance) => {
+              unselectCodeLines();
+              instance.reference.classList.remove('code-annotation-active');
+            },
+            maxWidth: 300,
+            delay: [50, 0],
+            duration: [200, 0],
+            offset: [5, 10],
+            arrow: true,
+            appendTo: function(el) {
+              return el.parentElement.parentElement.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'quarto',
+            placement: 'right',
+            popperOptions: {
+              modifiers: [
+              {
+                name: 'flip',
+                options: {
+                  flipVariations: false, // true by default
+                  allowedAutoPlacements: ['right'],
+                  fallbackPlacements: ['right', 'top', 'top-start', 'top-end', 'bottom', 'bottom-start', 'bottom-end', 'left'],
+                },
+              },
+              {
+                name: 'preventOverflow',
+                options: {
+                  mainAxis: false,
+                  altAxis: false
+                }
+              }
+              ]        
+            }      
+          };
+          window.tippy(annoteTarget, config); 
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation column-body">
+  <div class="nav-page nav-page-previous">
+      <a href="./seasonalityinr.html" class="pagination-link" aria-label="Seasonal models in R">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Seasonal models in R</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./validation.html" class="pagination-link" aria-label="Model validation">
+        <span class="nav-page-text"><span class="chapter-title">Model validation</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

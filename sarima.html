@@ -284,6 +284,32 @@ window.Quarto = {
 </li>
       </ul>
   </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">4. Forecasting and validation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./forecasts.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Forecast strategies</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./validation.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Model validation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./validationinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Validation in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
     </ul>
     </div>
 </nav>
@@ -561,7 +587,7 @@ Training set -0.03689682</code></pre>
 <li><p>First, we are looking at a <em>double-differenced</em> model: once differenced against its first lag, and then re-differenced against its 12<sup>th</sup> lag. The double differencing is why we do not need to estimate a mean/level or a trend/slope: the double difference of a linear trend is zero.</p></li>
 <li><p>Second, there are no AR terms or seasonal AR terms (somewhat surprisingly!), only MA and seasonal MA terms. Rather than creating an echoing chain of dependency across months and across years, we will simply focus on what happened last month and what happened 12 months ago.</p></li>
 <li><p>Third, the MA(1) term and seasonal MA(1) term are negative, meaning that we see some degree of error correction. If the innovation from last month was estimated to be extreme, then we will <em>partially</em> ignore it when modeling this month’s difference. If the innovation from 13 months ago was estimated to be extreme, then we will <em>partially</em> ignore it when constructing the year-ago monthly difference which becomes the reference point for this month’s difference.</p></li>
-<li><p>Fourth, consider that this model implies the following approximate equivalency: <span class="math inline">\(\log Y_t - \log Y_{t-1} \approx \log Y_{t-12} - Y_{t-13}\)</span>. We can re-arrange terms to say that:</p></li>
+<li><p>Fourth, consider that this model implies the following approximate equivalency: <span class="math inline">\(\log Y_t - \log Y_{t-1} \approx \log Y_{t-12} - \log Y_{t-13}\)</span>. We can re-arrange terms to say that:</p></li>
 </ul>
 <p><span class="math display">\[Y_t = e^{\log Y_{t-1} + \log(Y_{t-12}/Y_{t-13})} = Y_{t-1} \times \frac{Y_{t-12}}{Y_{t-13}}\]</span></p>
 <p>In other words, our model suggests that the best prediction of this month’s airline passenger volume is equal to last month’s volume, plus the prior-year proportional increase between the same two months, plus or minus some error correction which is meant to mute the effect of one-off shocks and unusually large innovations. Between a log-transform and the two types of differencing, we were able to describe a multiplicative growth and multiplicative seasonality model using a representation intended for linear, stationary time series!</p>

@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Model validation – Forecasting Essentials and Notes: Online Resource</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./validationinr.html" rel="next">
+<link href="./forecasts.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-635ebee939b5a5ef3c54ffc98530d095.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./forecasts.html">4. Forecasting and validation</a></li><li class="breadcrumb-item"><a href="./validation.html"><span class="chapter-title">Model validation</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Forecasting Essentials and Notes: Online Resource</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Introduction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">1. Time series basics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./whatisatimeseries.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">What is a time series?</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./autocovariance.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Autocovariance and autocorrelation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./whitenoise.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">White noise</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./randomwalk.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Random walks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stationarity.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Stationarity</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./basicsinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Time series basics in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">2. ARIMA models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ar.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">AR models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ma.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">MA models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./backshift.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Backshift notation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arima.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">ARIMA models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./identificationinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">ARIMA identification in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">3. ETS and SARIMA models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ets.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">ETS models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sarima.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">SARIMA models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./seasonalityinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Seasonal models in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">4. Forecasting and validation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./forecasts.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Forecast strategies</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./validation.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Model validation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./validationinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Validation in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#backtesting-your-model" id="toc-backtesting-your-model" class="nav-link active" data-scroll-target="#backtesting-your-model">Backtesting your model</a>
+  <ul class="collapse">
+  <li><a href="#as-compared-to-ordinary-cross-validation" id="toc-as-compared-to-ordinary-cross-validation" class="nav-link" data-scroll-target="#as-compared-to-ordinary-cross-validation">As compared to ordinary cross-validation</a></li>
+  <li><a href="#time-series-cross-validation" id="toc-time-series-cross-validation" class="nav-link" data-scroll-target="#time-series-cross-validation">Time series cross-validation</a></li>
+  <li><a href="#variations-on-basic-time-series-cross-validation" id="toc-variations-on-basic-time-series-cross-validation" class="nav-link" data-scroll-target="#variations-on-basic-time-series-cross-validation">Variations on basic time series cross-validation</a></li>
+  </ul></li>
+  <li><a href="#choosing-a-model" id="toc-choosing-a-model" class="nav-link" data-scroll-target="#choosing-a-model">Choosing a model</a>
+  <ul class="collapse">
+  <li><a href="#identify-the-status-quo" id="toc-identify-the-status-quo" class="nav-link" data-scroll-target="#identify-the-status-quo">1. Identify the status quo</a></li>
+  <li><a href="#after-eda-pick-a-very-limited-number-of-contenders" id="toc-after-eda-pick-a-very-limited-number-of-contenders" class="nav-link" data-scroll-target="#after-eda-pick-a-very-limited-number-of-contenders">2. After EDA, pick a very limited number of contenders</a></li>
+  <li><a href="#pick-a-forecasting-method-and-one-or-two-metrics-to-help-you-evaluate-the-models-both-in-absolute-and-relative-terms." id="toc-pick-a-forecasting-method-and-one-or-two-metrics-to-help-you-evaluate-the-models-both-in-absolute-and-relative-terms." class="nav-link" data-scroll-target="#pick-a-forecasting-method-and-one-or-two-metrics-to-help-you-evaluate-the-models-both-in-absolute-and-relative-terms.">3. Pick a forecasting method and one or two metrics to help you evaluate the models both in absolute and relative terms.</a></li>
+  <li><a href="#be-prepared-to-defend-your-model-on-its-other-strengths-and-weaknesses-beyond-the-validation-metrics" id="toc-be-prepared-to-defend-your-model-on-its-other-strengths-and-weaknesses-beyond-the-validation-metrics" class="nav-link" data-scroll-target="#be-prepared-to-defend-your-model-on-its-other-strengths-and-weaknesses-beyond-the-validation-metrics">4. Be prepared to defend your model on its <em>other</em> strengths and weaknesses beyond the validation metrics</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./forecasts.html">4. Forecasting and validation</a></li><li class="breadcrumb-item"><a href="./validation.html"><span class="chapter-title">Model validation</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-title">Model validation</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta column-body">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Model <em>validation</em> refers to how we build confidence that we have constructed a model worth using to solve real-world problems. Importantly, model validation is not the same as model <em>performance</em> or model <em>accuracy</em>. A low-performance model may be the best we can reasonably fit to the data. A high-performance model may not be sufficiently better than a simple “null” model to justify its use.</p>
+<p>Time series models can be used simply to understand the past, much like cross-sectional techniques such as linear regression. However, when time series models are used specifically to forecast the future, we need to be very wary of in-sample performance on the training data. After all, <em>the whole point of forecasting is out-of-sample prediction</em>, so we should try to understand the model’s out-of-sample performance as best as we can.</p>
+<section id="backtesting-your-model" class="level2">
+<h2 class="anchored" data-anchor-id="backtesting-your-model">Backtesting your model</h2>
+<section id="as-compared-to-ordinary-cross-validation" class="level3">
+<h3 class="anchored" data-anchor-id="as-compared-to-ordinary-cross-validation">As compared to ordinary cross-validation</h3>
+<p>Non-time series models frequently use <em>cross-validation</em> to build confidence in the models. (In cross-validation, the training data is split into <span class="math inline">\(k\)</span> blocks of roughly equal size, and each block is used as a test dataset for a model trained on the remaining <span class="math inline">\(k-1\)</span> blocks.)</p>
+<p>We can’t use this technique in time series analysis because it cannot preserve the time indexing of the data, which in turn affects our model predictions. Having a block of observations missing from the middle of our data is often enough to “break” our model, and in any case to predict for these points would involve using future information to predict the past, which would not validate our model usefulness.</p>
+</section>
+<section id="time-series-cross-validation" class="level3">
+<h3 class="anchored" data-anchor-id="time-series-cross-validation">Time series cross-validation</h3>
+<p>One best practice which implements cross-validation concepts for time series modeling is called, plainly enough, <em>time series cross-validation</em>. (Sometimes this technique is also called “backtesting”, though backtesting could also refer to less formal methods or simply a single prior validation period.)</p>
+<p>The basic idea of time series cross-validation is to forecast <em>each observation</em> in our training data (as far back as practical while retaining enough of a prior training sample), and after each forecast is complete we then incorporate that observation into our training set for the new data:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">20</span>),<span class="at">y=</span><span class="fu">c</span>(<span class="fl">0.5</span>,<span class="fl">6.5</span>),<span class="at">type=</span><span class="st">'n'</span>,<span class="at">yaxt=</span><span class="st">'n'</span>,<span class="at">ylab=</span><span class="st">'CV Iteration'</span>,<span class="at">xlab=</span><span class="st">'Time index'</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="at">side=</span><span class="dv">2</span>,<span class="at">at=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>,<span class="at">labels=</span><span class="dv">6</span><span class="sc">:</span><span class="dv">1</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">arrows</span>(<span class="at">x0=</span><span class="dv">0</span>,<span class="at">y0=</span><span class="dv">6</span><span class="sc">:</span><span class="dv">1</span>,<span class="at">x1=</span><span class="dv">20</span>,<span class="at">length=</span><span class="fl">0.1</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">symbols</span>(<span class="at">x=</span><span class="fu">unlist</span>(<span class="fu">sapply</span>(<span class="dv">10</span><span class="sc">:</span><span class="dv">15</span>,<span class="cf">function</span>(z) <span class="dv">1</span><span class="sc">:</span>z)),<span class="at">y=</span><span class="fu">rep</span>(<span class="dv">6</span><span class="sc">:</span><span class="dv">1</span>,<span class="at">times=</span>(<span class="dv">10</span><span class="sc">:</span><span class="dv">15</span>)),<span class="at">circles=</span><span class="fu">rep</span>(<span class="fl">0.3</span>,<span class="dv">75</span>),<span class="at">fg=</span><span class="st">'#000000'</span>,<span class="at">bg=</span><span class="st">'#000000'</span>,<span class="at">inches=</span><span class="cn">FALSE</span>,<span class="at">add=</span><span class="cn">TRUE</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">symbols</span>(<span class="at">x=</span><span class="dv">11</span><span class="sc">:</span><span class="dv">16</span>,<span class="at">y=</span><span class="dv">6</span><span class="sc">:</span><span class="dv">1</span>,<span class="at">circles=</span><span class="fu">rep</span>(<span class="fl">0.3</span>,<span class="dv">6</span>),<span class="at">fg=</span><span class="st">'#0000ff'</span>,<span class="at">bg=</span><span class="st">'#0000ff'</span>,<span class="at">inches=</span><span class="cn">FALSE</span>,<span class="at">add=</span><span class="cn">TRUE</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'top'</span>,<span class="at">pch=</span><span class="dv">19</span>,<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#0000ff'</span>),<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Training data'</span>,<span class="st">'Test data'</span>),<span class="at">horiz=</span><span class="cn">TRUE</span>,<span class="at">xjust=</span><span class="fl">0.5</span>,<span class="at">bty=</span><span class="st">'n'</span>,<span class="at">inset=</span><span class="sc">-</span><span class="fl">0.15</span>,<span class="at">xpd=</span><span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="validation_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Basic time series cross-validation structure</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Once we have forecasted as much of the training data as possible through time series cross-validation, we can compute out-of-sample performance metrics such as MAE or RMSE by aggregating across the test forecasts.</p>
+</section>
+<section id="variations-on-basic-time-series-cross-validation" class="level3">
+<h3 class="anchored" data-anchor-id="variations-on-basic-time-series-cross-validation">Variations on basic time series cross-validation</h3>
+<p>As a forecaster (and more generally as a data scientist), you must do more than simply memorize how to drop a pre-written routine into your workflow: you will need to know how to <em>choose</em> and <em>adapt</em> a technique to the problem that you’re solving. As an example, consider three variations on the basic timeseries cross-validation method described above.</p>
+<section id="fixed-width-training-windows" class="level4">
+<h4 class="anchored" data-anchor-id="fixed-width-training-windows">Fixed-width training windows</h4>
+<p>Some models avoid parameter drift by de-weighting old observations (<em>e.g.</em> ETS, neural networks), while other models avoid parameter drift by avoiding parameters altogether (<em>e.g.</em> KNN). When using these models, the dangers of inlcuing stale training data are largely minimized.</p>
+<p>Other models, like ARIMA models, VARs, or dynamic regressions, equal-weight the entire training range and are sensitive to parameter drift or structural breaks. When running these models over a large amount of data, you might want to limit the size of the training sets used for time series cross-validation, to more accurately reflect the limited training datasets you intend to provide your model “in production”:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">20</span>),<span class="at">y=</span><span class="fu">c</span>(<span class="fl">0.5</span>,<span class="fl">6.5</span>),<span class="at">type=</span><span class="st">'n'</span>,<span class="at">yaxt=</span><span class="st">'n'</span>,<span class="at">ylab=</span><span class="st">'CV Iteration'</span>,<span class="at">xlab=</span><span class="st">'Time index'</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="at">side=</span><span class="dv">2</span>,<span class="at">at=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>,<span class="at">labels=</span><span class="dv">6</span><span class="sc">:</span><span class="dv">1</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">arrows</span>(<span class="at">x0=</span><span class="dv">0</span>,<span class="at">y0=</span><span class="dv">6</span><span class="sc">:</span><span class="dv">1</span>,<span class="at">x1=</span><span class="dv">20</span>,<span class="at">length=</span><span class="fl">0.1</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">symbols</span>(<span class="at">x=</span><span class="fu">unlist</span>(<span class="fu">sapply</span>(<span class="dv">10</span><span class="sc">:</span><span class="dv">15</span>,<span class="cf">function</span>(z) (z<span class="dv">-9</span>)<span class="sc">:</span>z)),<span class="at">y=</span><span class="fu">rep</span>(<span class="dv">6</span><span class="sc">:</span><span class="dv">1</span>,<span class="at">each=</span><span class="dv">10</span>),<span class="at">circles=</span><span class="fu">rep</span>(<span class="fl">0.3</span>,<span class="dv">60</span>),<span class="at">fg=</span><span class="st">'#000000'</span>,<span class="at">bg=</span><span class="st">'#000000'</span>,<span class="at">inches=</span><span class="cn">FALSE</span>,<span class="at">add=</span><span class="cn">TRUE</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">symbols</span>(<span class="at">x=</span><span class="fu">unlist</span>(<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,<span class="cf">function</span>(z) <span class="dv">1</span><span class="sc">:</span>z)),<span class="at">y=</span><span class="fu">rep</span>(<span class="dv">5</span><span class="sc">:</span><span class="dv">1</span>,<span class="at">times=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>),<span class="at">circles=</span><span class="fu">rep</span>(<span class="fl">0.3</span>,<span class="dv">15</span>),<span class="at">fg=</span><span class="st">'#000000'</span>,<span class="at">bg=</span><span class="st">'#ffffff'</span>,<span class="at">inches=</span><span class="cn">FALSE</span>,<span class="at">add=</span><span class="cn">TRUE</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">symbols</span>(<span class="at">x=</span><span class="dv">11</span><span class="sc">:</span><span class="dv">16</span>,<span class="at">y=</span><span class="dv">6</span><span class="sc">:</span><span class="dv">1</span>,<span class="at">circles=</span><span class="fu">rep</span>(<span class="fl">0.3</span>,<span class="dv">6</span>),<span class="at">fg=</span><span class="st">'#0000ff'</span>,<span class="at">bg=</span><span class="st">'#0000ff'</span>,<span class="at">inches=</span><span class="cn">FALSE</span>,<span class="at">add=</span><span class="cn">TRUE</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'top'</span>,<span class="at">pch=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">19</span>,<span class="dv">19</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#000000'</span>,<span class="st">'#0000ff'</span>),<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Unused'</span>,<span class="st">'Training data'</span>,<span class="st">'Test data'</span>),<span class="at">horiz=</span><span class="cn">TRUE</span>,<span class="at">xjust=</span><span class="fl">0.5</span>,<span class="at">bty=</span><span class="st">'n'</span>,<span class="at">inset=</span><span class="sc">-</span><span class="fl">0.15</span>,<span class="at">xpd=</span><span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="validation_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Time series cross-validation with fixed-width training windows</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>As an example, econometricians and legal experts sometimes analyze daily securities prices (stocks, hedges, commodities, futures, options, etc.) using time series models. A greater amount of training data (prior daily prices) helps to better estimate the model, but too much data runs the risk of parameter drift, structural break, or contaminating the sample with otherwise outdated information. In most literature, one year of daily price returns is seen as a good compromise, with six months or two years being common alternatives. The basic cross-validation procedure might involve fitting models with 10+ years of training data, which is not how these models would ever be used in practice.</p>
+</section>
+<section id="cross-validating-h-ahead-forecasts" class="level4">
+<h4 class="anchored" data-anchor-id="cross-validating-h-ahead-forecasts">Cross-validating <em>h</em>-ahead forecasts</h4>
+<p>In some instances, the one-ahead forecast is not an organizational priority, but forecasting on a longer time horizon is more valuable. A realtor or a bond market trader may want to gain insight into the expected interest climate next <em>year</em>, not just next <em>quarter</em>. In these cases, we should match our validation to the forecast window(s) which will be used for decision-making, even if the metrics for the one-ahead forecast period are stronger (which will almost always be true):</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">20</span>),<span class="at">y=</span><span class="fu">c</span>(<span class="fl">0.5</span>,<span class="fl">6.5</span>),<span class="at">type=</span><span class="st">'n'</span>,<span class="at">yaxt=</span><span class="st">'n'</span>,<span class="at">ylab=</span><span class="st">'CV Iteration'</span>,<span class="at">xlab=</span><span class="st">'Time index'</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="at">side=</span><span class="dv">2</span>,<span class="at">at=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>,<span class="at">labels=</span><span class="dv">6</span><span class="sc">:</span><span class="dv">1</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">arrows</span>(<span class="at">x0=</span><span class="dv">0</span>,<span class="at">y0=</span><span class="dv">6</span><span class="sc">:</span><span class="dv">1</span>,<span class="at">x1=</span><span class="dv">20</span>,<span class="at">length=</span><span class="fl">0.1</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">symbols</span>(<span class="at">x=</span><span class="fu">unlist</span>(<span class="fu">sapply</span>(<span class="dv">10</span><span class="sc">:</span><span class="dv">15</span>,<span class="cf">function</span>(z) <span class="dv">1</span><span class="sc">:</span>z)),<span class="at">y=</span><span class="fu">rep</span>(<span class="dv">6</span><span class="sc">:</span><span class="dv">1</span>,<span class="at">times=</span>(<span class="dv">10</span><span class="sc">:</span><span class="dv">15</span>)),<span class="at">circles=</span><span class="fu">rep</span>(<span class="fl">0.3</span>,<span class="dv">75</span>),<span class="at">fg=</span><span class="st">'#000000'</span>,<span class="at">bg=</span><span class="st">'#000000'</span>,<span class="at">inches=</span><span class="cn">FALSE</span>,<span class="at">add=</span><span class="cn">TRUE</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">symbols</span>(<span class="at">x=</span><span class="fu">unlist</span>(<span class="fu">sapply</span>(<span class="dv">11</span><span class="sc">:</span><span class="dv">16</span>,<span class="cf">function</span>(z) z<span class="sc">:</span>(z<span class="sc">+</span><span class="dv">3</span>))),<span class="at">y=</span><span class="fu">rep</span>(<span class="dv">6</span><span class="sc">:</span><span class="dv">1</span>,<span class="at">each=</span><span class="dv">4</span>),<span class="at">circles=</span><span class="fu">rep</span>(<span class="fl">0.3</span>,<span class="dv">24</span>),<span class="at">fg=</span><span class="st">'#000000'</span>,<span class="at">bg=</span><span class="st">'#ffffff'</span>,<span class="at">inches=</span><span class="cn">FALSE</span>,<span class="at">add=</span><span class="cn">TRUE</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">symbols</span>(<span class="at">x=</span><span class="dv">15</span><span class="sc">:</span><span class="dv">20</span>,<span class="at">y=</span><span class="dv">6</span><span class="sc">:</span><span class="dv">1</span>,<span class="at">circles=</span><span class="fu">rep</span>(<span class="fl">0.3</span>,<span class="dv">6</span>),<span class="at">fg=</span><span class="st">'#0000ff'</span>,<span class="at">bg=</span><span class="st">'#0000ff'</span>,<span class="at">inches=</span><span class="cn">FALSE</span>,<span class="at">add=</span><span class="cn">TRUE</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'top'</span>,<span class="at">pch=</span><span class="fu">c</span>(<span class="dv">19</span>,<span class="dv">1</span>,<span class="dv">19</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#000000'</span>,<span class="st">'#0000ff'</span>),<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Training data'</span>,<span class="st">'Unused'</span>,<span class="st">'Test data'</span>),<span class="at">horiz=</span><span class="cn">TRUE</span>,<span class="at">xjust=</span><span class="fl">0.5</span>,<span class="at">bty=</span><span class="st">'n'</span>,<span class="at">inset=</span><span class="sc">-</span><span class="fl">0.15</span>,<span class="at">xpd=</span><span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="validation_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Time series cross-validation of 5-ahead forecasts</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Depending on the problem and the organizational interest in solving said problem, multiple forecasting horizons might be important to understand. The same forecasting methods for interest rates could be validated at a 1-month, 12-month, and 60-month horizon. Different models could be chosen for each horizon, or a model could be chosen which performs as well as possible across all three horizons simultaneously, depending on the user’s needs and preferences.</p>
+<p>(Note that a direct forecasting approach naturally dovetails with the idea of validating each time horizon separately, while a recursive forecasting approach naturally suggests itself when choosing one model to be “good enough” at all horizons of interest.)</p>
+</section>
+<section id="cross-validating-mimo-forecasts" class="level4">
+<h4 class="anchored" data-anchor-id="cross-validating-mimo-forecasts">Cross-validating MIMO forecasts</h4>
+<p>Time series cross-validation extends simply to MIMO forecasts, though even here we may find nuance and user judgment calls. For example, say I were a meteorologist tasked with five-day forecasts (of daily weather, or perhaps the track of a hurricane). I could train a five-day MIMO model, and I could cross-validate it by rolling the training window through my data one day at a time:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">20</span>),<span class="at">y=</span><span class="fu">c</span>(<span class="fl">0.5</span>,<span class="fl">6.5</span>),<span class="at">type=</span><span class="st">'n'</span>,<span class="at">yaxt=</span><span class="st">'n'</span>,<span class="at">ylab=</span><span class="st">'CV Iteration'</span>,<span class="at">xlab=</span><span class="st">'Time index'</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="at">side=</span><span class="dv">2</span>,<span class="at">at=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>,<span class="at">labels=</span><span class="dv">6</span><span class="sc">:</span><span class="dv">1</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">arrows</span>(<span class="at">x0=</span><span class="dv">0</span>,<span class="at">y0=</span><span class="dv">6</span><span class="sc">:</span><span class="dv">1</span>,<span class="at">x1=</span><span class="dv">20</span>,<span class="at">length=</span><span class="fl">0.1</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">symbols</span>(<span class="at">x=</span><span class="fu">unlist</span>(<span class="fu">sapply</span>(<span class="dv">10</span><span class="sc">:</span><span class="dv">15</span>,<span class="cf">function</span>(z) <span class="dv">1</span><span class="sc">:</span>z)),<span class="at">y=</span><span class="fu">rep</span>(<span class="dv">6</span><span class="sc">:</span><span class="dv">1</span>,<span class="at">times=</span>(<span class="dv">10</span><span class="sc">:</span><span class="dv">15</span>)),<span class="at">circles=</span><span class="fu">rep</span>(<span class="fl">0.3</span>,<span class="dv">75</span>),<span class="at">fg=</span><span class="st">'#000000'</span>,<span class="at">bg=</span><span class="st">'#000000'</span>,<span class="at">inches=</span><span class="cn">FALSE</span>,<span class="at">add=</span><span class="cn">TRUE</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">symbols</span>(<span class="at">x=</span><span class="fu">unlist</span>(<span class="fu">sapply</span>(<span class="dv">15</span><span class="sc">:</span><span class="dv">20</span>,<span class="cf">function</span>(z) (z<span class="dv">-4</span>)<span class="sc">:</span>z)),<span class="at">y=</span><span class="fu">rep</span>(<span class="dv">6</span><span class="sc">:</span><span class="dv">1</span>,<span class="at">each=</span><span class="dv">5</span>),<span class="at">circles=</span><span class="fu">rep</span>(<span class="fl">0.3</span>,<span class="dv">30</span>),<span class="at">fg=</span><span class="st">'#0000ff'</span>,<span class="at">bg=</span><span class="st">'#0000ff'</span>,<span class="at">inches=</span><span class="cn">FALSE</span>,<span class="at">add=</span><span class="cn">TRUE</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'top'</span>,<span class="at">pch=</span><span class="dv">19</span>,<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#0000ff'</span>),<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Training data'</span>,<span class="st">'Test data'</span>),<span class="at">horiz=</span><span class="cn">TRUE</span>,<span class="at">xjust=</span><span class="fl">0.5</span>,<span class="at">bty=</span><span class="st">'n'</span>,<span class="at">inset=</span><span class="sc">-</span><span class="fl">0.15</span>,<span class="at">xpd=</span><span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="validation_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Time series cross-validation of 5-day MIMO forecasts</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Even though the test regions overlap, this setup would provide perfectly acceptable validation of my model! In fact, by allowing the test windows to overlap, we preserve crucial details about the dependence structure. If we tested only the observations <span class="math inline">\(y_{11}, \ldots, y_{15}\)</span> as one iteration and then the observations <span class="math inline">\(y_{16}, \ldots, y_{20}\)</span> as the next iteration, we would never ask our model to incorporate both <span class="math inline">\(y_{15}\)</span> and <span class="math inline">\(y_{16}\)</span> in the same test period. That particular transition might be extreme or unexpected; failing to test it could obscure weaknesses in our model.</p>
+<p>However!! What if, instead, I worked as a grocery store manager. Each Wednesday I place my orders with suppliers to restock my store Friday morning ahead of the weekend rush. If I have to resupply midweek I can, but I need to know ahead of time, and if I order too much food it may end up as costly spoilage.</p>
+<p>In this situation, it would be more appropriate to slide the training window one week at a time, predicting each future week’s sales Friday to Thursday. We have no current use for a model which predicts grocery sales Tuesday to Monday. (Though we did have a use for a hurricane forecasting tool which could be used every day.)</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">34</span>),<span class="at">y=</span><span class="fu">c</span>(<span class="fl">0.5</span>,<span class="fl">4.5</span>),<span class="at">type=</span><span class="st">'n'</span>,<span class="at">yaxt=</span><span class="st">'n'</span>,<span class="at">xaxt=</span><span class="st">'n'</span>,<span class="at">ylab=</span><span class="st">'CV Iteration'</span>,<span class="at">xlab=</span><span class="st">'Time index'</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="at">side=</span><span class="dv">1</span>,<span class="at">at=</span><span class="fu">seq</span>(<span class="dv">5</span>,<span class="dv">33</span>,<span class="dv">7</span>),<span class="at">labels=</span><span class="fu">rep</span>(<span class="st">'Fri'</span>,<span class="dv">5</span>))</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="at">side=</span><span class="dv">2</span>,<span class="at">at=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>,<span class="at">labels=</span><span class="dv">4</span><span class="sc">:</span><span class="dv">1</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">arrows</span>(<span class="at">x0=</span><span class="dv">0</span>,<span class="at">y0=</span><span class="dv">4</span><span class="sc">:</span><span class="dv">1</span>,<span class="at">x1=</span><span class="dv">34</span>,<span class="at">length=</span><span class="fl">0.1</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">symbols</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">17</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">24</span>),<span class="at">y=</span><span class="fu">rep</span>(<span class="dv">4</span><span class="sc">:</span><span class="dv">1</span>,<span class="at">times=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">10</span>,<span class="dv">17</span>,<span class="dv">24</span>)),<span class="at">circles=</span><span class="fu">rep</span>(<span class="fl">0.3</span>,<span class="dv">54</span>),<span class="at">fg=</span><span class="st">'#000000'</span>,<span class="at">bg=</span><span class="st">'#000000'</span>,<span class="at">inches=</span><span class="cn">FALSE</span>,<span class="at">add=</span><span class="cn">TRUE</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">symbols</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">5</span><span class="sc">:</span><span class="dv">11</span>,<span class="dv">12</span><span class="sc">:</span><span class="dv">18</span>,<span class="dv">19</span><span class="sc">:</span><span class="dv">25</span>,<span class="dv">26</span><span class="sc">:</span><span class="dv">32</span>),<span class="at">y=</span><span class="fu">rep</span>(<span class="dv">4</span><span class="sc">:</span><span class="dv">1</span>,<span class="at">each=</span><span class="dv">7</span>),<span class="at">circles=</span><span class="fu">rep</span>(<span class="fl">0.3</span>,<span class="dv">28</span>),<span class="at">fg=</span><span class="st">'#0000ff'</span>,<span class="at">bg=</span><span class="st">'#0000ff'</span>,<span class="at">inches=</span><span class="cn">FALSE</span>,<span class="at">add=</span><span class="cn">TRUE</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'top'</span>,<span class="at">pch=</span><span class="dv">19</span>,<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#0000ff'</span>),<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Training data'</span>,<span class="st">'Test data'</span>),<span class="at">horiz=</span><span class="cn">TRUE</span>,<span class="at">xjust=</span><span class="fl">0.5</span>,<span class="at">bty=</span><span class="st">'n'</span>,<span class="at">inset=</span><span class="sc">-</span><span class="fl">0.15</span>,<span class="at">xpd=</span><span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="validation_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Time series cross-validation of 7-day MIMO forecasts</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="choosing-a-model" class="level2">
+<h2 class="anchored" data-anchor-id="choosing-a-model">Choosing a model</h2>
+<p>Validation is one part of a multistep process which ends with our adoption of a forecasting model. Let’s examine the other parts to see how validation contributes to the final decision.</p>
+<section id="identify-the-status-quo" class="level3">
+<h3 class="anchored" data-anchor-id="identify-the-status-quo">1. Identify the status quo</h3>
+<p>In some organizational settings, a forecasting model is <em>already in place</em>, and you are asked (or you are offering) to improve upon it.</p>
+<ul>
+<li><p>If the existing codebase and data is available to you, start by using the exact model, on the real data.</p></li>
+<li><p>If you simply have a description of the status quo, replicate the model and the data as best as you can. Even small details can create large changes in forecast accuracy, so treat this step very carefully.</p></li>
+</ul>
+<p>In other settings, your model will be the first used to address the business problem or research question.</p>
+<ul>
+<li>Determine the best “null model” and its associated forecast method which would make sense for this application. Depending on the problem, a null model might be a random walk (where the forecast is the last observed value), white noise (where the forecast is the mean of the historical data), linear regression (no true interdependency, just extrapolation using a time-based covariate), etc.</li>
+</ul>
+<p>Use the status quo or the null model to prove the worth of your work. If your modeling efforts do not meaningfully surpass the status quo, then you should stop the analysis. Do not see this outcome as a personal failure or an unsuccessful project. Instead, you will be saving your organization the cost (in money and time and risk) of changing forecast methods, and delivering <em>new knowledge</em> to decisionmakers about the ability or inability to meaningfully predict the future of this data series.</p>
+</section>
+<section id="after-eda-pick-a-very-limited-number-of-contenders" class="level3">
+<h3 class="anchored" data-anchor-id="after-eda-pick-a-very-limited-number-of-contenders">2. After EDA, pick a very limited number of contenders</h3>
+<p>Students and junior professionals often mistakenly select many different models and run them against each other to “prove” they have found the right approach. Usually, they achieve the opposite result:</p>
+<ul>
+<li><p>By selecting models which are not well-fit to the problem, they suggest either domain inexperience or data science inexperience,</p></li>
+<li><p>By selecting many different models, they rarely give proper attention to each, in terms of the feature engineering or hyperparameter tuning they would realistically require.</p></li>
+<li><p>By selecting many models, they make it more difficult to communicate their work to others and have it be easily understood and trusted.</p></li>
+<li><p>By selecting many models, they increase the chance of overfitting the problem and seeing much worse performance in production than during testing.</p></li>
+<li><p>By selecting many models, they increase their own workload and place needless strain on their deadlines.</p></li>
+</ul>
+<p>Instead, aim to exit this step with <em>one or two</em> classes of model, perhaps with one or two variants each. Choose models that fit the problem: don’t bring an ARIMA model to a GARCH problem, or choose a neural network model (RNNs, LSTMs) with inputs which fail to capture the long-period seasonality in your data.</p>
+<p>In other words, confirm the functional form of your model candidates through EDA. <em>Do not</em> use extensive model validation simply to show that an AR representation fits the data better than an MA representation: you can and should do this without time series cross-validation. Only bring true contenders to the validation phase.</p>
+</section>
+<section id="pick-a-forecasting-method-and-one-or-two-metrics-to-help-you-evaluate-the-models-both-in-absolute-and-relative-terms." class="level3">
+<h3 class="anchored" data-anchor-id="pick-a-forecasting-method-and-one-or-two-metrics-to-help-you-evaluate-the-models-both-in-absolute-and-relative-terms.">3. Pick a forecasting method and one or two metrics to help you evaluate the models both in absolute and relative terms.</h3>
+<p>At this point you will be choosing between the status quo model (the “champion”) and one or two new models which have been fully built out and polished. If those models involve tuning parameters or other hyperparameters, then ideally these choices will have already been set using additional training data <em>different than</em> the validation training set.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<ul>
+<li><p>Which <a href="./forecasts.html">forecast method</a> will you use? Generally, there will only be one right choice, fitted to your model type(s) and business problem, though occasionally you may simultaneously test the models over multiple time horizons.</p></li>
+<li><p>Which metric will be computed from the time series cross-validation?</p>
+<ul>
+<li><p><strong>Root mean squared error (RMSE):</strong> The classic. Heavily penalizes large errors. Often described as the size of an “average” error although this is <em>not</em> mathematically true. Some models minimize the in-sample RMSE by construction, so it’s a fitting comparison to see how they perform out-of-sample.</p></li>
+<li><p><strong>Mean absolute error (MAE):</strong> <em>Actually</em> the size of the “average” error. Does not disproportionally penalize large errors. Most useful when errors are naturally and tightly bound (<em>e.g.</em> when predicting proportions), or when the large errors are not particularly costly (<em>e.g.</em> when predicting future daily wind speed).</p></li>
+<li><p><strong>Mean absolute percentage error (MAPE):</strong> A metric which solves some problems but introduces others. Unitless, and therefore good for measuring predictions which vary wildly in their mean as well as comparing models trained on different datasets or different periods. However, the metric does not handle values near zero very well and it assigns an asymmetrically larger penalty to negative errors as compared to positive errors.</p></li>
+<li><p><strong>Mean absolute scaled error (MASE):</strong> Introduced by Hyndman and Koehler, solves many problems with MAPE. Benchmarks the challenger model’s forecast errors using the errors from a naive “null model”.</p></li>
+<li><p><strong>Custom cost function or value function:</strong> Often overlooked by data scientists. When you can estimate this function, it will generally be <em>more useful than any of the above model metrics</em>. Examples would be the costs of spoiled overage or empty shelves at a grocery store (as opposed to the forecast error in estimated demand), or the market value of an RMBS security (as opposed to the forecast error in the default rate on the underlying mortgages).</p></li>
+</ul></li>
+</ul>
+<p>Your goal when choosing these metrics is to simultaneously learn (and communicate) whether any given model is <em>(a)</em> <em>better</em> than other models, and <em>(b)</em> acceptably <em>good</em> enough to be put into production. Both relative and aboslute performance are important.</p>
+<p>It helps to have a goal post set before you begin validation, perhaps even before you begin modeling. What is a useful level of forecasting performance? Where is the benchmark for “worth organizational resources”? Check in with your stakeholders. Giving them the best model is not helpful when even the best model simply isn’t very good.</p>
+</section>
+<section id="be-prepared-to-defend-your-model-on-its-other-strengths-and-weaknesses-beyond-the-validation-metrics" class="level3">
+<h3 class="anchored" data-anchor-id="be-prepared-to-defend-your-model-on-its-other-strengths-and-weaknesses-beyond-the-validation-metrics">4. Be prepared to defend your model on its <em>other</em> strengths and weaknesses beyond the validation metrics</h3>
+<p>The world does not stop what it’s doing and bow down to you for achieving a remarkable forecast accuracy, sad to say. There may be skeptics among your audience or stakeholders. In fact, there <em>should</em> be skeptics, or at least those who will only be persuaded by a body of evidence, or else you run the risk of pushing bad models into production which have not survived legitimate scrutiny. Invite the toughest critic you know (and who is allowed to see your model) to kick the tires on your work.</p>
+<p>You will likely be asked about some or all of the following model properties, so you should do whatever work you can to prepare for these types of questions:</p>
+<ul>
+<li><p>How does this model fit in with the previously accepted or previously used theory? If it differs, why does it differ, and is this reasonable? If it uses the same model class as the status quo, why did the small differences in specification create large differences in model performance?</p></li>
+<li><p>How does this choice of model characterize the world? What does it say about the underlying number generating process, and is that a statement which your organization would feel comfortable supporting? For example, are you saying that prices are not random walks? Are you saying that crime is best predicted through racial demographics?</p></li>
+<li><p>Do the residuals or estimated innovations suggest that you have <em>underfit</em> the model? If any structure remains — non-stationarity, autocorrelation structures, volatility clustering, <em>etc.</em> — then likely you have missed a modeling opportunity which others might observe and point out to your audience.</p></li>
+<li><p>How would you persuade someone that you have not <em>overfit</em> the model, through cherrypicking, “throwing spaghetti at the wall and seeing what sticks” (using many model classes and variants), information leakage, or other sources?</p></li>
+<li><p>How resource-intensive is your model, in terms of deployment time, runtime, compute and storage requirements, employee skill sets needed for maintenance and model refreshes, data engineering tasks, <em>etc.</em>?</p></li>
+<li><p>Do <em>you</em> like your model? Why or why not? Do <em>you</em> trust your model? Why or why not?</p></li>
+</ul>
+
+
+</section>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>If need be, the rolling training window can include a short tuning sequence before each true test forecast(s). After using the tuning sequence to set the hyperparameters, the model is fixed in place: the tuning sequence enters the embedding horizon for the forecast without altering the training model.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        const annoteTargets = window.document.querySelectorAll('.code-annotation-anchor');
+        for (let i=0; i<annoteTargets.length; i++) {
+          const annoteTarget = annoteTargets[i];
+          const targetCell = annoteTarget.getAttribute("data-target-cell");
+          const targetAnnotation = annoteTarget.getAttribute("data-target-annotation");
+          const contentFn = () => {
+            const content = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+            if (content) {
+              const tipContent = content.cloneNode(true);
+              tipContent.classList.add("code-annotation-tip-content");
+              return tipContent.outerHTML;
+            }
+          }
+          const config = {
+            allowHTML: true,
+            content: contentFn,
+            onShow: (instance) => {
+              selectCodeLines(instance.reference);
+              instance.reference.classList.add('code-annotation-active');
+              window.tippy.hideAll();
+            },
+            onHide: (instance) => {
+              unselectCodeLines();
+              instance.reference.classList.remove('code-annotation-active');
+            },
+            maxWidth: 300,
+            delay: [50, 0],
+            duration: [200, 0],
+            offset: [5, 10],
+            arrow: true,
+            appendTo: function(el) {
+              return el.parentElement.parentElement.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'quarto',
+            placement: 'right',
+            popperOptions: {
+              modifiers: [
+              {
+                name: 'flip',
+                options: {
+                  flipVariations: false, // true by default
+                  allowedAutoPlacements: ['right'],
+                  fallbackPlacements: ['right', 'top', 'top-start', 'top-end', 'bottom', 'bottom-start', 'bottom-end', 'left'],
+                },
+              },
+              {
+                name: 'preventOverflow',
+                options: {
+                  mainAxis: false,
+                  altAxis: false
+                }
+              }
+              ]        
+            }      
+          };
+          window.tippy(annoteTarget, config); 
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation column-body">
+  <div class="nav-page nav-page-previous">
+      <a href="./forecasts.html" class="pagination-link" aria-label="Forecast strategies">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Forecast strategies</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./validationinr.html" class="pagination-link" aria-label="Validation in R">
+        <span class="nav-page-text"><span class="chapter-title">Validation in R</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

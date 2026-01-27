@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Forecasting Essentials and Notes: Online Resource</title>
+<title>Validation in R – Forecasting Essentials and Notes: Online Resource</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -30,7 +30,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./whatisatimeseries.html" rel="next">
+<link href="./validation.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -83,7 +83,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Introduction</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./forecasts.html">4. Forecasting and validation</a></li><li class="breadcrumb-item"><a href="./validationinr.html"><span class="chapter-title">Validation in R</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -112,7 +112,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Introduction</span></a>
   </div>
 </li>
@@ -240,7 +240,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./validationinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Validation in R</span></a>
+  <a href="./validationinr.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Validation in R</span></a>
   </div>
 </li>
       </ul>
@@ -250,30 +250,20 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#sec-intro" id="toc-sec-intro" class="nav-link active" data-scroll-target="#sec-intro">Introduction</a>
-  <ul class="collapse">
-  <li><a href="#sec-referencetexts" id="toc-sec-referencetexts" class="nav-link" data-scroll-target="#sec-referencetexts">Recommended textbooks</a></li>
-  <li><a href="#how-these-notes-were-made" id="toc-how-these-notes-were-made" class="nav-link" data-scroll-target="#how-these-notes-were-made">How these notes were made</a></li>
-  </ul></li>
-  </ul>
-</nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
-<main class="content column-body" id="quarto-document-content">
+<main class="content column-page-right" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./forecasts.html">4. Forecasting and validation</a></li><li class="breadcrumb-item"><a href="./validationinr.html"><span class="chapter-title">Validation in R</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Forecasting Essentials and Notes: Online Resource</h1>
+<h1 class="title"><span class="chapter-title">Validation in R</span></h1>
 </div>
 
 
 
-<div class="quarto-title-meta column-body">
+<div class="quarto-title-meta column-page-right">
 
     
   
@@ -285,35 +275,8 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="sec-intro" class="level1 unnumbered">
-<h1 class="unnumbered">Introduction</h1>
-<p>Hello! I’m Jonathan, and I want to teach you time series analysis I have designed this website to accompany the University of Chicago course ADSP 31006 “Time Series Analysis and Forecasting”. Although the course will mostly be taught in a traditional lecture format, I would like to use this website to provide backing material for the lectures.</p>
-<section id="sec-referencetexts" class="level2">
-<h2 class="anchored" data-anchor-id="sec-referencetexts">Recommended textbooks</h2>
-<p>Unlike <a href="https://adsp-stats.github.io/statisticalmodels">my statistics course website</a>, I do <em>not</em> intend that this course website be considered the principle text for the class. We will have two primary textbooks (described below), and the notes in these pages <em>supplement</em> the readings without <em>replacing</em> the readings.</p>
-<ul>
-<li><p><em>Forecasting: Principles and Practice</em> 3rd edition, by Rob Hyndman and George Athanasopoulos</p>
-<p>This book is <a href="https://otexts.com/fpp3/">freely available</a> and one of our two major reference sources. The book relies heavily on R code using the <code>tidyverse</code> constellation of packages and the new <code>fable</code> package written by the authors, which interleaves specifically with the <code>tsibble</code> package. Readers who prefer base R may instead read the book’s <a href="https://otexts.com/fpp3/">second edition</a> (also freely available), and readers who prefer Python will benefit from the new <a href="https://otexts.com/fpppy/">Python edition</a> (also freely available).</p></li>
-<li><p><em>Practical Time Series Analysis</em>, by Aileen Nielsen</p>
-<p>This is the second of our two major reference sources. In contrast to the Hyndman and Athanasopoulos textbook, Nielsen includes more on-the-job tips about working with real datasets, structuring and storing the data, and putting forecasting models into production. She uses a combination of R (using the less-common <code>data.table</code> environment) and Python examples, and describes time series analysis from both a statistical and a machine learning perspective.</p></li>
-<li><p><em>Time Series Analysis: Forecasting and Control</em> 5th edition, by George Box, et al.</p>
-<p>One of the classic texts in the field. Box and his co-authors have introduced and refined (over several decades) the best all-purpose textbook from a purely statistical perspective. They spend less time discussing programming considerations or machine learning models.</p></li>
-</ul>
-</section>
-<section id="how-these-notes-were-made" class="level2">
-<h2 class="anchored" data-anchor-id="how-these-notes-were-made">How these notes were made</h2>
-<p>I assembled these notes using <a href="https://quarto.org">Quarto</a>, a publishing system built around the Pandoc markdown language. I wrote all the code backing these notes in <a href="https://cran.r-project.org">R</a>, and alongside every figure or table you can find the corresponding R code.</p>
-<p>Neither the text nor the R code in these notes were generated by AI tools: for better and worse the opinions expressed here are my own, and the I’ve described these concepts in my own voice.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> Complaints can be submitted <a href="https://chatgpt.com">here</a>.</p>
 
 
-</section>
-</section>
-<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
-<hr>
-<ol>
-<li id="fn1"><p>AI assistance was used to brainstorm case studies and examples, and to help with the layout and coding of the website itself.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-</ol>
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -755,13 +718,13 @@ ul.task-list li input[type="checkbox"] {
     }
   });
   </script>
-<nav class="page-navigation column-body">
+<nav class="page-navigation column-page-right">
   <div class="nav-page nav-page-previous">
+      <a href="./validation.html" class="pagination-link" aria-label="Model validation">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Model validation</span></span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./whatisatimeseries.html" class="pagination-link" aria-label="What is a time series?">
-        <span class="nav-page-text"><span class="chapter-title">What is a time series?</span></span> <i class="bi bi-arrow-right-short"></i>
-      </a>
   </div>
 </nav>
 </div> <!-- /content -->

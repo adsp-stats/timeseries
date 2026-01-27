@@ -284,6 +284,32 @@ window.Quarto = {
 </li>
       </ul>
   </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">4. Forecasting and validation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./forecasts.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Forecast strategies</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./validation.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Model validation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./validationinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Validation in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
     </ul>
     </div>
 </nav>
@@ -358,7 +384,7 @@ window.Quarto = {
 </div>
 <p>The last observation tends to overfit — time series rarely stay in exactly the same place – and it also ignores the vast majority of the data. The series average tends to underfit — it doesn’t use any time series information at all — and it equally weights observations which may no longer be relevant.</p>
 <p>There is a middle way. The most recent observation can get <em>the most weight</em>, and yet all observations will get <em>some weight</em>, with older observations receiving <em>exponentially less weight</em>:</p>
-<p><span class="math display">\[\hat{y}_{t+1} = \alpha y_t + \alpha (1 - \alpha) y_{t-2} + \alpha (1 - \alpha)^2 y_{t-3} + \ldots\]</span></p>
+<p><span class="math display">\[\hat{y}_{t+1} = \alpha y_t + \alpha (1 - \alpha) y_{t-1} + \alpha (1 - \alpha)^2 y_{t-2} + \ldots\]</span></p>
 <p>Let us note a few properties of this equation before going further:</p>
 <ul>
 <li><p>I have written the equation using <span class="math inline">\(y_t\)</span> instead of <span class="math inline">\(Y_t\)</span>, signaling to you that we need not associate this time series with probability distributions of a set of random variables. We can view exponential smoothing as a type of machine learning model, not parametric statistical inference.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p></li>
