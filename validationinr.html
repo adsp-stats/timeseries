@@ -363,7 +363,8 @@ window.Quarto = {
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forecast)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tseries)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nnet)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nnet)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <section id="time-series-functions-used-in-this-document" class="level2">
 <h2 class="anchored" data-anchor-id="time-series-functions-used-in-this-document">Time series functions used in this document</h2>
@@ -572,31 +573,7 @@ Training set 0.2524138</code></pre>
 </section>
 <section id="selected-contender-feedforward-neural-network" class="level3">
 <h3 class="anchored" data-anchor-id="selected-contender-feedforward-neural-network">Selected contender: Feedforward neural network</h3>
-<p>Knowing that we are predicting several periods into the future (a weakness of ETS’s recursive structure), I am also interested in an “outside opinion” of sorts. A basic neural network functions somewhat similarly to a non-linear regression; no time series dependencies are learned, just features correlated with outputs. I wonder if this would be a good match for treasury spreads. I’ll use one year of past monthly yields as features.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># define and scale the features (note: h=1 here)</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>lagged <span class="ot">&lt;-</span> <span class="fu">embed</span>(spread,<span class="dv">13</span>)</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> lagged[,<span class="dv">2</span><span class="sc">:</span><span class="dv">13</span>]</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> lagged[,<span class="dv">1</span>]</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>X_mean <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(X)</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>X_sd   <span class="ot">&lt;-</span> <span class="fu">apply</span>(X,<span class="dv">2</span>,sd)</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>X_scaled <span class="ot">&lt;-</span> <span class="fu">scale</span>(X,X_mean,X_sd)</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co">#run the network on the scaled features (note: h=1 here)</span></span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0127</span>)</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>spread.nn.full <span class="ot">&lt;-</span> <span class="fu">nnet</span>(X_scaled,Y,</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>                       <span class="at">size=</span><span class="dv">7</span>,<span class="at">linout=</span><span class="cn">TRUE</span>,<span class="at">maxit=</span><span class="dv">1000</span>,<span class="at">trace=</span><span class="cn">FALSE</span>)</span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">tail</span>(spread,<span class="at">n=</span><span class="dv">24</span>),<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">ylab=</span><span class="st">'10Y - 1Y spread'</span>,</span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'In-sample fitted values for neural network'</span>)</span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">ts</span>(<span class="fu">tail</span>(<span class="fu">predict</span>(spread.nn.full),<span class="at">n=</span><span class="dv">24</span>),<span class="at">start=</span><span class="fl">1997.75</span>,<span class="at">frequency=</span><span class="dv">12</span>),</span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">lty=</span><span class="dv">2</span>,<span class="at">lwd=</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="validationinr_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
+<p>Knowing that we are predicting several periods into the future (a weakness of ETS’s recursive structure), I am also interested in an “outside opinion” of sorts. A basic neural network functions somewhat similarly to a non-linear regression; no time series dependencies are learned, just features correlated with outputs. I wonder if this would be a good match for treasury spreads. I’ll use the levels and the backward differences of the past six monthly yields as features.</p>
 </section>
 </section>
 <section id="validation" class="level2">
@@ -609,150 +586,125 @@ Training set 0.2524138</code></pre>
 <li><p>We have 558 observations. Let’s save the last 24 for a final model trial (simulating the use of our winning model in production).</p></li>
 <li><p>Let’s enforce a rolling 240-observation training window, which is equivalent to 20 years of monthly returns. That should be enough data to train both an ETS model and a feedforward neural net, without mixing too many different economic regimes, and still allowing a large holdout validation set.</p></li>
 <li><p>We will compute the four-ahead ETS forecasts recursively while computing the four-ahead neural network forecasts directly. (For recursive neural network behavior, I would use <code>forecast::nnetar</code>.)</p></li>
-<li><p>That means our first cross-validation training set will use spread observations 13 though 252 (observations 1 through 12 are used to build the neural net features) and predict spread 256 (July 1974). Our last cross-validation training set will use spread observations 291 through 530 and predict spread 534 (September 1997).</p></li>
+<li><p>To give me some flexibility if I want to change features or differencing orders in the future, I will start by predicting spread 256 (July 1974), meaning our first ETS cross-validation training set will use spread observations 13 though 252 (earlier observations are used to build the neural net features) and predict spread 256 (July 1974). Our last ETS will predict spread 534 (September 1997), and its ETS cross-validation training set will use spread observations 291 through 530.</p></li>
 </ul>
 </section>
 <section id="code-and-initial-results" class="level3">
 <h3 class="anchored" data-anchor-id="code-and-initial-results">Code and initial results</h3>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>h <span class="ot">&lt;-</span> <span class="dv">4</span> <span class="co"># forecasting horizon</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="dv">240</span> <span class="co"># training sample size</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="dv">256</span><span class="sc">:</span><span class="dv">534</span> <span class="co"># validation forecasting points (not training points)</span></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0130</span>) <span class="co"># note the nn will give different results with different seeds</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co"># compute naive forecasts</span></span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>cv.null <span class="ot">&lt;-</span> spread[t <span class="sc">-</span> <span class="dv">4</span>]</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="co"># compute ets forecasts</span></span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>ets.iter <span class="ot">&lt;-</span> <span class="cf">function</span>(yhat.index){</span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  y.iter <span class="ot">&lt;-</span> spread[yhat.index <span class="sc">-</span> h <span class="sc">-</span> d <span class="sc">+</span> (<span class="dv">1</span><span class="sc">:</span>d)]</span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  model.iter <span class="ot">&lt;-</span> <span class="fu">ets</span>(y.iter,<span class="at">model=</span><span class="st">'AAN'</span>,<span class="at">damped=</span><span class="cn">TRUE</span>)</span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">forecast</span>(model.iter,<span class="at">h=</span>h)<span class="sc">$</span>mean[h]}</span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>cv.ets <span class="ot">&lt;-</span> <span class="fu">sapply</span>(t,ets.iter)</span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a><span class="co"># compute nn forecasts</span></span>
-<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="dv">12</span> <span class="co"># feature count for nn</span></span>
-<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>lagged <span class="ot">&lt;-</span> <span class="fu">embed</span>(spread,h<span class="sc">+</span>p)</span>
-<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> lagged[,h<span class="sc">+</span>(<span class="dv">1</span><span class="sc">:</span>p)]</span>
-<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> lagged[,<span class="dv">1</span>]</span>
-<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>nn.iter <span class="ot">&lt;-</span> <span class="cf">function</span>(yhat.index){</span>
-<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>  embed_row <span class="ot">&lt;-</span> yhat.index <span class="sc">-</span> p <span class="sc">-</span> h <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>  X.iter <span class="ot">&lt;-</span> X[embed_row <span class="sc">-</span> (d<span class="dv">-1</span>)<span class="sc">:</span><span class="dv">0</span>,]</span>
-<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>  Y.iter <span class="ot">&lt;-</span> Y[embed_row <span class="sc">-</span> (d<span class="dv">-1</span>)<span class="sc">:</span><span class="dv">0</span>]</span>
-<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>  X_mean <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(X.iter)</span>
-<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>  X_sd   <span class="ot">&lt;-</span> <span class="fu">apply</span>(X.iter,<span class="dv">2</span>,sd)</span>
-<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>  X_scaled <span class="ot">&lt;-</span> <span class="fu">scale</span>(X.iter,X_mean,X_sd)</span>
-<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>  model.iter <span class="ot">&lt;-</span> <span class="fu">nnet</span>(X_scaled,Y.iter,<span class="at">size=</span><span class="dv">7</span>,<span class="at">linout=</span><span class="cn">TRUE</span>,<span class="at">maxit=</span><span class="dv">1000</span>,<span class="at">trace=</span><span class="cn">FALSE</span>)</span>
-<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(model.iter)[d]}</span>
-<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a>          </span>
-<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a>cv.nn <span class="ot">&lt;-</span> <span class="fu">sapply</span>(t,nn.iter)</span>
-<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(<span class="at">actual=</span>spread[<span class="dv">256</span><span class="sc">:</span><span class="dv">265</span>],</span>
-<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a>      <span class="at">cv.null=</span><span class="fu">round</span>(cv.null[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>],<span class="dv">2</span>),</span>
-<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a>      <span class="at">cv.ets=</span><span class="fu">round</span>(cv.ets[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>],<span class="dv">2</span>),</span>
-<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a>      <span class="at">cv.nn=</span><span class="fu">round</span>(cv.nn[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>],<span class="dv">2</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>h <span class="ot">&lt;-</span> <span class="dv">4</span> <span class="co"># forecasting horizon</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="dv">240</span> <span class="co"># training sample size</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> <span class="dv">256</span><span class="sc">:</span><span class="dv">534</span> <span class="co"># validation forecasting points (not training points)</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0130</span>) <span class="co"># note the nn will give different results with different seeds</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co"># compute naive forecasts</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>cv.null <span class="ot">&lt;-</span> spread[t <span class="sc">-</span> <span class="dv">4</span>]</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="co"># compute ets forecasts</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>ets.iter <span class="ot">&lt;-</span> <span class="cf">function</span>(yhat.index){</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  y.iter <span class="ot">&lt;-</span> spread[yhat.index <span class="sc">-</span> h <span class="sc">-</span> d <span class="sc">+</span> (<span class="dv">1</span><span class="sc">:</span>d)]</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  model.iter <span class="ot">&lt;-</span> <span class="fu">ets</span>(y.iter,<span class="at">model=</span><span class="st">'AAN'</span>,<span class="at">damped=</span><span class="cn">TRUE</span>)</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">forecast</span>(model.iter,<span class="at">h=</span>h)<span class="sc">$</span>mean[h]}</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>cv.ets <span class="ot">&lt;-</span> <span class="fu">sapply</span>(t,ets.iter)</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a><span class="co"># compute nn forecasts</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="dv">6</span> <span class="co"># lag order (for both levels and differences)</span></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0130</span>) <span class="co">#note different seeds will give different results</span></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>lagged.spreads <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>,<span class="at">ncol=</span>h<span class="sc">+</span>p,<span class="at">nrow=</span>h<span class="sc">+</span>p<span class="dv">-1</span>),</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">embed</span>(spread,h<span class="sc">+</span>p))</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>lagged.diffs <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>,<span class="at">ncol=</span>h<span class="sc">+</span>p,<span class="at">nrow=</span>h<span class="sc">+</span>p),</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">embed</span>(<span class="fu">diff</span>(spread),h<span class="sc">+</span>p))</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>nn.iter <span class="ot">&lt;-</span> <span class="cf">function</span>(yhat.index) {</span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>  Y.train <span class="ot">&lt;-</span> spread[yhat.index<span class="dv">-1</span><span class="sc">:</span>d]</span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>  X.train <span class="ot">&lt;-</span> <span class="fu">cbind</span>(lagged.spreads[yhat.index<span class="dv">-1</span><span class="sc">:</span>d,(h<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(h<span class="sc">+</span>p)],</span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>                   lagged.diffs[yhat.index<span class="dv">-1</span><span class="sc">:</span>d,(h<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(h<span class="sc">+</span>p)])</span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>  X.mean <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(X.train)</span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>  X.sd   <span class="ot">&lt;-</span> <span class="fu">apply</span>(X.train,<span class="dv">2</span>,sd)</span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>  X.scaled <span class="ot">&lt;-</span> <span class="fu">scale</span>(X.train,X.mean,X.sd)</span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a>  model.iter <span class="ot">&lt;-</span> <span class="fu">nnet</span>(X.scaled,Y.train,</span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a>                     <span class="at">size=</span><span class="dv">7</span>,<span class="at">linout=</span><span class="cn">TRUE</span>,<span class="at">maxit=</span><span class="dv">1000</span>,<span class="at">trace=</span><span class="cn">FALSE</span>)</span>
+<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a>  X.new <span class="ot">&lt;-</span> <span class="fu">cbind</span>(lagged.spreads[yhat.index,(h<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(h<span class="sc">+</span>p)],</span>
+<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a>                 lagged.diffs[yhat.index,(h<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(h<span class="sc">+</span>p)])</span>
+<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a>  X.new <span class="ot">&lt;-</span> <span class="fu">scale</span>(<span class="fu">matrix</span>(X.new,<span class="at">nrow=</span><span class="dv">1</span>),X.mean,X.sd)</span>
+<span id="cb17-39"><a href="#cb17-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(model.iter, X.new)}</span>
+<span id="cb17-40"><a href="#cb17-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-41"><a href="#cb17-41" aria-hidden="true" tabindex="-1"></a>cv.nn <span class="ot">&lt;-</span> <span class="fu">sapply</span>(t, nn.iter)</span>
+<span id="cb17-42"><a href="#cb17-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-43"><a href="#cb17-43" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(<span class="at">actual=</span>spread[<span class="dv">256</span><span class="sc">:</span><span class="dv">265</span>],</span>
+<span id="cb17-44"><a href="#cb17-44" aria-hidden="true" tabindex="-1"></a>      <span class="at">cv.null=</span><span class="fu">round</span>(cv.null[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>],<span class="dv">2</span>),</span>
+<span id="cb17-45"><a href="#cb17-45" aria-hidden="true" tabindex="-1"></a>      <span class="at">cv.ets=</span><span class="fu">round</span>(cv.ets[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>],<span class="dv">2</span>),</span>
+<span id="cb17-46"><a href="#cb17-46" aria-hidden="true" tabindex="-1"></a>      <span class="at">cv.nn=</span><span class="fu">round</span>(cv.nn[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>],<span class="dv">2</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>         [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]  [,8] [,9] [,10]
-actual  -0.99 -1.32 -0.83 -0.15  0.02  0.12  0.67  1.41 1.62  1.33
-cv.null -0.55 -1.11 -1.20 -1.13 -0.99 -1.32 -0.83 -0.15 0.02  0.12
-cv.ets  -0.66 -1.38 -1.46 -1.23 -1.01 -1.45 -0.80 -0.15 0.08  0.31
-cv.nn   -0.75 -1.32 -0.52 -0.18 -0.03  0.20  0.60  1.41 1.47  1.34</code></pre>
+<pre><code>         [,1]  [,2]  [,3]  [,4]   [,5]  [,6]  [,7]  [,8] [,9] [,10]
+actual  -0.99 -1.32 -0.83 -0.15   0.02  0.12  0.67  1.41 1.62  1.33
+cv.null -0.55 -1.11 -1.20 -1.13  -0.99 -1.32 -0.83 -0.15 0.02  0.12
+cv.ets  -0.66 -1.38 -1.46 -1.23  -1.01 -1.45 -0.80 -0.15 0.08  0.31
+cv.nn    0.70 -0.87 -1.12 -0.46 -25.50 -0.21  0.37  0.26 0.36  0.25</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">window</span>(spread,<span class="at">start=</span><span class="fl">1974.5</span>,<span class="at">end=</span><span class="fl">1977.49</span>),<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">ylab=</span><span class="st">'10Y - 1Y spread'</span>,</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'First 36 cross-validation forecasts'</span>)</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">time</span>(spread)[<span class="dv">256</span><span class="sc">:</span><span class="dv">291</span>],cv.null[<span class="dv">1</span><span class="sc">:</span><span class="dv">36</span>],<span class="at">col=</span><span class="st">'#0000ff'</span>)</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">time</span>(spread)[<span class="dv">256</span><span class="sc">:</span><span class="dv">291</span>],cv.ets[<span class="dv">1</span><span class="sc">:</span><span class="dv">36</span>],<span class="at">col=</span><span class="st">'#ff0000'</span>)</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">time</span>(spread)[<span class="dv">256</span><span class="sc">:</span><span class="dv">291</span>],cv.nn[<span class="dv">1</span><span class="sc">:</span><span class="dv">36</span>],<span class="at">col=</span><span class="st">'#7f00ff'</span>)</span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'bottomright'</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Actual'</span>,<span class="st">'Naive'</span>,<span class="st">'ETS'</span>,<span class="st">'NNet'</span>),</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">lwd=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#0000ff'</span>,<span class="st">'#ff0000'</span>,<span class="st">'#7f00ff'</span>),<span class="at">bty=</span><span class="st">'n'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">window</span>(spread,<span class="at">start=</span><span class="fl">1974.5</span>,<span class="at">end=</span><span class="fl">1977.49</span>),<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">ylab=</span><span class="st">'10Y - 1Y spread'</span>,</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'First 36 cross-validation forecasts'</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">time</span>(spread)[<span class="dv">256</span><span class="sc">:</span><span class="dv">291</span>],cv.null[<span class="dv">1</span><span class="sc">:</span><span class="dv">36</span>],<span class="at">col=</span><span class="st">'#0000ff'</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">time</span>(spread)[<span class="dv">256</span><span class="sc">:</span><span class="dv">291</span>],cv.ets[<span class="dv">1</span><span class="sc">:</span><span class="dv">36</span>],<span class="at">col=</span><span class="st">'#ff0000'</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">time</span>(spread)[<span class="dv">256</span><span class="sc">:</span><span class="dv">291</span>],cv.nn[<span class="dv">1</span><span class="sc">:</span><span class="dv">36</span>],<span class="at">col=</span><span class="st">'#7f00ff'</span>)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'bottomright'</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Actual'</span>,<span class="st">'Naive'</span>,<span class="st">'ETS'</span>,<span class="st">'NNet'</span>),</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">lwd=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#0000ff'</span>,<span class="st">'#ff0000'</span>,<span class="st">'#7f00ff'</span>),<span class="at">bty=</span><span class="st">'n'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="validationinr_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="validationinr_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>Excellent. All signs are positive. None of our models are prone to explosive errors (by design), and the CV forecasts show functional (if imperfect) four-ahead forecasts. Let’s see how they do on our metrics of RMSE and MASE:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>rmse <span class="ot">&lt;-</span> <span class="cf">function</span>(pred,act) <span class="fu">sqrt</span>(<span class="fu">mean</span>((act<span class="sc">-</span>pred)<span class="sc">^</span><span class="dv">2</span>))</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">null=</span><span class="fu">rmse</span>(cv.null,spread[t]),</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">ets=</span><span class="fu">rmse</span>(cv.ets,spread[t]),</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">nn=</span><span class="fu">rmse</span>(cv.nn,spread[t]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>rmse <span class="ot">&lt;-</span> <span class="cf">function</span>(pred,act) <span class="fu">sqrt</span>(<span class="fu">mean</span>((act<span class="sc">-</span>pred)<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">null=</span><span class="fu">rmse</span>(cv.null,spread[t]),</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">ets=</span><span class="fu">rmse</span>(cv.ets,spread[t]),</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">nn=</span><span class="fu">rmse</span>(cv.nn,spread[t]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     null       ets        nn 
-0.7941786 0.8469242 0.3147148 </code></pre>
+0.7941786 0.8469242 1.7906802 </code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>mase <span class="ot">&lt;-</span> <span class="cf">function</span>(pred,act,null) <span class="fu">mean</span>(<span class="fu">abs</span>((pred<span class="sc">-</span>act)<span class="sc">/</span><span class="fu">mean</span>(<span class="fu">abs</span>(act<span class="sc">-</span>null))))</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">null=</span><span class="fu">mase</span>(cv.null,spread[t],cv.null),</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">ets=</span><span class="fu">mase</span>(cv.ets,spread[t],cv.null),</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">nn=</span><span class="fu">mase</span>(cv.nn,spread[t],cv.null))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>mase <span class="ot">&lt;-</span> <span class="cf">function</span>(pred,act,null) <span class="fu">mean</span>(<span class="fu">abs</span>((pred<span class="sc">-</span>act)<span class="sc">/</span><span class="fu">mean</span>(<span class="fu">abs</span>(act<span class="sc">-</span>null))))</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">null=</span><span class="fu">mase</span>(cv.null,spread[t],cv.null),</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">ets=</span><span class="fu">mase</span>(cv.ets,spread[t],cv.null),</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">nn=</span><span class="fu">mase</span>(cv.nn,spread[t],cv.null))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>     null       ets        nn 
-1.0000000 1.0444317 0.4065807 </code></pre>
+<pre><code>    null      ets       nn 
+1.000000 1.044432 1.500311 </code></pre>
 </div>
 </div>
-<p>The results are clear. The exponential smoothing model isn’t terrible, but it does not outperform a naive forecast of the last-known observation. Its average error is 4% <em>larger</em> than the average naive forecaster. Meanwhile, the neural network produces errors that are 60% <em>smaller</em> than the naive forecaster, and typically forecasts four-month-ahead spreads to within about 31bps.</p>
+<p>The results are clear. The exponential smoothing model isn’t terrible, but it does not outperform a naive forecast of the last-known observation. Its average error is 4% <em>larger</em> than the average naive forecaster (about 85bps). Meanwhile, the neural network produces errors that are 50% larger than the naive forecaster (about 179bps), which is even worse. In this case, the naive estimator proves its value over the competition, suggesting that future treasury spreads cannot be easily predicted, at least at a four-month time horizon, and without any exogenous predictors.</p>
 </section>
 <section id="examining-a-cost-function-instead-of-model-metrics" class="level3">
 <h3 class="anchored" data-anchor-id="examining-a-cost-function-instead-of-model-metrics">Examining a cost function instead of model metrics</h3>
 <p>What about an actual cost function? This would depend very much on the use of your spread forecasting model. As an illustration, however, consider a trader who bets every month whether the spread will widen or tighten in four months. They will profit in months they guess correctly and lose in months they guess wrong.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">null=</span><span class="fu">mean</span>(<span class="fu">sign</span>(spread[t]<span class="sc">-</span>spread[t<span class="dv">-4</span>])<span class="sc">==</span><span class="fu">sign</span>(cv.null<span class="sc">-</span>spread[t<span class="dv">-4</span>])),</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">ets=</span><span class="fu">mean</span>(<span class="fu">sign</span>(spread[t]<span class="sc">-</span>spread[t<span class="dv">-4</span>])<span class="sc">==</span><span class="fu">sign</span>(cv.ets<span class="sc">-</span>spread[t<span class="dv">-4</span>])),</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">nn=</span><span class="fu">mean</span>(<span class="fu">sign</span>(spread[t]<span class="sc">-</span>spread[t<span class="dv">-4</span>])<span class="sc">==</span><span class="fu">sign</span>(cv.nn<span class="sc">-</span>spread[t<span class="dv">-4</span>])))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">null=</span><span class="fu">mean</span>(<span class="fu">sign</span>(spread[t]<span class="sc">-</span>spread[t<span class="dv">-4</span>])<span class="sc">==</span><span class="fu">sign</span>(cv.null<span class="sc">-</span>spread[t<span class="dv">-4</span>])),</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">ets=</span><span class="fu">mean</span>(<span class="fu">sign</span>(spread[t]<span class="sc">-</span>spread[t<span class="dv">-4</span>])<span class="sc">==</span><span class="fu">sign</span>(cv.ets<span class="sc">-</span>spread[t<span class="dv">-4</span>])),</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">nn=</span><span class="fu">mean</span>(<span class="fu">sign</span>(spread[t]<span class="sc">-</span>spread[t<span class="dv">-4</span>])<span class="sc">==</span><span class="fu">sign</span>(cv.nn<span class="sc">-</span>spread[t<span class="dv">-4</span>])))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       null         ets          nn 
-0.007168459 0.516129032 0.795698925 </code></pre>
+0.007168459 0.516129032 0.559139785 </code></pre>
 </div>
 </div>
 <ul>
 <li><p>The null model is of no help to our trader: by construction, it predicts no change over the next four months, and it is right less than 1% of the time.</p></li>
-<li><p>The exponential smoothing model would only call the direction of the spread movement correctly 51% of the time, hardly enough to call a trading strategy.</p></li>
-<li><p>The neural network would predict the spread direction correctly 80% of the time, not a sure bet but much better (and more profitable) than the other models.</p></li>
+<li><p>The exponential smoothing model would only call the direction of the spread movement correctly 52% of the time, hardly enough to call a trading strategy.</p></li>
+<li><p>The neural network would predict the spread direction correctly 56% of the time, not too much better.</p></li>
 </ul>
-<p>With some hypothetical investment strategies and rules for when to commit a reserve of funds, you could create a true cost function around these ideas which might be enough to attract the attention of actual industry professionals.</p>
+<p>With some hypothetical investment strategies and rules for when to commit a reserve of funds, you could create a true cost function around these ideas which might be enough to attract the attention of actual industry professionals — although these models have poor performance, at some level of accuracy you might be able to generate a consistent return, and that level may not be much greater than 60%. Also, if this direction interested you or a stakeholder, you could retrain your models to predict direction instead of level: these forecasts might be substantially more accurate.</p>
 </section>
 <section id="hypothetical-performance-in-production" class="level3">
 <h3 class="anchored" data-anchor-id="hypothetical-performance-in-production">Hypothetical performance “in production”</h3>
-<p>We held back 24 months to simulate the idea that the best model is chosen and put into production. What would that look like?</p>
-<p>In some scenarios, the model is continually updated and re-run before each new prediction — this would essentially extend the time series cross-validation process from “model selection” to “in-production forecasting” with no change. It would be common to see this used on monthly forecasts, since the model refresh would be infrequent and low-lift.</p>
-<p>In other scenarios, the model chosen at the end of the validation period is “frozen” and used with exactly the same parameters until a later model refresh. Even though this method would not be common with the scenario we are considering, we can simulate it to notice the drop in accuracy often seen when “really” forecasting:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0131</span>)</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>embed_row <span class="ot">&lt;-</span> <span class="fu">max</span>(t) <span class="sc">-</span> p <span class="sc">-</span> h <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>X.final <span class="ot">&lt;-</span> X[embed_row <span class="sc">-</span> (d<span class="dv">-1</span>)<span class="sc">:</span><span class="dv">0</span>,]</span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>Y.final <span class="ot">&lt;-</span> Y[embed_row <span class="sc">-</span> (d<span class="dv">-1</span>)<span class="sc">:</span><span class="dv">0</span>]</span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>X_mean <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(X.final)</span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>X_sd   <span class="ot">&lt;-</span> <span class="fu">apply</span>(X.final,<span class="dv">2</span>,sd)</span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>X_scaled <span class="ot">&lt;-</span> <span class="fu">scale</span>(X.final,X_mean,X_sd)</span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>model.final <span class="ot">&lt;-</span> <span class="fu">nnet</span>(X_scaled,Y.final,<span class="at">size=</span><span class="dv">7</span>,<span class="at">linout=</span><span class="cn">TRUE</span>,<span class="at">maxit=</span><span class="dv">1000</span>,<span class="at">trace=</span><span class="cn">FALSE</span>)</span>
-<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>preds.final <span class="ot">&lt;-</span> <span class="fu">predict</span>(model.final,<span class="at">newdata=</span><span class="fu">scale</span>(X[embed_row<span class="sc">+</span><span class="dv">1</span><span class="sc">:</span><span class="dv">24</span>,],X_mean,X_sd))</span>
-<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a><span class="fu">rmse</span>(preds.final,spread[<span class="dv">535</span><span class="sc">:</span><span class="dv">558</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.3069447</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mase</span>(preds.final,spread[<span class="dv">535</span><span class="sc">:</span><span class="dv">558</span>],spread[<span class="dv">531</span><span class="sc">:</span><span class="dv">554</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 1.121129</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">window</span>(spread,<span class="at">start=</span><span class="fl">1997.75</span>),<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">ylab=</span><span class="st">'10Y - 1Y spread'</span>,</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'Hypothetical production run of frozen Nnet model'</span>)</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">time</span>(spread)[<span class="dv">535</span><span class="sc">:</span><span class="dv">558</span>],preds.final[<span class="dv">1</span><span class="sc">:</span><span class="dv">24</span>],<span class="at">col=</span><span class="st">'#0000ff'</span>)</span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'bottomright'</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Actual'</span>,<span class="st">'Forecasted'</span>),</span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">lwd=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#0000ff'</span>),<span class="at">bty=</span><span class="st">'n'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="validationinr_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Mixed news from our simulated future: the neural network continues to hold its same absolute predictive power (OOS RMSE of 31bps). However, the movements of the yield spread during these twelve months would actually be better predicted by a naive estimator, since the average neural network error is roughly \12% larger than the those produced by the fourth lag.</p>
+<p>We held back 24 months to simulate the idea that the best model is chosen and put into production. Here we saw no need, since the naive estimator won out over both challengers. But if we had put a new model in place, how would it perform?</p>
+<p>In some production scenarios, the model is continually updated and re-run before each new prediction — this would essentially extend the time series cross-validation process from “model selection” to “in-production forecasting” with no change. It would be common to see this used on monthly forecasts, since the model refresh would be infrequent and low-lift.</p>
+<p>In other production scenarios, the model chosen at the end of the validation period is “frozen” and used with exactly the same parameters until a later model refresh. This might be aprticularly true when many stakeholders use model outputs and rely upon thorough model documentation, or when forecasting is deemed worth a one-time resource commitment but not worth maintenance costs.</p>
 
 
 </section>
