@@ -1,1 +1,252 @@
 # Validation in R
+
+```{r}
+#| output: false
+library(forecast)
+library(tseries)
+library(nnet)
+```
+
+## Time series functions used in this document
+
+I'm a firm believer that we should not become too dependent upon our tools. Fifteen years from now, we may still be forecasting and validating, but in a new language other than R or Python --- if we don't know how these methods work, we will have trouble relearning the techniques in the languages of the future.
+
+Or, looking toward the past, I can't count the number of times I have had to hard-code a data science model into an Excel spreadsheet to help an organization or stakeholder who simply cannot use a modern ML pipeline. If you can't represent these techniques in Excel, you may not know them very well.
+
+Therefore, the R code below does not use the automated validation routines suggested by the `forecast` or `fable` packages, even though I think they are very helpful and worth learning.
+
+In the table below, packages with *italicized* names will need to be installed, while the package names in a standard font face can be found in most base R distributions (though they may need to be loaded into your workspace).
+
+|Package   |Function name|Purpose                          |
+|:---------|:------------|:--------------------------------|
+|stats     |time         |Extract the time indices of a ts |
+|stats     |start        |The first time index of a ts     |
+|stats     |stop         |The last time index of a ts      |
+|stats     |window       |Subset a time series             |
+|*forecast*|auto.arima   |Automatically select a well-fit ARIMA model|
+|*forecast*|plot.Arima   |Plot the inverse AR and MA roots |
+|*forecast*|ets          |Fit exponential smoothing models |
+|*forecast*|fitted       |In-sample predictions of a ts model|
+|stats     |embed        |Create a matrix of lags for a ts |
+|*nnet*    |nnet         |Simple neural network modeling   |
+|*nnet*    |predict.nnet |Direct or MIMO nnet forecasting  |
+|*forecast*|forecast     |Look-ahead prediction of a ts model|
+
+: Time series functions used in the code below
+
+## Use case and objective: 4-month-ahead prediction of Treasury spreads
+
+The United States Department of the Treasury issues a number of government debt investments: U.S. Treasury bills, Treasury notes, and Treasury bonds (collectively, "treasuries"), each of various maturities, which trade daily in secondary markets. For any treasury security, the yield (an effective return-on-investment) can be computed from the market price, the maturity (payback date), and the coupon rate (annualized interest), and these "yields" are generally how the performance of treasuries are measured over time.
+
+The yields of short-term treasuries and long-term treasuries reflect market expectations of near-term and longer-term economic uncertainty, and so the difference in yields between a short-term treasury and a long-term treasury (the "spread") can serve as a useful proxy for certain types of market uncertainty.
+
+We will pull in a monthly history of 1-year and 10-year treasury yields, and then use their difference to establish a yield spread. (Students wanting to make a different set of judgmet calls might consider creating a daily version of this analysis.)
+
+Our goal for this analysis is to predict the monthly treasury spread *four months in advance*. For example, if we have December's data, we wish to predict what the spread will be in April.
+
+```{r}
+# make sure the two time series are ready to combine
+data(tcm)
+all(time(tcm1y)==time(tcm10y))
+c(sum(is.na(tcm1y)),sum(is.na(tcm10y)))
+
+# define new spread series as their difference
+spread <- tcm10y - tcm1y
+summary(spread)
+c(start(spread),end(spread))
+plot(spread)
+```
+
+## Model class selection
+
+### Status quo model: naive estimator (last observation)
+
+First, let's choose a null model. Here, the naive estimator of the most recent spread suggests itself. We do not have any reason to believe seasonal adjustments should be made, and the overall mean of the series does not seem appropriate (the spreads show slowly evolving regimes, not true stationarity.)
+
+### Dismissed contender: ARIMA
+
+Next, let's dismiss ARIMA models as being a poor fit for this data. A glance at the plot and what little we may know of macroeconomics suggest that these spreads are subject to regime changes, structural breaks, parameter drift, and long-term persistence (as opposed to mean-recursion) which all work against a multi-decade ARIMA expression. To quickly confirm this impression, consider the following information.
+
+  * The automated ARIMA selection routines pick a dubious model with both differencing *and* high AR and MA orders after differencing:
+  
+```{r}
+auto.arima(spread)
+```
+    
+  * The model this automated routine selects has AR and MA roots very near the unit circle, suggesting the true process is neither stationary nor invertible, even after differencing:
+    
+```{r}
+plot(auto.arima(spread))
+```
+
+### Selected contender: Exponential smoothing
+
+Sometimes less is more. I would like to try a simple time series model which does not add a lot of sophistication to the anlaysis (if treasury spreads were very forecastable, we could all soon make our fortunes in fixed income.) Exponential smoothing models with a damped trend and no seasonality provide a nice degree of humility.
+
+Since some of the data are negative and I see no obvious need for mean-variance stabilization, I will do without a Box-Cox transformation.
+
+```{r}
+spread.ets.full <- ets(spread,model='AAN',damped=TRUE)
+summary(spread.ets.full)
+plot(tail(spread,n=24),lwd=2,ylab='10Y - 1Y spread',
+     main='In-sample fitted values for ETS(A,Ad,N)')
+lines(tail(fitted(spread.ets.full),n=24),col='#0000ff',lty=2,lwd=2)
+```
+
+This exponential smoothing model heavily weights $(\alpha \approx 1)$ the most recent observation (in fact, it effectively *only* uses the most recent observation), but it does include a non-trivial trend $(b \gt 0)$) from a large historical sample period $(\beta \ll 1$) and a moderate dampening effect $(\phi \lnapprox 1)$.
+
+Some of these parameters will change throughout the validation period. Even if the final ETS model that R selects would be different, I'm willing to try this one because I believe it offers flexibility without overfitting.
+
+### Selected contender: Feedforward neural network
+
+Knowing that we are predicting several periods into the future (a weakness of ETS's recursive structure), I am also interested in an "outside opinion" of sorts. A basic neural network functions somewhat similarly to a non-linear regression; no time series dependencies are learned, just features correlated with outputs. I wonder if this would be a good match for treasury spreads. I'll use one year of past monthly yields as features.
+
+```{r}
+# define and scale the features (note: h=1 here)
+lagged <- embed(spread,13)
+X <- lagged[,2:13]
+Y <- lagged[,1]
+X_mean <- colMeans(X)
+X_sd   <- apply(X,2,sd)
+X_scaled <- scale(X,X_mean,X_sd)
+#run the network on the scaled features (note: h=1 here)
+set.seed(0127)
+spread.nn.full <- nnet(X_scaled,Y,
+                       size=7,linout=TRUE,maxit=1000,trace=FALSE)
+plot(tail(spread,n=24),lwd=2,ylab='10Y - 1Y spread',
+     main='In-sample fitted values for neural network')
+lines(ts(tail(predict(spread.nn.full),n=24),start=1997.75,frequency=12),
+      col='#0000ff',lty=2,lwd=2)
+```
+
+## Validation
+
+From here, let's decide to use cross-validated RMSE and MASE as our two model validation metrics. I'd like to show a "manual" coding of the cross-validation process, though automated versions exist using either the `forecast` or `fable` packages.
+
+### Judgment calls
+
+We begin with a series of judgment calls:
+
+  * We have 558 observations. Let's save the last 24 for a final model trial (simulating the use of our winning model in production). 
+  
+  * Let's enforce a rolling 240-observation training window, which is equivalent to 20 years of monthly returns. That should be enough data to train both an ETS model and a feedforward neural net, without mixing too many different economic regimes, and still allowing a large holdout validation set.
+  
+  * We will compute the four-ahead ETS forecasts recursively while computing the four-ahead neural network forecasts directly. (For recursive neural network behavior, I would use `forecast::nnetar`.)
+  
+  * That means our first cross-validation training set will use spread observations 13 though 252 (observations 1 through 12 are used to build the neural net features) and predict spread 256 (July 1974). Our last cross-validation training set will use spread observations 291 through 530 and predict spread 534 (September 1997).
+  
+### Code and initial results
+  
+```{r}
+h <- 4 # forecasting horizon
+d <- 240 # training sample size
+t <- 256:534 # validation forecasting points (not training points)
+set.seed(0130) # note the nn will give different results with different seeds
+
+# compute naive forecasts
+cv.null <- spread[t - 4]
+
+# compute ets forecasts
+ets.iter <- function(yhat.index){
+  y.iter <- spread[yhat.index - h - d + (1:d)]
+  model.iter <- ets(y.iter,model='AAN',damped=TRUE)
+  forecast(model.iter,h=h)$mean[h]}
+
+cv.ets <- sapply(t,ets.iter)
+
+# compute nn forecasts
+p <- 12 # feature count for nn
+lagged <- embed(spread,h+p)
+X <- lagged[,h+(1:p)]
+Y <- lagged[,1]
+
+nn.iter <- function(yhat.index){
+  embed_row <- yhat.index - p - h + 1
+  X.iter <- X[embed_row - (d-1):0,]
+  Y.iter <- Y[embed_row - (d-1):0]
+  X_mean <- colMeans(X.iter)
+  X_sd   <- apply(X.iter,2,sd)
+  X_scaled <- scale(X.iter,X_mean,X_sd)
+  model.iter <- nnet(X_scaled,Y.iter,size=7,linout=TRUE,maxit=1000,trace=FALSE)
+  predict(model.iter)[d]}
+          
+cv.nn <- sapply(t,nn.iter)
+
+rbind(actual=spread[256:265],
+      cv.null=round(cv.null[1:10],2),
+      cv.ets=round(cv.ets[1:10],2),
+      cv.nn=round(cv.nn[1:10],2))
+
+plot(window(spread,start=1974.5,end=1977.49),lwd=2,ylab='10Y - 1Y spread',
+     main='First 36 cross-validation forecasts')
+lines(time(spread)[256:291],cv.null[1:36],col='#0000ff')
+lines(time(spread)[256:291],cv.ets[1:36],col='#ff0000')
+lines(time(spread)[256:291],cv.nn[1:36],col='#7f00ff')
+legend(x='bottomright',legend=c('Actual','Naive','ETS','NNet'),
+       lwd=c(2,1,1,1),col=c('#000000','#0000ff','#ff0000','#7f00ff'),bty='n')
+```
+
+Excellent. All signs are positive. None of our models are prone to explosive errors (by design), and the CV forecasts show functional (if imperfect) four-ahead forecasts.  Let's see how they do on our metrics of RMSE and MASE:
+
+```{r}
+rmse <- function(pred,act) sqrt(mean((act-pred)^2))
+c(null=rmse(cv.null,spread[t]),
+  ets=rmse(cv.ets,spread[t]),
+  nn=rmse(cv.nn,spread[t]))
+
+mase <- function(pred,act,null) mean(abs((pred-act)/mean(abs(act-null))))
+c(null=mase(cv.null,spread[t],cv.null),
+  ets=mase(cv.ets,spread[t],cv.null),
+  nn=mase(cv.nn,spread[t],cv.null))
+```
+
+The results are clear. The exponential smoothing model isn't terrible, but it does not outperform a naive forecast of the last-known observation. Its average error is 4\% *larger* than the average naive forecaster. Meanwhile, the neural network produces errors that are 60\% *smaller* than the naive forecaster, and typically forecasts four-month-ahead spreads to within about 31bps.
+
+### Examining a cost function instead of model metrics
+
+What about an actual cost function? This would depend very much on the use of your spread forecasting model. As an illustration, however, consider a trader who bets every month whether the spread will widen or tighten in four months. They will profit in months they guess correctly and lose in months they guess wrong.
+
+```{r}
+c(null=mean(sign(spread[t]-spread[t-4])==sign(cv.null-spread[t-4])),
+  ets=mean(sign(spread[t]-spread[t-4])==sign(cv.ets-spread[t-4])),
+  nn=mean(sign(spread[t]-spread[t-4])==sign(cv.nn-spread[t-4])))
+```
+
+  * The null model is of no help to our trader: by construction, it predicts no change over the next four months, and it is right less than 1\% of the time.
+
+  * The exponential smoothing model would only call the direction of the spread movement correctly 51\% of the time, hardly enough to call a trading strategy.
+  
+  * The neural network would predict the spread direction correctly 80\% of the time, not a sure bet but much better (and more profitable) than the other models.
+  
+With some hypothetical investment strategies and rules for when to commit a reserve of funds, you could create a true cost function around these ideas which might be enough to attract the attention of actual industry professionals.
+
+### Hypothetical performance "in production"
+
+We held back 24 months to simulate the idea that the best model is chosen and put into production. What would that look like?
+
+In some scenarios, the model is continually updated and re-run before each new prediction --- this would essentially extend the time series cross-validation process from "model selection" to "in-production forecasting" with no change. It would be common to see this used on monthly forecasts, since the model refresh would be infrequent and low-lift.
+
+In other scenarios, the model chosen at the end of the validation period is "frozen" and used with exactly the same parameters until a later model refresh. Even though this method would not be common with the scenario we are considering, we can simulate it to notice the drop in accuracy often seen when "really" forecasting:
+
+```{r}
+set.seed(0131)
+embed_row <- max(t) - p - h + 1
+X.final <- X[embed_row - (d-1):0,]
+Y.final <- Y[embed_row - (d-1):0]
+X_mean <- colMeans(X.final)
+X_sd   <- apply(X.final,2,sd)
+X_scaled <- scale(X.final,X_mean,X_sd)
+model.final <- nnet(X_scaled,Y.final,size=7,linout=TRUE,maxit=1000,trace=FALSE)
+
+preds.final <- predict(model.final,newdata=scale(X[embed_row+1:24,],X_mean,X_sd))
+rmse(preds.final,spread[535:558])
+mase(preds.final,spread[535:558],spread[531:554])
+
+plot(window(spread,start=1997.75),lwd=2,ylab='10Y - 1Y spread',
+     main='Hypothetical production run of frozen Nnet model')
+lines(time(spread)[535:558],preds.final[1:24],col='#0000ff')
+legend(x='bottomright',legend=c('Actual','Forecasted'),
+       lwd=c(2,1),col=c('#000000','#0000ff'),bty='n')
+```
+
+Mixed news from our simulated future: the neural network continues to hold its same absolute predictive power (OOS RMSE of 31bps). However, the movements of the yield spread during these twelve months would actually be better predicted by a naive estimator, since the average neural network error is roughly \12% larger than the those produced by the fourth lag.
