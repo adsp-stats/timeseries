@@ -5,6 +5,7 @@
 library(forecast)
 library(tseries)
 library(nnet)
+library(dplyr)
 ```
 
 ## Time series functions used in this document
@@ -99,25 +100,7 @@ Some of these parameters will change throughout the validation period. Even if t
 
 ### Selected contender: Feedforward neural network
 
-Knowing that we are predicting several periods into the future (a weakness of ETS's recursive structure), I am also interested in an "outside opinion" of sorts. A basic neural network functions somewhat similarly to a non-linear regression; no time series dependencies are learned, just features correlated with outputs. I wonder if this would be a good match for treasury spreads. I'll use one year of past monthly yields as features.
-
-```{r}
-# define and scale the features (note: h=1 here)
-lagged <- embed(spread,13)
-X <- lagged[,2:13]
-Y <- lagged[,1]
-X_mean <- colMeans(X)
-X_sd   <- apply(X,2,sd)
-X_scaled <- scale(X,X_mean,X_sd)
-#run the network on the scaled features (note: h=1 here)
-set.seed(0127)
-spread.nn.full <- nnet(X_scaled,Y,
-                       size=7,linout=TRUE,maxit=1000,trace=FALSE)
-plot(tail(spread,n=24),lwd=2,ylab='10Y - 1Y spread',
-     main='In-sample fitted values for neural network')
-lines(ts(tail(predict(spread.nn.full),n=24),start=1997.75,frequency=12),
-      col='#0000ff',lty=2,lwd=2)
-```
+Knowing that we are predicting several periods into the future (a weakness of ETS's recursive structure), I am also interested in an "outside opinion" of sorts. A basic neural network functions somewhat similarly to a non-linear regression; no time series dependencies are learned, just features correlated with outputs. I wonder if this would be a good match for treasury spreads. I'll use the levels and the backward differences of the past six monthly yields as features.
 
 ## Validation
 
@@ -133,7 +116,7 @@ We begin with a series of judgment calls:
   
   * We will compute the four-ahead ETS forecasts recursively while computing the four-ahead neural network forecasts directly. (For recursive neural network behavior, I would use `forecast::nnetar`.)
   
-  * That means our first cross-validation training set will use spread observations 13 though 252 (observations 1 through 12 are used to build the neural net features) and predict spread 256 (July 1974). Our last cross-validation training set will use spread observations 291 through 530 and predict spread 534 (September 1997).
+  * To give me some flexibility if I want to change features or differencing orders in the future, I will start by predicting spread 256 (July 1974), meaning our first ETS cross-validation training set will use spread observations 13 though 252 (earlier observations are used to build the neural net features) and predict spread 256 (July 1974). Our last ETS will predict spread 534 (September 1997), and its ETS cross-validation training set will use spread observations 291 through 530.
   
 ### Code and initial results
   
@@ -155,22 +138,30 @@ ets.iter <- function(yhat.index){
 cv.ets <- sapply(t,ets.iter)
 
 # compute nn forecasts
-p <- 12 # feature count for nn
-lagged <- embed(spread,h+p)
-X <- lagged[,h+(1:p)]
-Y <- lagged[,1]
+p <- 6 # lag order (for both levels and differences)
+set.seed(0130) #note different seeds will give different results
+lagged.spreads <- rbind(matrix(NA,ncol=h+p,nrow=h+p-1),
+                        embed(spread,h+p))
+lagged.diffs <- rbind(matrix(NA,ncol=h+p,nrow=h+p),
+                        embed(diff(spread),h+p))
 
-nn.iter <- function(yhat.index){
-  embed_row <- yhat.index - p - h + 1
-  X.iter <- X[embed_row - (d-1):0,]
-  Y.iter <- Y[embed_row - (d-1):0]
-  X_mean <- colMeans(X.iter)
-  X_sd   <- apply(X.iter,2,sd)
-  X_scaled <- scale(X.iter,X_mean,X_sd)
-  model.iter <- nnet(X_scaled,Y.iter,size=7,linout=TRUE,maxit=1000,trace=FALSE)
-  predict(model.iter)[d]}
-          
-cv.nn <- sapply(t,nn.iter)
+nn.iter <- function(yhat.index) {
+  Y.train <- spread[yhat.index-1:d]
+  X.train <- cbind(lagged.spreads[yhat.index-1:d,(h+1):(h+p)],
+                   lagged.diffs[yhat.index-1:d,(h+1):(h+p)])
+  X.mean <- colMeans(X.train)
+  X.sd   <- apply(X.train,2,sd)
+  X.scaled <- scale(X.train,X.mean,X.sd)
+ 
+  model.iter <- nnet(X.scaled,Y.train,
+                     size=7,linout=TRUE,maxit=1000,trace=FALSE)
+  
+  X.new <- cbind(lagged.spreads[yhat.index,(h+1):(h+p)],
+                 lagged.diffs[yhat.index,(h+1):(h+p)])
+  X.new <- scale(matrix(X.new,nrow=1),X.mean,X.sd)
+  predict(model.iter, X.new)}
+
+cv.nn <- sapply(t, nn.iter)
 
 rbind(actual=spread[256:265],
       cv.null=round(cv.null[1:10],2),
@@ -200,7 +191,7 @@ c(null=mase(cv.null,spread[t],cv.null),
   nn=mase(cv.nn,spread[t],cv.null))
 ```
 
-The results are clear. The exponential smoothing model isn't terrible, but it does not outperform a naive forecast of the last-known observation. Its average error is 4\% *larger* than the average naive forecaster. Meanwhile, the neural network produces errors that are 60\% *smaller* than the naive forecaster, and typically forecasts four-month-ahead spreads to within about 31bps.
+The results are clear. The exponential smoothing model isn't terrible, but it does not outperform a naive forecast of the last-known observation. Its average error is 4\% *larger* than the average naive forecaster (about 85bps). Meanwhile, the neural network produces errors that are 50\% larger than the naive forecaster (about 179bps), which is even worse. In this case, the naive estimator proves its value over the competition, suggesting that future treasury spreads cannot be easily predicted, at least at a four-month time horizon, and without any exogenous predictors.
 
 ### Examining a cost function instead of model metrics
 
@@ -214,39 +205,17 @@ c(null=mean(sign(spread[t]-spread[t-4])==sign(cv.null-spread[t-4])),
 
   * The null model is of no help to our trader: by construction, it predicts no change over the next four months, and it is right less than 1\% of the time.
 
-  * The exponential smoothing model would only call the direction of the spread movement correctly 51\% of the time, hardly enough to call a trading strategy.
+  * The exponential smoothing model would only call the direction of the spread movement correctly 52\% of the time, hardly enough to call a trading strategy.
   
-  * The neural network would predict the spread direction correctly 80\% of the time, not a sure bet but much better (and more profitable) than the other models.
+  * The neural network would predict the spread direction correctly 56\% of the time, not too much better.
   
-With some hypothetical investment strategies and rules for when to commit a reserve of funds, you could create a true cost function around these ideas which might be enough to attract the attention of actual industry professionals.
+With some hypothetical investment strategies and rules for when to commit a reserve of funds, you could create a true cost function around these ideas which might be enough to attract the attention of actual industry professionals --- although these models have poor performance, at some level of accuracy you might be able to generate a consistent return, and that level may not be much greater than 60\%. Also, if this direction interested you or a stakeholder, you could retrain your models to predict direction instead of level: these forecasts might be substantially more accurate.
 
 ### Hypothetical performance "in production"
 
-We held back 24 months to simulate the idea that the best model is chosen and put into production. What would that look like?
+We held back 24 months to simulate the idea that the best model is chosen and put into production. Here we saw no need, since the naive estimator won out over both challengers. But if we had put a new model in place, how would it perform?
 
-In some scenarios, the model is continually updated and re-run before each new prediction --- this would essentially extend the time series cross-validation process from "model selection" to "in-production forecasting" with no change. It would be common to see this used on monthly forecasts, since the model refresh would be infrequent and low-lift.
+In some production scenarios, the model is continually updated and re-run before each new prediction --- this would essentially extend the time series cross-validation process from "model selection" to "in-production forecasting" with no change. It would be common to see this used on monthly forecasts, since the model refresh would be infrequent and low-lift.
 
-In other scenarios, the model chosen at the end of the validation period is "frozen" and used with exactly the same parameters until a later model refresh. Even though this method would not be common with the scenario we are considering, we can simulate it to notice the drop in accuracy often seen when "really" forecasting:
+In other production scenarios, the model chosen at the end of the validation period is "frozen" and used with exactly the same parameters until a later model refresh. This might be aprticularly true when many stakeholders use model outputs and rely upon thorough model documentation, or when forecasting is deemed worth a one-time resource commitment but not worth maintenance costs.
 
-```{r}
-set.seed(0131)
-embed_row <- max(t) - p - h + 1
-X.final <- X[embed_row - (d-1):0,]
-Y.final <- Y[embed_row - (d-1):0]
-X_mean <- colMeans(X.final)
-X_sd   <- apply(X.final,2,sd)
-X_scaled <- scale(X.final,X_mean,X_sd)
-model.final <- nnet(X_scaled,Y.final,size=7,linout=TRUE,maxit=1000,trace=FALSE)
-
-preds.final <- predict(model.final,newdata=scale(X[embed_row+1:24,],X_mean,X_sd))
-rmse(preds.final,spread[535:558])
-mase(preds.final,spread[535:558],spread[531:554])
-
-plot(window(spread,start=1997.75),lwd=2,ylab='10Y - 1Y spread',
-     main='Hypothetical production run of frozen Nnet model')
-lines(time(spread)[535:558],preds.final[1:24],col='#0000ff')
-legend(x='bottomright',legend=c('Actual','Forecasted'),
-       lwd=c(2,1),col=c('#000000','#0000ff'),bty='n')
-```
-
-Mixed news from our simulated future: the neural network continues to hold its same absolute predictive power (OOS RMSE of 31bps). However, the movements of the yield spread during these twelve months would actually be better predicted by a naive estimator, since the average neural network error is roughly \12% larger than the those produced by the fourth lag.
