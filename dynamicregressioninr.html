@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Dynamic regression in R – Forecasting Essentials and Notes: Online Resource</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./harmonics.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-635ebee939b5a5ef3c54ffc98530d095.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./cointegration.html">5. Incorporating external regressors</a></li><li class="breadcrumb-item"><a href="./dynamicregressioninr.html"><span class="chapter-title">Dynamic regression in R</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Forecasting Essentials and Notes: Online Resource</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Introduction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">1. Time series basics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./whatisatimeseries.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">What is a time series?</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./autocovariance.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Autocovariance and autocorrelation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./whitenoise.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">White noise</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./randomwalk.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Random walks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stationarity.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Stationarity</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./basicsinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Time series basics in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">2. ARIMA models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ar.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">AR models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ma.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">MA models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./backshift.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Backshift notation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arima.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">ARIMA models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./identificationinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">ARIMA identification in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">3. ETS and SARIMA models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ets.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">ETS models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sarima.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">SARIMA models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./seasonalityinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Seasonal models in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">4. Forecasting and validation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./forecasts.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Forecast strategies</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./validation.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Model validation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./validationinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Validation in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">5. Incorporating external regressors</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cointegration.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Cointegration</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dynamicregression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Dynamic regression and “ARIMAX” models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./harmonics.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Harmonic predictors and multiple seasonality</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dynamicregressioninr.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Dynamic regression in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#time-series-functions-used-in-this-document" id="toc-time-series-functions-used-in-this-document" class="nav-link active" data-scroll-target="#time-series-functions-used-in-this-document">Time series functions used in this document</a></li>
+  <li><a href="#use-case-1-annual-u.s.-marriage-rates" id="toc-use-case-1-annual-u.s.-marriage-rates" class="nav-link" data-scroll-target="#use-case-1-annual-u.s.-marriage-rates">Use case 1: Annual U.S. marriage rates</a>
+  <ul class="collapse">
+  <li><a href="#data-overview" id="toc-data-overview" class="nav-link" data-scroll-target="#data-overview">Data overview</a></li>
+  <li><a href="#fitting-an-ols-regression" id="toc-fitting-an-ols-regression" class="nav-link" data-scroll-target="#fitting-an-ols-regression">Fitting an OLS regression</a></li>
+  <li><a href="#dynamic-regression-with-arima-errors" id="toc-dynamic-regression-with-arima-errors" class="nav-link" data-scroll-target="#dynamic-regression-with-arima-errors">Dynamic regression with ARIMA errors</a></li>
+  <li><a href="#autoregressive-distributed-lag-adl-model" id="toc-autoregressive-distributed-lag-adl-model" class="nav-link" data-scroll-target="#autoregressive-distributed-lag-adl-model">Autoregressive distributed lag (ADL) model</a></li>
+  </ul></li>
+  <li><a href="#use-case-2-monthly-sunspot-counts" id="toc-use-case-2-monthly-sunspot-counts" class="nav-link" data-scroll-target="#use-case-2-monthly-sunspot-counts">Use case 2: Monthly sunspot counts</a>
+  <ul class="collapse">
+  <li><a href="#data-overview-1" id="toc-data-overview-1" class="nav-link" data-scroll-target="#data-overview-1">Data overview</a></li>
+  <li><a href="#estimating-the-seasonal-period" id="toc-estimating-the-seasonal-period" class="nav-link" data-scroll-target="#estimating-the-seasonal-period">Estimating the seasonal period</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./cointegration.html">5. Incorporating external regressors</a></li><li class="breadcrumb-item"><a href="./dynamicregressioninr.html"><span class="chapter-title">Dynamic regression in R</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-title">Dynamic regression in R</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta column-body">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forecast)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(faraway)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tseries)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="time-series-functions-used-in-this-document" class="level2">
+<h2 class="anchored" data-anchor-id="time-series-functions-used-in-this-document">Time series functions used in this document</h2>
+<p>In the table below, packages with <em>italicized</em> names will need to be installed, while the package names in a standard font face can be found in most base R distributions (though they may need to be loaded into your workspace).</p>
+<table class="caption-top table">
+<caption>Time series functions used in the code below</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Package</th>
+<th style="text-align: left;">Function name</th>
+<th style="text-align: left;">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">stats</td>
+<td style="text-align: left;">acf</td>
+<td style="text-align: left;">Compute and plot autocorrelation</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">stats</td>
+<td style="text-align: left;">Box.test</td>
+<td style="text-align: left;">Ljung-Box test for multilag autocor</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><em>tseries</em></td>
+<td style="text-align: left;">adf.test</td>
+<td style="text-align: left;">ADF stationarity test</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><em>forecast</em></td>
+<td style="text-align: left;">auto.arima</td>
+<td style="text-align: left;">Identify ARIMA order and coefs</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><em>dplyr</em></td>
+<td style="text-align: left;">lag</td>
+<td style="text-align: left;">Create lags of a series (<em>see note</em>)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">stats</td>
+<td style="text-align: left;">tsp</td>
+<td style="text-align: left;">Extract indexing information for a ts</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">stats</td>
+<td style="text-align: left;">spectrum</td>
+<td style="text-align: left;">Plot a smoothed periodogram</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><em>forecast</em></td>
+<td style="text-align: left;">fourier</td>
+<td style="text-align: left;">Generate harmonic regressors</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><em>forecast</em></td>
+<td style="text-align: left;">Arima</td>
+<td style="text-align: left;">Fit an ARIMA model with known order</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><em>forecast</em></td>
+<td style="text-align: left;">forecast</td>
+<td style="text-align: left;">Look-ahead prediction of a ts model</td>
+</tr>
+</tbody>
+</table>
+<p>Note: <code>dplyr::lag</code> will overwrite the base R <code>lag</code> function, and this is <em>important</em>. Base R will not add ’NA’s to the start of a lagged vector, but the <code>dplyr</code> version <em>does</em> add the NAs, which is needed for the code below to work properly.</p>
+</section>
+<section id="use-case-1-annual-u.s.-marriage-rates" class="level2">
+<h2 class="anchored" data-anchor-id="use-case-1-annual-u.s.-marriage-rates">Use case 1: Annual U.S. marriage rates</h2>
+<p>This example will cover cointegration, dynamic regression, and ADL models. Harmonic regression will be covered in the next example.</p>
+<section id="data-overview" class="level3">
+<h3 class="anchored" data-anchor-id="data-overview">Data overview</h3>
+<p>The dataset <code>faraway::divusa</code> contains annual marriage rates (per 1000 unmarried women aged 16+) in the United States from 1920 through 1996, with additional contemporaneous information including unemployment rate and female participation in the workforce. Let’s try to understand why marriage rate changed during this period.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1920</span><span class="sc">:</span><span class="dv">1996</span>,divusa<span class="sc">$</span>marriage,<span class="at">ylab=</span><span class="st">'Marriage rate'</span>,<span class="at">xlab=</span><span class="st">'Year'</span>,</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'U.S. marriage rates, 1920-1996'</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="dv">1946</span>,divusa<span class="sc">$</span>marriage[<span class="dv">27</span>],<span class="st">'1946 (World War II over)'</span>,<span class="at">pos=</span><span class="dv">4</span>,<span class="at">cex=</span><span class="fl">0.75</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dynamicregressioninr_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The obvious visual interpretation is probably a good starting point. Marriage rates declined during the Great Depression (1929-1939), spiked when young men came back from overseas wars to a booming economy (1946), and then declined in recent decades with a possible bump when the large Baby Boomer cohort came of age (1965-1970).</p>
+<p>Let’s hypothesize some relationships:</p>
+<ul>
+<li><p>Marriage will be inversely correlated with the proportion of women in the workforce. Working women have greater financial independence, working women may have children later in life or not at all, and in times of war working women may serve as a proxy for overseas men, which all tend against marriage.</p></li>
+<li><p>Marriage will also be inversely correlated with unemployment. When the nation is out of work, the cost of providing for dependents (spouse and/or children) may prove prohibitive. Engagement rings or weddings may also represent large expenses which must be saved for over time, and these savings either do not accumulate while out of work or are re-appropriated for basic needs.</p></li>
+<li><p>As needed, we might code for the extreme spike of marriages in 1946 (and/or 1947 and 1948) with indicator variables.</p></li>
+</ul>
+</section>
+<section id="fitting-an-ols-regression" class="level3">
+<h3 class="anchored" data-anchor-id="fitting-an-ols-regression">Fitting an OLS regression</h3>
+<p>As a benchmark, we can try OLS regression:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mar.lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(marriage <span class="sc">~</span> femlab <span class="sc">+</span> unemployed <span class="sc">+</span> <span class="fu">I</span>(year<span class="sc">==</span><span class="dv">1946</span>), divusa)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mar.lm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = marriage ~ femlab + unemployed + I(year == 1946), 
+    data = divusa)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-15.5149  -3.6814   0.0497   3.2854  24.4060 
+
+Coefficients:
+                     Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)         112.37854    3.40836  32.971  &lt; 2e-16 ***
+femlab               -0.82308    0.07193 -11.443  &lt; 2e-16 ***
+unemployed           -1.13091    0.16652  -6.791 2.53e-09 ***
+I(year == 1946)TRUE  35.48292    7.19539   4.931 4.97e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 7.094 on 73 degrees of freedom
+Multiple R-squared:  0.7194,    Adjusted R-squared:  0.7079 
+F-statistic: 62.39 on 3 and 73 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1920</span><span class="sc">:</span><span class="dv">1996</span>,mar.lm<span class="sc">$</span>residuals,<span class="at">ylab=</span><span class="st">'Residual'</span>,<span class="at">xlab=</span><span class="st">'Year'</span>,</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'Residual plot after first-stage OLS regression'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dynamicregressioninr_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(mar.lm<span class="sc">$</span>residuals,<span class="at">main=</span><span class="st">'ACF plot for OLS residuals'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dynamicregressioninr_files/figure-html/unnamed-chunk-3-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Box.test</span>(mar.lm<span class="sc">$</span>residuals,<span class="at">type=</span><span class="st">'Ljung'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Box-Ljung test
+
+data:  mar.lm$residuals
+X-squared = 51.483, df = 1, p-value = 7.222e-13</code></pre>
+</div>
+</div>
+<p>This benchmark analysis shows preliminary strengths and weaknesses:</p>
+<ul>
+<li><p>All of our predictors are judged to be highly significant</p></li>
+<li><p>Cumulatively, we can explain 72% of the variation in marriage rates</p></li>
+<li><p>The signs on the coefficients match our hypotheses</p></li>
+<li><p>However, the residuals show clear time series autocorrelation</p></li>
+<li><p>This visual pattern is matched by a Ljung-Box test for independence</p></li>
+</ul>
+<p>Furthermore, we know that we might be looking at a case of spurious regression. We can test this through a series of augmented Dickey-Fuller tests:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Tests whether original series are stationary</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">adf.test</span>(divusa<span class="sc">$</span>marriage)<span class="sc">$</span>p.value)<span class="sc">&lt;</span><span class="fl">0.1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">adf.test</span>(divusa<span class="sc">$</span>femlab)<span class="sc">$</span>p.value)<span class="sc">&lt;</span><span class="fl">0.1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">adf.test</span>(divusa<span class="sc">$</span>unemployed)<span class="sc">$</span>p.value)<span class="sc">&lt;</span><span class="fl">0.1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Tests whether differences series are stationary</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">adf.test</span>(<span class="fu">diff</span>(divusa<span class="sc">$</span>marriage))<span class="sc">$</span>p.value)<span class="sc">&lt;</span><span class="fl">0.1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">adf.test</span>(<span class="fu">diff</span>(divusa<span class="sc">$</span>femlab))<span class="sc">$</span>p.value)<span class="sc">&lt;</span><span class="fl">0.1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">adf.test</span>(<span class="fu">diff</span>(divusa<span class="sc">$</span>unemployed))<span class="sc">$</span>p.value)<span class="sc">&lt;</span><span class="fl">0.1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Test whether linear combination is stationary</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">adf.test</span>(mar.lm<span class="sc">$</span>residuals)<span class="sc">$</span>p.value)<span class="sc">&lt;</span><span class="fl">0.1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+</div>
+<ul>
+<li><p>None of the original series were stationary</p></li>
+<li><p>All of the differenced series were stationary</p></li>
+<li><p>The linear combination of the series was not stationary (<em>i.e.</em> no cointegration)</p></li>
+</ul>
+<p>These results are bad news for our regression: our coefficients and the seeming strength of our results are likely being biased by spurious correlation. We may have to differ the data and re-perform this analysis on <em>changes</em> in marriage rate.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>diffusa <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">diff</span>(<span class="fu">as.matrix</span>(divusa)))</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1921</span><span class="sc">:</span><span class="dv">1996</span>,diffusa<span class="sc">$</span>marriage,<span class="at">ylab=</span><span class="st">'Change in marriage rate'</span>,</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Year'</span>,<span class="at">main=</span><span class="st">'Differences of U.S. marriage rates'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dynamicregressioninr_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>diff.lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(marriage <span class="sc">~</span> femlab <span class="sc">+</span> unemployed <span class="sc">+</span> <span class="fu">I</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">76</span><span class="sc">==</span><span class="dv">26</span>), diffusa)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(diff.lm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = marriage ~ femlab + unemployed + I(1:76 == 26), 
+    data = diffusa)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-9.9452 -1.4877  0.0316  1.9010  7.7430 
+
+Coefficients:
+                  Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)        0.07549    0.50589   0.149 0.881787    
+femlab            -2.03032    0.58544  -3.468 0.000889 ***
+unemployed        -1.11079    0.16908  -6.570 6.80e-09 ***
+I(1:76 == 26)TRUE 26.49445    4.64909   5.699 2.47e-07 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 3.367 on 72 degrees of freedom
+Multiple R-squared:  0.6849,    Adjusted R-squared:  0.6718 
+F-statistic: 52.17 on 3 and 72 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1921</span><span class="sc">:</span><span class="dv">1996</span>,diff.lm<span class="sc">$</span>residuals,<span class="at">ylab=</span><span class="st">'Residual'</span>,<span class="at">xlab=</span><span class="st">'Year'</span>,</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'Residual plot of OLS regression on differences'</span>,</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">type=</span><span class="st">'l'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dynamicregressioninr_files/figure-html/unnamed-chunk-5-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(diff.lm<span class="sc">$</span>residuals,<span class="at">main=</span><span class="st">'ACF plot for difference residuals'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dynamicregressioninr_files/figure-html/unnamed-chunk-5-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Box.test</span>(diff.lm<span class="sc">$</span>residuals,<span class="at">type=</span><span class="st">'Ljung'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Box-Ljung test
+
+data:  diff.lm$residuals
+X-squared = 4.995, df = 1, p-value = 0.02542</code></pre>
+</div>
+</div>
+<p>This regression on changes is fairly encouraging!</p>
+<ul>
+<li><p>The R<sup>2</sup> value of 68.5% is still fairly high: differencing has not removed all of the useful variation from the series.</p></li>
+<li><p>All of our coefficients are still highly significant and preserve the expected signs.</p></li>
+<li><p>Although a Ljung-Box test suggests the residuals are not yet independent, the test statistic has dramatically improved.</p></li>
+<li><p>The raw differences look more stable (if not stationary) and the residuals show no obvious patterns or misspecifications apart from some possible heteroskedasticity.</p></li>
+</ul>
+<p>Let’s use this as our new static benchmark.</p>
+</section>
+<section id="dynamic-regression-with-arima-errors" class="level3">
+<h3 class="anchored" data-anchor-id="dynamic-regression-with-arima-errors">Dynamic regression with ARIMA errors</h3>
+<p>Since we know the original levels of the marriage data are prone to spurious correlation, we should not fit a regression with ARIMA errors to the levels, instead we should fit a regression with ARMA errors to the differences:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>diff.xarima <span class="ot">&lt;-</span> <span class="fu">auto.arima</span>(diffusa<span class="sc">$</span>marriage,<span class="at">d=</span><span class="dv">0</span>,</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>                          <span class="at">approximation=</span><span class="cn">FALSE</span>,<span class="at">stepwise=</span><span class="cn">FALSE</span>,</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>                          <span class="at">xreg=</span><span class="fu">cbind</span>(<span class="at">femlab=</span>diffusa<span class="sc">$</span>femlab,</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">unempl=</span>diffusa<span class="sc">$</span>unemployed,</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">dummy1946=</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">76</span><span class="sc">==</span><span class="dv">26</span>)))</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(diff.xarima)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Series: diffusa$marriage 
+Regression with ARIMA(0,0,1) errors 
+
+Coefficients:
+         ma1   femlab   unempl  dummy1946
+      0.2863  -1.9138  -1.1306    27.4122
+s.e.  0.1245   0.4848   0.1652     3.8996
+
+sigma^2 = 10.55:  log likelihood = -195.36
+AIC=400.71   AICc=401.57   BIC=412.37
+
+Training set error measures:
+                      ME     RMSE      MAE      MPE     MAPE      MASE
+Training set 0.005717085 3.161276 2.320985 47.43886 128.6397 0.5305512
+                    ACF1
+Training set -0.01199232</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Box.test</span>(diff.xarima<span class="sc">$</span>residuals,<span class="at">type=</span><span class="st">'Ljung'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Box-Ljung test
+
+data:  diff.xarima$residuals
+X-squared = 0.011367, df = 1, p-value = 0.9151</code></pre>
+</div>
+</div>
+<p>We now have removed any serial dependence from our residuals and successfully fit an MA(1) model to the error process of our regression on differences. The coefficients all remain significant and with the expected sign. The mild positive MA(1) term suggests that if any year should an unusual change in the marriage rate, the next year will also see an unexpected bump in the same direction (though not as strong).</p>
+</section>
+<section id="autoregressive-distributed-lag-adl-model" class="level3">
+<h3 class="anchored" data-anchor-id="autoregressive-distributed-lag-adl-model">Autoregressive distributed lag (ADL) model</h3>
+<p>Since we know the original levels of the marriage data are prone to spurious correlation, we will use differences for our ADL model, just as before.</p>
+<p>The dynamic regression with ARIMA errors identified a MA process in the errors… any finite-order MA process is equivalent to an infinite AR process, and I suspect that dynamic regression will prove a more compact, elegant representation than ADL. But I will try, starting with three past lags of my response and my linear predictors.</p>
+<p>(<em>Note:</em> None of the predictor lags offered any explanatory power. I fast forward to my final model.)</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>adldata <span class="ot">&lt;-</span> <span class="fu">cbind</span>(diffusa[,<span class="dv">5</span><span class="sc">:</span><span class="dv">3</span>],<span class="fu">lag</span>(diffusa<span class="sc">$</span>marriage),<span class="fu">lag</span>(diffusa<span class="sc">$</span>marriage,<span class="dv">2</span>),</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">lag</span>(diffusa<span class="sc">$</span>marriage,<span class="dv">3</span>),<span class="at">dummy1946=</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">76</span><span class="sc">==</span><span class="dv">26</span>))</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(adldata)[<span class="dv">4</span><span class="sc">:</span><span class="dv">6</span>] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'marriageL1'</span>,<span class="st">'marriageL2'</span>,<span class="st">'marriageL3'</span>)</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(adldata)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  marriage femlab unemployed marriageL1 marriageL2 marriageL3 dummy1946
+2     -9.0   0.09        6.5         NA         NA         NA     FALSE
+3     -3.3   0.09       -5.0       -9.0         NA         NA     FALSE
+4      5.5   0.09       -4.3       -3.3       -9.0         NA     FALSE
+5     -4.9   0.09        2.6        5.5       -3.3       -9.0     FALSE
+6     -1.1   0.09       -1.8       -4.9        5.5       -3.3     FALSE
+7     -0.5   0.09       -1.4       -1.1       -4.9        5.5     FALSE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>diff.adl <span class="ot">&lt;-</span> <span class="fu">lm</span>(marriage <span class="sc">~</span> .,adldata)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(diff.adl)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = marriage ~ ., data = adldata)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-7.837 -1.469  0.000  1.430  6.772 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)   -0.28908    0.47382  -0.610  0.54388    
+femlab        -1.52732    0.54041  -2.826  0.00623 ** 
+unemployed    -1.33422    0.16855  -7.916 3.75e-11 ***
+marriageL1    -0.15159    0.06284  -2.413  0.01863 *  
+marriageL2    -0.20029    0.06011  -3.332  0.00142 ** 
+marriageL3    -0.16187    0.06113  -2.648  0.01012 *  
+dummy1946TRUE 27.97662    4.14600   6.748 4.54e-09 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 2.894 on 66 degrees of freedom
+  (3 observations deleted due to missingness)
+Multiple R-squared:  0.7766,    Adjusted R-squared:  0.7563 
+F-statistic: 38.25 on 6 and 66 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Box.test</span>(diff.adl<span class="sc">$</span>residuals,<span class="at">type=</span><span class="st">'Ljung'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Box-Ljung test
+
+data:  diff.adl$residuals
+X-squared = 10.102, df = 1, p-value = 0.001481</code></pre>
+</div>
+</div>
+<p>This ADL model performs well, with a high R<sup>2</sup> and a low error variance, but its residuals still contain dependencies and the ideas put forward by the model are less believable. Even a fourth lag would be significant, if added… are we really to believe that the change in marriage rate four years ago affects the change in marriage rate this year <em>even after controlling for the intervening three rate changes?</em></p>
+<p>Further, with the more lags we add, the more rows we drop from the beginning of our sample. At some point this will stop being an apples-to-apples comparison with our original dataset. For example, the AIC is no longer directly comparable, since some of the response values were not used in this regression.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>rmse <span class="ot">&lt;-</span> <span class="cf">function</span>(act,pred) <span class="fu">sqrt</span>(<span class="fu">mean</span>((act<span class="sc">-</span>pred)<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="co">#In-sample RMSE comparison</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">ols=</span><span class="fu">rmse</span>(diffusa<span class="sc">$</span>marriage,diff.lm<span class="sc">$</span>residuals),</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">xarima=</span><span class="fu">rmse</span>(diffusa<span class="sc">$</span>marriage,diff.xarima<span class="sc">$</span>residuals),</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">adl=</span><span class="fu">rmse</span>(diffusa<span class="sc">$</span>marriage[<span class="sc">-</span><span class="dv">1</span><span class="sc">:-</span><span class="dv">3</span>],diff.adl<span class="sc">$</span>residuals))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     ols   xarima      adl 
+4.863327 5.155881 5.153555 </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="use-case-2-monthly-sunspot-counts" class="level2">
+<h2 class="anchored" data-anchor-id="use-case-2-monthly-sunspot-counts">Use case 2: Monthly sunspot counts</h2>
+<p>Harmonic regressors are particularly useful for long and/or non-integer periodicity. Let’s apply to a dataset with both features: monthly sunspot activity.</p>
+<section id="data-overview-1" class="level3">
+<h3 class="anchored" data-anchor-id="data-overview-1">Data overview</h3>
+<p>Sunspots are dark blotches on the face of the sun’s surface, which are caused by regions where the Sun’s magnetic field is in temporary flux, blocking the convection of its superheated plasma. Solar activity loosely follows 11-year (or 22-year, depending on how you measure) cycles, although this period is not exactly 11 years and each cycle may show slight variations in total length. A long dataset of monthly sunspot counts (using the “Wolf” or “Zurich” method of counting relative sunspot activity) can be found in <code>datasets::sunspot.month</code>.</p>
+<p>These data plot the monthly “relative sunspot count”, which includes approximations and adjustment factors, calculated daily and then averaged over every day of the month.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(sunspot.month)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3310</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(sunspot.month)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]   0.0 398.2</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tsp</span>(sunspot.month) <span class="co"># start, stop, and frequency</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1749.00 2024.75   12.00</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sunspot.month,<span class="at">ylab=</span><span class="st">'Mean relative sunspot count'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dynamicregressioninr_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The data clearly would benefit from a variance stabilization, but because of the 0s in the data a Box-Cox transformation would not be possible. We could add a small amount to each month’s total (say, 0.1) and Box-Cox transform from there, but instead since no observations are negative we will simply take a square root transformation.</p>
+</section>
+<section id="estimating-the-seasonal-period" class="level3">
+<h3 class="anchored" data-anchor-id="estimating-the-seasonal-period">Estimating the seasonal period</h3>
+<p>Solar cycles are approximately 11 years (or 132 months), but can we test this? Using a <em>periodogram</em>, we can estimate the power spectrum of the sunspot numbers, finding the exact frequency which has the most “resonance” with the data:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>spotroots <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="fu">sqrt</span>(sunspot.month),<span class="at">frequency=</span><span class="dv">12</span>,<span class="at">start=</span><span class="dv">1749</span>)</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">spectrum</span>(spotroots,<span class="at">spans=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">5</span>),<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>))</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">11</span>),<span class="at">col=</span><span class="st">'#7f7f7f'</span>)</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">11</span>,<span class="dv">100</span>,<span class="st">"11-year cycle"</span>,<span class="at">pos=</span><span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dynamicregressioninr_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The periodogram does neatly line up with an exact 11-year cycle, but we can test this once again with a grid search. Supposing cycles of slightly different frequencies, we can see which frequency has the highest R<sup>2</sup> value when used to explain the monthly totals.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>cyclegrid <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fl">10.5</span>,<span class="fl">11.5</span>,<span class="fl">0.02</span>)</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cyclegrid,<span class="fu">sapply</span>(cyclegrid,<span class="cf">function</span>(z) <span class="fu">summary</span>(<span class="fu">lm</span>(spotroots<span class="sc">~</span><span class="fu">fourier</span>(<span class="fu">ts</span>(spotroots,<span class="at">frequency=</span><span class="dv">12</span><span class="sc">*</span>z),<span class="at">K=</span><span class="dv">5</span>)))<span class="sc">$</span>r.squared),</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="fu">expression</span>(R<span class="sc">^</span><span class="dv">2</span>),<span class="at">xlab=</span><span class="st">'Cycle frequency (years)'</span>)</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="dv">11</span>,<span class="at">col=</span><span class="st">'#7f7f7f'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dynamicregressioninr_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>It seems that exactly 11 years is a pretty good guess after all, but if we’re being pedantic, 10.99 years is a slightly better fit to the data. For the sake of argument, to show it can be done, I will fit a 10.99 year frequency — and, over the 3310 months of our sample, the difference adds up to over a quarter-cycle.</p>
+<p>Using <code>forecast::fourier</code> it’s very easy to generate harmonic regressors for the data. You only need to supply:</p>
+<ul>
+<li>A ts the same length as your data (note, any vector will do), with a correctly-specified frequency attribute.</li>
+<li>The number of harmonic sine-cosine pairs <span class="math inline">\(K\)</span> (so, <span class="math inline">\(K=5\)</span> will generate 10 regressors)</li>
+<li><em>Optionally</em>, a lookahead forecast period <span class="math inline">\(h\)</span>, so that the appropriate regressors can be generated for your forecasting.</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>spot.harmonics <span class="ot">&lt;-</span> <span class="fu">fourier</span>(<span class="fu">ts</span>(spotroots,<span class="at">frequency=</span><span class="fl">10.99</span><span class="sc">*</span><span class="dv">12</span>),<span class="at">K=</span><span class="dv">5</span>)</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">round</span>(spot.harmonics,<span class="dv">4</span>),<span class="dv">12</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      S1-132 C1-132 S2-132 C2-132 S3-132  C3-132 S4-132  C4-132 S5-132  C5-132
+ [1,] 0.0476 0.9989 0.0951 0.9955 0.1424  0.9898 0.1894  0.9819 0.2360  0.9718
+ [2,] 0.0951 0.9955 0.1894 0.9819 0.2820  0.9594 0.3720  0.9282 0.4586  0.8886
+ [3,] 0.1424 0.9898 0.2820 0.9594 0.4158  0.9095 0.5411  0.8410 0.6554  0.7553
+ [4,] 0.1894 0.9819 0.3720 0.9282 0.5411  0.8410 0.6906  0.7233 0.8151  0.5794
+ [5,] 0.2360 0.9718 0.4586 0.8886 0.6554  0.7553 0.8151  0.5794 0.9288  0.3707
+ [6,] 0.2820 0.9594 0.5411 0.8410 0.7563  0.6543 0.9101  0.4145 0.9900  0.1410
+ [7,] 0.3274 0.9449 0.6186 0.7857 0.8417  0.5399 0.9721  0.2346 0.9953 -0.0966
+ [8,] 0.3720 0.9282 0.6906 0.7233 0.9101  0.4145 0.9989  0.0462 0.9444 -0.3287
+ [9,] 0.4158 0.9095 0.7563 0.6543 0.9598  0.2806 0.9896 -0.1439 0.8402 -0.5423
+[10,] 0.4586 0.8886 0.8151 0.5794 0.9900  0.1410 0.9444 -0.3287 0.6885 -0.7252
+[11,] 0.5004 0.8658 0.8665 0.4992 1.0000 -0.0014 0.8651 -0.5016 0.4979 -0.8672
+[12,] 0.5411 0.8410 0.9101 0.4145 0.9896 -0.1439 0.7544 -0.6564 0.2792 -0.9602</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">matplot</span>((<span class="dv">1</span><span class="sc">:</span><span class="dv">132</span>)<span class="sc">/</span><span class="dv">12</span>,spot.harmonics[<span class="dv">1</span><span class="sc">:</span><span class="dv">132</span>,],<span class="at">type=</span><span class="st">'l'</span>,<span class="at">col=</span><span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#0000bf'</span>,<span class="st">'#0000ff'</span>,<span class="st">'#5f5fff'</span>,<span class="st">'#afafff'</span>),<span class="at">each=</span><span class="dv">2</span>),<span class="at">lwd=</span><span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>),<span class="at">each=</span><span class="dv">2</span>),<span class="at">lty=</span><span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">times=</span><span class="dv">5</span>),<span class="at">xlab=</span><span class="st">'Time index (years)'</span>,<span class="at">ylab=</span><span class="st">'Regressor value'</span>,<span class="at">main=</span><span class="st">'Five sets of harmonic regressors for 10.99-year period'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dynamicregressioninr_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>These harmonic regressors by themselves don’t look like much, but linear combinations of their peaks and valleys can approximate almost any seasonal pattern, especially one as smoothly sinusoidal as the sunspots.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>spot.reg <span class="ot">&lt;-</span> <span class="fu">lm</span>(spotroots <span class="sc">~</span> spot.harmonics)</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(spot.reg)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = spotroots ~ spot.harmonics)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-9.6090 -2.2602 -0.0888  2.1150 14.8195 
+
+Coefficients:
+                      Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)           8.114972   0.058720 138.197  &lt; 2e-16 ***
+spot.harmonicsS1-132  2.323309   0.083160  27.938  &lt; 2e-16 ***
+spot.harmonicsC1-132  1.879462   0.082925  22.664  &lt; 2e-16 ***
+spot.harmonicsS2-132  0.092706   0.083071   1.116    0.265    
+spot.harmonicsC2-132  0.403041   0.083014   4.855 1.26e-06 ***
+spot.harmonicsS3-132  0.066490   0.083008   0.801    0.423    
+spot.harmonicsC3-132 -0.009917   0.083076  -0.119    0.905    
+spot.harmonicsS4-132  0.025823   0.083007   0.311    0.756    
+spot.harmonicsC4-132 -0.104138   0.083076  -1.254    0.210    
+spot.harmonicsS5-132  0.030746   0.083040   0.370    0.711    
+spot.harmonicsC5-132 -0.108500   0.083042  -1.307    0.191    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 3.378 on 3299 degrees of freedom
+Multiple R-squared:  0.2871,    Adjusted R-squared:  0.285 
+F-statistic: 132.9 on 10 and 3299 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">seq</span>(<span class="dv">1749</span>,<span class="at">by=</span><span class="dv">1</span><span class="sc">/</span><span class="dv">12</span>,<span class="at">length.out=</span><span class="dv">264</span>),spotroots[<span class="dv">1</span><span class="sc">:</span><span class="dv">264</span>],</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'Sunspots and harmonic regressors during first 2 cycles'</span>,</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Year'</span>,<span class="at">ylab=</span><span class="st">'Root of relative sunspot count'</span>)</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">seq</span>(<span class="dv">1749</span>,<span class="at">by=</span><span class="dv">1</span><span class="sc">/</span><span class="dv">12</span>,<span class="at">length.out=</span><span class="dv">264</span>),spot.reg<span class="sc">$</span>fitted.values[<span class="dv">1</span><span class="sc">:</span><span class="dv">264</span>],<span class="at">col=</span><span class="st">'#0000ff'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dynamicregressioninr_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">seq</span>(<span class="dv">1749</span>,<span class="at">by=</span><span class="dv">1</span><span class="sc">/</span><span class="dv">12</span>,<span class="at">length.out=</span><span class="dv">1320</span>),spotroots[<span class="dv">1</span><span class="sc">:</span><span class="dv">1320</span>],</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'Sunspots and harmonic regressors during first 10 cycles'</span>,</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Year'</span>,<span class="at">ylab=</span><span class="st">'Root of relative sunspot count'</span>)</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">seq</span>(<span class="dv">1749</span>,<span class="at">by=</span><span class="dv">1</span><span class="sc">/</span><span class="dv">12</span>,<span class="at">length.out=</span><span class="dv">1320</span>),spot.reg<span class="sc">$</span>fitted.values[<span class="dv">1</span><span class="sc">:</span><span class="dv">1320</span>],<span class="at">col=</span><span class="st">'#0000ff'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dynamicregressioninr_files/figure-html/unnamed-chunk-13-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>In fact, we did not need to include 5 pairs of terms; 2 might have been enough. Still, the method has its weaknesses too: Looking at 10 total sunspot cycles, we see that sometimes the cycle peaks a few months before or after we might expect.</p>
+<p>This first pass might do well enough to control for most seasonal variation. What remains might be long-order ARIMA behavior, or even something to fit with ETS. Let’s look at the residuals from the first ten periods:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">seq</span>(<span class="dv">1749</span>,<span class="at">by=</span><span class="dv">1</span><span class="sc">/</span><span class="dv">12</span>,<span class="at">length.out=</span><span class="dv">1320</span>),spot.reg<span class="sc">$</span>residuals[<span class="dv">1</span><span class="sc">:</span><span class="dv">1320</span>],<span class="at">col=</span><span class="st">'#ff0000'</span>,<span class="at">type=</span><span class="st">'l'</span>,<span class="at">xlab=</span><span class="st">'Year'</span>,<span class="at">ylab=</span><span class="st">'Residual'</span>,<span class="at">main=</span><span class="st">'Residuals from first 10 sunspot cycles'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dynamicregressioninr_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>And now we can try adding ARIMA errors. Let’s fit this model to the first 24 cycles and try to predict the 25th.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>spot.dynreg <span class="ot">&lt;-</span> <span class="fu">Arima</span>(spotroots[<span class="dv">1</span><span class="sc">:</span>(<span class="dv">132</span><span class="sc">*</span><span class="dv">24</span>)],<span class="at">order=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>),<span class="at">xreg=</span>spot.harmonics[<span class="dv">1</span><span class="sc">:</span>(<span class="dv">132</span><span class="sc">*</span><span class="dv">24</span>),])</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">forecast</span>(spot.dynreg,<span class="at">h=</span><span class="dv">132</span>,<span class="at">xreg=</span>spot.harmonics[(<span class="dv">132</span><span class="sc">*</span><span class="dv">24</span><span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(<span class="dv">132</span><span class="sc">*</span><span class="dv">25</span>),]),<span class="at">include=</span><span class="dv">132</span>)</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>((<span class="dv">132</span><span class="sc">*</span><span class="dv">24</span><span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(<span class="dv">132</span><span class="sc">*</span><span class="dv">25</span>),spotroots[(<span class="dv">132</span><span class="sc">*</span><span class="dv">24</span><span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(<span class="dv">132</span><span class="sc">*</span><span class="dv">25</span>)])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dynamicregressioninr_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        const annoteTargets = window.document.querySelectorAll('.code-annotation-anchor');
+        for (let i=0; i<annoteTargets.length; i++) {
+          const annoteTarget = annoteTargets[i];
+          const targetCell = annoteTarget.getAttribute("data-target-cell");
+          const targetAnnotation = annoteTarget.getAttribute("data-target-annotation");
+          const contentFn = () => {
+            const content = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+            if (content) {
+              const tipContent = content.cloneNode(true);
+              tipContent.classList.add("code-annotation-tip-content");
+              return tipContent.outerHTML;
+            }
+          }
+          const config = {
+            allowHTML: true,
+            content: contentFn,
+            onShow: (instance) => {
+              selectCodeLines(instance.reference);
+              instance.reference.classList.add('code-annotation-active');
+              window.tippy.hideAll();
+            },
+            onHide: (instance) => {
+              unselectCodeLines();
+              instance.reference.classList.remove('code-annotation-active');
+            },
+            maxWidth: 300,
+            delay: [50, 0],
+            duration: [200, 0],
+            offset: [5, 10],
+            arrow: true,
+            appendTo: function(el) {
+              return el.parentElement.parentElement.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'quarto',
+            placement: 'right',
+            popperOptions: {
+              modifiers: [
+              {
+                name: 'flip',
+                options: {
+                  flipVariations: false, // true by default
+                  allowedAutoPlacements: ['right'],
+                  fallbackPlacements: ['right', 'top', 'top-start', 'top-end', 'bottom', 'bottom-start', 'bottom-end', 'left'],
+                },
+              },
+              {
+                name: 'preventOverflow',
+                options: {
+                  mainAxis: false,
+                  altAxis: false
+                }
+              }
+              ]        
+            }      
+          };
+          window.tippy(annoteTarget, config); 
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation column-body">
+  <div class="nav-page nav-page-previous">
+      <a href="./harmonics.html" class="pagination-link" aria-label="Harmonic predictors and multiple seasonality">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Harmonic predictors and multiple seasonality</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
