@@ -1,0 +1,131 @@
+# Dynamic regression and "ARIMAX" models
+
+## Terminology
+
+Language matters, and yet language also evolves over time, and we humans communicate (and translate) language inconsistently at our best and inaccurately (or even maliciously) at our worst. When we data scientists describe new innovations in a way intended to accurately link them to the broader ecology of data models, we often fall short of our goal.
+
+All this is meant to express my sympathy for you. For each technique we learn, you must bravely disentangle 10--100 years of prior discussion (now including my own) which use different notation, terms, and taxonomies.
+
+Some of the terms I use below will be defined differently elsewhere. Some of those differing sources are wrong. Others are not wrong at all; they are entirely self-consistent, and so is this, but the field has not sorted out one standard system of terms.
+
+## The use of external predictors in a statistical time series model
+
+So far, *all* the time series modeling we have done has explained a time series $\boldsymbol{Y}$ as a function of past values of itself, past changes of itself, a contemporaneous white noise process, and past levels or changes of that white noise process.
+
+This seems to leave a lot of information "on the table"! Many time series could be much more accurately modeled if we bring in some obvious external predictors:
+
+ * Daily river discharge volumes could be better modeled if we knew the season (snowmelt will flood the rivers in spring) or the recent rainfall amounts.
+ 
+ * Weekly store revenues could be better modeled if we knew the holiday calendar (not all holidays fall in the same day or week, complicating seasonal models) or extreme weather events.
+ 
+ * Hourly web traffic to a particular site could be better modeled if we knew broader traffic trends among all sites or knew the recent search trends for keywords related to the website.
+
+### OLS regression as a base case (static regression)
+
+How then should we incorporate this outside information? We could start by throwing all we know of time series out the window and retreating to the friendly confines of least squares regression.^[Throughout this discussion I will often illustrate an idea using a single predictor $X$ but all of my comments would apply equally to cases with multiple predictors $X_1, \ldots, X_k$.]
+
+$$y_t = \beta_0 + \beta_1 x_t + \omega_t$$
+
+We could call this **static regression** since neither the response nor the predictor nor the error term are believed to have any interesting time series properties. And there are several instances in which this concept would produce perfectly valid explanations of the past and halfway-decent forecasts of the future:
+
+ * Simple deterministic drift could be modeled by using the time index as a predictor alongside one or more other covariates: 
+ 
+ $$y_t = \beta_0 + \beta_1 t + \ldots + \beta_k x_t + \omega_t$$
+ 
+ * Complex time-based trends could be modeled with polynomial terms: 
+ 
+ $$y_t = \beta_0 + \beta_1 t + \beta_2 t^2 + \beta_3 t^3 + \ldots + \beta_k x_t + \omega_t$$
+ 
+  * Complex time-based trends could *also* be modeled with "stairstep" dummies: 
+ 
+ $$y_t = \beta_0 + \beta_1 1\!\!1\{\tau_1 \lt t \le \tau_2\} + \beta_2 1\!\!1\{\tau_2 \lt t \le \tau_3\} + \ldots + \beta_k x_t + \omega_t$$
+ 
+ * Anomolous one-off behavior could be coded for with dummy variables:
+ 
+  $$y_t = \beta_0 + \beta_1 1\!\!1\{t = \tau_1\} + \beta_2 1\!\!1\{t = \tau_2\} + \ldots + \beta_k x_t + \omega_t$$
+ 
+ * Regime changes could be represented by time-based interaction terms:
+ 
+ $$y_t = \beta_0 + \beta_1 1\!\!1\{t \gt \tau\} + \beta_2 x_t + \beta_3 x_t 1\!\!1\{t \gt \tau\} + \omega_t$$
+ 
+ * Even some complicated long-term dependencies could be explained by an external predictor which is shown to be [cointegrated](cointegration.qmd) with $\boldsymbol{Y}$: 
+ 
+  $$y_t = \beta_0 + \beta_1 x_t + \omega_t; \qquad \boldsymbol{Y} \sim I(d), \boldsymbol{X} \sim I(d), \boldsymbol{Y} - \beta_1 \boldsymbol{X} \sim I(0)$$
+  
+All of these options can lead to useful insights, but they also bring disadvantages when applied to some time series problems:
+
+ * The standard errors of our predictors will often be wrong in the presence of significant autocorrelation, which can lead us to wrongly exclude or include certain predictive effects.
+ 
+ * All of these techniques ignore short-term dependencies which could affect near-term forecasting. For example, if we are predicting rainfall and an ongoing drought made this month much drier than expected, we could reasonably expect next month to be drier than expected, and adjust our forecast downward, which cannot easily be represented in a static regression.
+ 
+ * Because the short-term dependencies are not formally captured in the model, they tend to "leak" into the static coefficients, which in turn can bias the estimates and mislead the user.
+ 
+### "Dynamic" regression as a class of alternatives
+
+Many regression-style time series models instead use past values or differences of $\boldsymbol{Y}$, $X$, or $\boldsymbol{\omega}$ as predictors.
+
+When a regression-style model (with both a response $\boldsymbol{Y}$ and one or more predictors $X$) treats *either the response, the predictors, or the error term* as evolving time series processes containing useful information in their past lags or differences, I will refer to it as **dynamic regression**.
+
+Many different model classes could be considered a dynamic regression: at the very least ARIMAX (ARIMA with external regressors), ECMs (error correction models), ADLs (autoregressive distributed lag models) and the broader category of transfer functions. Different sources will suggest different categorizations. A few notes on these below:
+
+### ARIMAX models, which will not be used or discussed further
+
+I will follow Rob Hyndman's [old but influential blog post](https://robjhyndman.com/hyndsight/arimax/) in defining ARIMAX models, which used to be suggested quite widely for time series analysis but have fallen somewhat out of favor.
+
+ARIMAX was *the* extension of ARIMA to include external regressors, so much so that the term is still used (confusingly) for any model combining ARIMA-like properties with outside predictors. However, it can be more narrowly defined as simply adding one or more predictors to an existing ARMA representation:
+
+$$y_t = \beta x_t + \sum_{i=1}^p \phi_i y_{t-i} + \sum_{i=1}^q \theta_i \omega_{t-j} + \omega_t$$
+
+One problem with this model is that $\beta$ is near-uninterpretable. It no longer represents the marginal effect of a one-unit increase of $X$ on the response variable $\boldsymbol{Y}$. We can see this more clearly by re-writing with backshift operators:
+
+$$y_t = \frac{\beta}{\Phi(B)}x_t + \frac{\Theta(B)}{\Phi(B)}\omega_t$$
+
+So the effect of $X$ on $\boldsymbol{Y}$ depends both on $\beta$ as well as on the specific set of AR coefficients $\Phi$, which complicates discussion. Essentially, $y_t$ is being affected by $x_t$ as well as its own past values $y_{t-1}, \ldots, y_{t-p}$... which in turn are each affected by $x_{t-1}, \ldots, x_{t-p}$! The error term of this regression is also more complicated than we might like, and is not IID Gaussian/normal.
+
+ARIMAX has its niche, but other methods are simpler to interpret and allow us to solve similar problems. Plus, ARIMAX is just a specific subset of a broader class of models known as *transfer function models*, and the general form might be a better starting point than this specific case.
+
+### Dynamic regression with ARIMA errors
+
+Hyndman proposes an alternative which he calls "dynamic regression with ARIMA errors" despite the fact it does not *look* very dynamic. The model comes in two parts:
+
+$$\begin{aligned} (1) \quad y_t &= \beta_0 + \beta_1 x_t + \eta_t \\ (2) \quad \eta_t &= \sum_{i=1}^p \phi_i \eta_{t-i} + \sum_{i=1}^q \theta_i \omega_{t-j} + \omega_t \end{aligned}$$
+
+Equation 1, for $y_t$, is the regression. There is in fact nothing dynamic about it. The response and predictor(s) are all treated as static variables. However, the error term $\eta_t$ is *not* assumed to be IID Normal / Gaussian / white noise.
+
+Equation 2, for $\eta_t$, treats the first-stage residuals as the output of an ARMA(*p*,*q*) process. The residuals for Equation 1 might depend upon their own past values or the past values of $\boldsymbol{\omega}$, which *is* an IID Normal / Gaussian / white noise process.
+
+Even though Hyndman refers to this class of models as "dynamic regression with ARIMA errors", the error process for Equation 1 should actually be an ARMA process, *i.e.* $I(0)$. If the error process shows signs of integration, then in most cases it would be better to try the regression again using the *differences* of $\boldsymbol{Y}$ and $X$.
+
+The features used in a dynamic regression can be linear predictors (such as temperature or treatment dose strength), categorical predictors (such as audience demographics or weather conditions), or indicator variables (such as store closures or new a regulatory environment).
+
+### Autoregressive distributed lag models (ADLs)
+
+Dynamic regression with ARIMA errors placed all the "dynamic" movement into its error term $\eta_t$, which had explicit ARMA-style dependency upon its own past values.
+
+However, dynamic regression with ARIMA errors did *not* include any explicit dependency upon the past values of $\boldsymbol{Y}$. The fitted values from the first-stage regression were linear combinations of external predictors, just like an OLS model.
+
+We can shift the "dynamics" back to the fitted model by including past lags of $\boldsymbol{Y}$ (and optionally $X$ as well) alongside the external regressors:
+
+$$y_t = \alpha_0 + \alpha_1 y_{t-1} + \ldots + \alpha_k y_{t-k} + \beta_1 x_t + \beta_2 x_{t-2} + \ldots + \beta_l x_{t-l} + \omega_t$$
+
+By adding these lags, we have once again complicated the interpretation of $\beta$, the coefficient on our external regressor(s). Imagine a model such as:
+
+$$y_t = \alpha y_{t-1} + \beta x_t + \omega_t$$
+
+Which we can expand as:
+
+$$\begin{aligned} y_t &= \alpha y_{t-1} + \beta x_t + \omega_t \\ &= \alpha (\alpha y_{t-2} + \beta x_{t-1} + \omega_{t-1}) + \beta x_t + \omega_t \\ &= \alpha (\alpha (\alpha y_{t-3} + \beta x_{t-2} + \omega_{t-2}) + \beta x_{t-1} + \omega_{t-1}) + \beta x_t + \omega_t \\ &\;\vdots \\ &\approx \sum_{i=0}^\infty \alpha^i (\beta x_{t-i} + \omega_{t-i}) \end{aligned}$$
+
+Unlike the earlier dynamic regression with ARIMA errors, the mean or level of this ADL model will be shifted by the past values of $X$ and the past values of $\boldsymbol{\omega}$ --- potentially by long-ago values, depending on the exact coefficients and the scale of the predictors.
+
+### Which to use?
+
+When trying to incorporate external regressors into an ARIMA-like model, you might ask whether you should apply a dynamic regression with ARIMA errors or an autoregressive distributed lag model (ADL). A few considerations:
+
+ * You can let the data answer this question, by fitting a dynamic regression with ARIMA errors and testing whether adding one or more past values of $\boldsymbol{Y}$ improves the model (and the model diagnostics) or not. Or alternatively, by fitting an ADL model and seeing whether the residuals support further ARMA modeling.
+ 
+ * If you fit an ADL and the estimated coefficient for $Y_{t-1}$ is statistically indistinguishable from 1, you might want to respecify a regression on *differences* rather than a regression on *levels* --- the difference regression may not need an ADL.
+ 
+ * Conceptually, a dynamic regression with ARIMA errors has a "true" static level set by the relationship between $\boldsymbol{Y}$ and $X$. Whenever $x_t$ is at a specific level, and no matter what happened before or after, we should expect some roughly constant value of $\hat{Y_t}$. The ARIMA errors introduce short-term perturbations around this "true" mean, but these errors are stationary.
+ 
+ * Conceptually, an autoregressive distributed lag (ADL) model has no "true" mean: $\hat{Y_t}$ can only be understood by placing it in context of its recent past values. The "push" or "pull" of these past values is not guaranteed to be stationary and is more than what we would see by only including the lags of $X$ instead.
