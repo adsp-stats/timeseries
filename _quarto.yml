@@ -36,6 +36,7 @@ book:
         - cointegration.qmd
         - dynamicregression.qmd
         - harmonics.qmd
+        - dynamicregressioninr.qmd
 format:
   html:
     toc: true

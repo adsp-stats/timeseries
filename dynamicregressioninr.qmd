@@ -1,0 +1,260 @@
+# Dynamic regression in R
+
+```{r}
+#| output: false
+library(forecast)
+library(faraway)
+library(tseries)
+library(dplyr)
+```
+
+## Time series functions used in this document
+
+In the table below, packages with *italicized* names will need to be installed, while the package names in a standard font face can be found in most base R distributions (though they may need to be loaded into your workspace).
+
+|Package   |Function name|Purpose                          |
+|:---------|:------------|:--------------------------------|
+|stats     |acf          |Compute and plot autocorrelation |
+|stats     |Box.test     |Ljung-Box test for multilag autocor |
+|*tseries* |adf.test     |ADF stationarity test            |
+|*forecast*|auto.arima   |Identify ARIMA order and coefs   |
+|*dplyr*   |lag          |Create lags of a series (*see note*)|
+|stats     |tsp          |Extract indexing information for a ts |
+|stats     |spectrum     |Plot a smoothed periodogram      |
+|*forecast*|fourier      |Generate harmonic regressors     |
+|*forecast*|Arima        |Fit an ARIMA model with known order|
+|*forecast*|forecast     |Look-ahead prediction of a ts model|
+
+: Time series functions used in the code below
+
+Note: `dplyr::lag` will overwrite the base R `lag` function, and this is *important*. Base R will not add 'NA's to the start of a lagged vector, but the `dplyr` version *does* add the NAs, which is needed for the code below to work properly.
+
+## Use case 1: Annual U.S. marriage rates
+
+This example will cover cointegration, dynamic regression, and ADL models. Harmonic regression will be covered in the next example.
+
+### Data overview
+
+The dataset `faraway::divusa` contains annual marriage rates (per 1000 unmarried women aged 16+) in the United States from 1920 through 1996, with additional contemporaneous information including unemployment rate and female participation in the workforce. Let's try to understand why marriage rate changed during this period.
+
+```{r}
+plot(1920:1996,divusa$marriage,ylab='Marriage rate',xlab='Year',
+     main='U.S. marriage rates, 1920-1996')
+text(1946,divusa$marriage[27],'1946 (World War II over)',pos=4,cex=0.75)
+```
+
+The obvious visual interpretation is probably a good starting point. Marriage rates declined during the Great Depression (1929-1939), spiked when young men came back from overseas wars to a booming economy (1946), and then declined in recent decades with a possible bump when the large Baby Boomer cohort came of age (1965-1970).
+
+Let's hypothesize some relationships:
+
+ * Marriage will be inversely correlated with the proportion of women in the workforce. Working women have greater financial independence, working women may have children later in life or not at all, and in times of war working women may serve as a proxy for overseas men, which all tend against marriage.
+ 
+ * Marriage will also be inversely correlated with unemployment. When the nation is out of work, the cost of providing for dependents (spouse and/or children) may prove prohibitive. Engagement rings or weddings may also represent large expenses which must be saved for over time, and these savings either do not accumulate while out of work or are re-appropriated for basic needs.
+ 
+ * As needed, we might code for the extreme spike of marriages in 1946 (and/or 1947 and 1948) with indicator variables.
+ 
+### Fitting an OLS regression
+
+As a benchmark, we can try OLS regression:
+
+```{r}
+mar.lm <- lm(marriage ~ femlab + unemployed + I(year==1946), divusa)
+summary(mar.lm)
+plot(1920:1996,mar.lm$residuals,ylab='Residual',xlab='Year',
+     main='Residual plot after first-stage OLS regression')
+acf(mar.lm$residuals,main='ACF plot for OLS residuals')
+
+Box.test(mar.lm$residuals,type='Ljung')
+```
+
+This benchmark analysis shows preliminary strengths and weaknesses:
+
+ * All of our predictors are judged to be highly significant
+ 
+ * Cumulatively, we can explain 72\% of the variation in marriage rates
+ 
+ * The signs on the coefficients match our hypotheses
+ 
+ * However, the residuals show clear time series autocorrelation
+ 
+ * This visual pattern is matched by a Ljung-Box test for independence
+ 
+Furthermore, we know that we might be looking at a case of spurious regression. We can test this through a series of augmented Dickey-Fuller tests:
+
+```{r}
+#Tests whether original series are stationary
+suppressWarnings(adf.test(divusa$marriage)$p.value)<0.1
+suppressWarnings(adf.test(divusa$femlab)$p.value)<0.1
+suppressWarnings(adf.test(divusa$unemployed)$p.value)<0.1
+
+#Tests whether differences series are stationary
+suppressWarnings(adf.test(diff(divusa$marriage))$p.value)<0.1
+suppressWarnings(adf.test(diff(divusa$femlab))$p.value)<0.1
+suppressWarnings(adf.test(diff(divusa$unemployed))$p.value)<0.1
+
+#Test whether linear combination is stationary
+suppressWarnings(adf.test(mar.lm$residuals)$p.value)<0.1
+```
+
+ * None of the original series were stationary
+ 
+ * All of the differenced series were stationary
+ 
+ * The linear combination of the series was not stationary (*i.e.* no cointegration)
+ 
+These results are bad news for our regression: our coefficients and the seeming strength of our results are likely being biased by spurious correlation. We may have to differ the data and re-perform this analysis on *changes* in marriage rate.
+
+```{r}
+diffusa <- as.data.frame(diff(as.matrix(divusa)))
+plot(1921:1996,diffusa$marriage,ylab='Change in marriage rate',
+     xlab='Year',main='Differences of U.S. marriage rates')
+diff.lm <- lm(marriage ~ femlab + unemployed + I(1:76==26), diffusa)
+summary(diff.lm)
+plot(1921:1996,diff.lm$residuals,ylab='Residual',xlab='Year',
+     main='Residual plot of OLS regression on differences',
+     type='l')
+acf(diff.lm$residuals,main='ACF plot for difference residuals')
+Box.test(diff.lm$residuals,type='Ljung')
+```
+
+This regression on changes is fairly encouraging!
+
+ * The R^2^ value of 68.5\% is still fairly high: differencing has not removed all of the useful variation from the series.
+ 
+ * All of our coefficients are still highly significant and preserve the expected signs.
+ 
+ * Although a Ljung-Box test suggests the residuals are not yet independent, the test statistic has dramatically improved.
+ 
+ * The raw differences look more stable (if not stationary) and the residuals show no obvious patterns or misspecifications apart from some possible heteroskedasticity.
+ 
+Let's use this as our new static benchmark.
+
+### Dynamic regression with ARIMA errors
+
+Since we know the original levels of the marriage data are prone to spurious correlation, we should not fit a regression with ARIMA errors to the levels, instead we should fit a regression with ARMA errors to the differences:
+
+```{r}
+diff.xarima <- auto.arima(diffusa$marriage,d=0,
+                          approximation=FALSE,stepwise=FALSE,
+                          xreg=cbind(femlab=diffusa$femlab,
+                                     unempl=diffusa$unemployed,
+                                     dummy1946=(1:76==26)))
+summary(diff.xarima)
+Box.test(diff.xarima$residuals,type='Ljung')
+```
+
+We now have removed any serial dependence from our residuals and successfully fit an MA(1) model to the error process of our regression on differences. The coefficients all remain significant and with the expected sign. The mild positive MA(1) term suggests that if any year should an unusual change in the marriage rate, the next year will also see an unexpected bump in the same direction (though not as strong).
+
+### Autoregressive distributed lag (ADL) model
+
+Since we know the original levels of the marriage data are prone to spurious correlation, we will use differences for our ADL model, just as before.
+
+The dynamic regression with ARIMA errors identified a MA process in the errors... any finite-order MA process is equivalent to an infinite AR process, and I suspect that dynamic regression will prove a more compact, elegant representation than ADL. But I will try, starting with three past lags of my response and my linear predictors.
+
+(*Note:* None of the predictor lags offered any explanatory power. I fast forward to my final model.)
+
+```{r}
+adldata <- cbind(diffusa[,5:3],lag(diffusa$marriage),lag(diffusa$marriage,2),
+                 lag(diffusa$marriage,3),dummy1946=(1:76==26))
+names(adldata)[4:6] <- c('marriageL1','marriageL2','marriageL3')
+head(adldata)
+diff.adl <- lm(marriage ~ .,adldata)
+summary(diff.adl)
+Box.test(diff.adl$residuals,type='Ljung')
+```
+
+This ADL model performs well, with a high R^2^ and a low error variance, but its residuals still contain dependencies and the ideas put forward by the model are less believable. Even a fourth lag would be significant, if added... are we really to believe that the change in marriage rate four years ago affects the change in marriage rate this year *even after controlling for the intervening three rate changes?*
+
+Further, with the more lags we add, the more rows we drop from the beginning of our sample. At some point this will stop being an apples-to-apples comparison with our original dataset. For example, the AIC is no longer directly comparable, since some of the response values were not used in this regression.
+
+```{r}
+rmse <- function(act,pred) sqrt(mean((act-pred)^2))
+#In-sample RMSE comparison
+c(ols=rmse(diffusa$marriage,diff.lm$residuals),
+  xarima=rmse(diffusa$marriage,diff.xarima$residuals),
+  adl=rmse(diffusa$marriage[-1:-3],diff.adl$residuals))
+```
+
+## Use case 2: Monthly sunspot counts
+
+Harmonic regressors are particularly useful for long and/or non-integer periodicity. Let's apply to a dataset with both features: monthly sunspot activity.
+
+### Data overview
+
+Sunspots are dark blotches on the face of the sun's surface, which are caused by regions where the Sun's magnetic field is in temporary flux, blocking the convection of its superheated plasma. Solar activity loosely follows 11-year (or 22-year, depending on how you measure) cycles, although this period is not exactly 11 years and each cycle may show slight variations in total length. A long dataset of monthly sunspot counts (using the "Wolf" or "Zurich" method of counting relative sunspot activity) can be found in `datasets::sunspot.month`.
+
+These data plot the monthly "relative sunspot count", which includes approximations and adjustment factors, calculated daily and then averaged over every day of the month.
+
+```{r}
+length(sunspot.month)
+range(sunspot.month)
+tsp(sunspot.month) # start, stop, and frequency
+plot(sunspot.month,ylab='Mean relative sunspot count')
+```
+
+The data clearly would benefit from a variance stabilization, but because of the 0s in the data a Box-Cox transformation would not be possible. We could add a small amount to each month's total (say, 0.1) and Box-Cox transform from there, but instead since no observations are negative we will simply take a square root transformation.
+
+### Estimating the seasonal period
+
+Solar cycles are approximately 11 years (or 132 months), but can we test this? Using a *periodogram*, we can estimate the power spectrum of the sunspot numbers, finding the exact frequency which has the most "resonance" with the data:
+
+```{r}
+spotroots <- ts(sqrt(sunspot.month),frequency=12,start=1749)
+spectrum(spotroots,spans=c(3,5),xlim=c(0,1))
+abline(v=c(1/11),col='#7f7f7f')
+text(1/11,100,"11-year cycle",pos=4)
+```
+
+The periodogram does neatly line up with an exact 11-year cycle, but we can test this once again with a grid search. Supposing cycles of slightly different frequencies, we can see which frequency has the highest R^2^ value when used to explain the monthly totals.
+
+```{r}
+cyclegrid <- seq(10.5,11.5,0.02)
+plot(cyclegrid,sapply(cyclegrid,function(z) summary(lm(spotroots~fourier(ts(spotroots,frequency=12*z),K=5)))$r.squared),
+     ylab=expression(R^2),xlab='Cycle frequency (years)')
+abline(v=11,col='#7f7f7f')
+```
+
+It seems that exactly 11 years is a pretty good guess after all, but if we're being pedantic, 10.99 years is a slightly better fit to the data. For the sake of argument, to show it can be done, I will fit a 10.99 year frequency --- and, over the 3310 months of our sample, the difference adds up to over a quarter-cycle.
+
+Using `forecast::fourier` it's very easy to generate harmonic regressors for the data. You only need to supply:
+
+ * A ts the same length as your data (note, any vector will do), with a correctly-specified frequency attribute.
+ * The number of harmonic sine-cosine pairs $K$ (so, $K=5$ will generate 10 regressors)
+ * *Optionally*, a lookahead forecast period $h$, so that the appropriate regressors can be generated for your forecasting.
+ 
+```{r}
+spot.harmonics <- fourier(ts(spotroots,frequency=10.99*12),K=5)
+head(round(spot.harmonics,4),12)
+matplot((1:132)/12,spot.harmonics[1:132,],type='l',col=rep(c('#000000','#0000bf','#0000ff','#5f5fff','#afafff'),each=2),lwd=rep(c(2,1,1,1,1),each=2),lty=rep(c(1,2),times=5),xlab='Time index (years)',ylab='Regressor value',main='Five sets of harmonic regressors for 10.99-year period')
+```
+
+These harmonic regressors by themselves don't look like much, but linear combinations of their peaks and valleys can approximate almost any seasonal pattern, especially one as smoothly sinusoidal as the sunspots.
+
+```{r}
+spot.reg <- lm(spotroots ~ spot.harmonics)
+summary(spot.reg)
+plot(seq(1749,by=1/12,length.out=264),spotroots[1:264],
+     main='Sunspots and harmonic regressors during first 2 cycles',
+     xlab='Year',ylab='Root of relative sunspot count')
+lines(seq(1749,by=1/12,length.out=264),spot.reg$fitted.values[1:264],col='#0000ff')
+plot(seq(1749,by=1/12,length.out=1320),spotroots[1:1320],
+     main='Sunspots and harmonic regressors during first 10 cycles',
+     xlab='Year',ylab='Root of relative sunspot count')
+lines(seq(1749,by=1/12,length.out=1320),spot.reg$fitted.values[1:1320],col='#0000ff')
+```
+
+In fact, we did not need to include 5 pairs of terms; 2 might have been enough. Still, the method has its weaknesses too: Looking at 10 total sunspot cycles, we see that sometimes the cycle peaks a few months before or after we might expect.
+
+This first pass might do well enough to control for most seasonal variation. What remains might be long-order ARIMA behavior, or even something to fit with ETS.  Let's look at the residuals from the first ten periods:
+
+```{r}
+plot(seq(1749,by=1/12,length.out=1320),spot.reg$residuals[1:1320],col='#ff0000',type='l',xlab='Year',ylab='Residual',main='Residuals from first 10 sunspot cycles')
+```
+
+And now we can try adding ARIMA errors. Let's fit this model to the first 24 cycles and try to predict the 25th.
+
+```{r}
+spot.dynreg <- Arima(spotroots[1:(132*24)],order=c(1,1,1),xreg=spot.harmonics[1:(132*24),])
+plot(forecast(spot.dynreg,h=132,xreg=spot.harmonics[(132*24+1):(132*25),]),include=132)
+lines((132*24+1):(132*25),spotroots[(132*24+1):(132*25)])
+```
