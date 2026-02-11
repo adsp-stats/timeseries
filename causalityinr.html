@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Forecasting Essentials and Notes: Online Resource</title>
+<title>VARs in R – Forecasting Essentials and Notes: Online Resource</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -30,7 +65,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./whatisatimeseries.html" rel="next">
+<link href="./granger.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -71,6 +106,35 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -83,7 +147,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Introduction</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./vars.html">6. Modeling systems of variables</a></li><li class="breadcrumb-item"><a href="./causalityinr.html"><span class="chapter-title">VARs in R</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -112,7 +176,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Introduction</span></a>
   </div>
 </li>
@@ -297,7 +361,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./causalityinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">VARs in R</span></a>
+  <a href="./causalityinr.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">VARs in R</span></a>
   </div>
 </li>
       </ul>
@@ -307,30 +371,20 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#sec-intro" id="toc-sec-intro" class="nav-link active" data-scroll-target="#sec-intro">Introduction</a>
-  <ul class="collapse">
-  <li><a href="#sec-referencetexts" id="toc-sec-referencetexts" class="nav-link" data-scroll-target="#sec-referencetexts">Recommended textbooks</a></li>
-  <li><a href="#how-these-notes-were-made" id="toc-how-these-notes-were-made" class="nav-link" data-scroll-target="#how-these-notes-were-made">How these notes were made</a></li>
-  </ul></li>
-  </ul>
-</nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
-<main class="content column-body" id="quarto-document-content">
+<main class="content column-page-right" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./vars.html">6. Modeling systems of variables</a></li><li class="breadcrumb-item"><a href="./causalityinr.html"><span class="chapter-title">VARs in R</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Forecasting Essentials and Notes: Online Resource</h1>
+<h1 class="title"><span class="chapter-title">VARs in R</span></h1>
 </div>
 
 
 
-<div class="quarto-title-meta column-body">
+<div class="quarto-title-meta column-page-right">
 
     
   
@@ -342,33 +396,336 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="sec-intro" class="level1 unnumbered">
-<h1 class="unnumbered">Introduction</h1>
-<p>Hello! I’m Jonathan, and I want to teach you time series analysis I have designed this website to accompany the University of Chicago course ADSP 31006 “Time Series Analysis and Forecasting”. Although the course will mostly be taught in a traditional lecture format, I would like to use this website to provide backing material for the lectures.</p>
-<section id="sec-referencetexts" class="level2">
-<h2 class="anchored" data-anchor-id="sec-referencetexts">Recommended textbooks</h2>
-<p>Unlike <a href="https://adsp-stats.github.io/statisticalmodels">my statistics course website</a>, I do <em>not</em> intend that this course website be considered the principle text for the class. We will have two primary textbooks (described below), and the notes in these pages <em>supplement</em> the readings without <em>replacing</em> the readings.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tseries)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(vars)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Our data are four seasonally adjusted quarterly macroeconomic time series describing the United States economy. Specifically, we will be relating money supply (M1), output (GNP), short term interest rates, and long term interest rates.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(USeconomic)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(USeconomic)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         log(M1) log(GNP)          rs         rl
+1954 Q1 6.111246 7.249073 0.010800000 0.02613333
+1954 Q2 6.115892 7.245084 0.008133333 0.02523333
+1954 Q3 6.129268 7.257003 0.008700000 0.02490000
+1954 Q4 6.141177 7.271565 0.010366667 0.02566667
+1955 Q1 6.151881 7.292746 0.012600000 0.02746667
+1955 Q2 6.159307 7.303641 0.015133333 0.02816667</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(USeconomic,<span class="at">main=</span><span class="st">'Levels of four macroeconomic indicators'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="causalityinr_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The data are clearly not stationary and differencing would be suggested. Further, plots of the data suggest <em>cointegration</em> — in a real analysis, this could invalidate the use of a VAR and instead suggest the use of a VECM to capture the error-correction mechanisms inherent to cointegrated data. We can quickly test for two hypothesized cointegrations.</p>
+<p>First, cointegration between money supply and output:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># M1 levels stationary</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">adf.test</span>(<span class="fu">log</span>(M1))<span class="sc">$</span>p.value<span class="sc">&lt;</span><span class="fl">0.05</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># GNP levels stationary</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">adf.test</span>(<span class="fu">log</span>(GNP))<span class="sc">$</span>p.value<span class="sc">&lt;</span><span class="fl">0.05</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># M1 diffs stationary</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">adf.test</span>(<span class="fu">diff</span>(<span class="fu">log</span>(M1)))<span class="sc">$</span>p.value<span class="sc">&lt;</span><span class="fl">0.05</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># GNP diffs stationary</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">adf.test</span>(<span class="fu">diff</span>(<span class="fu">log</span>(GNP)))<span class="sc">$</span>p.value<span class="sc">&lt;</span><span class="fl">0.05</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># M1/GNP resids stationary</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">adf.test</span>(<span class="fu">lm</span>(<span class="fu">log</span>(M1)<span class="sc">~</span><span class="fu">log</span>(GNP))<span class="sc">$</span>residuals)<span class="sc">$</span>p.value<span class="sc">&lt;</span><span class="fl">0.05</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+</div>
+<p>These in fact are not cointegrated! But the interest rates probably are:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Short levels stationary</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">adf.test</span>(rs)<span class="sc">$</span>p.value<span class="sc">&lt;</span><span class="fl">0.05</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Long levels stationary</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">adf.test</span>(rl)<span class="sc">$</span>p.value<span class="sc">&lt;</span><span class="fl">0.05</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Short diffs stationary</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">adf.test</span>(<span class="fu">diff</span>(rs))<span class="sc">$</span>p.value<span class="sc">&lt;</span><span class="fl">0.05</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Long diffs stationary</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">adf.test</span>(<span class="fu">diff</span>(rl))<span class="sc">$</span>p.value<span class="sc">&lt;</span><span class="fl">0.05</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Short/Long resids stationary</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">adf.test</span>(<span class="fu">lm</span>(rs<span class="sc">~</span>rl)<span class="sc">$</span>residuals)<span class="sc">$</span>p.value<span class="sc">&lt;</span><span class="fl">0.05</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<p>The evidence here is muddied — perhaps the short-term rates are I(0) while the long-term rates are I(1), but this seems implausible since they track very similar concepts and <a href="./cointegration.html">we have found them to be cointegrated series before</a>. Instead, these two series are likely cointegrated, which will be a caveat for our analysis.</p>
+<p>We will move ahead and perform a VAR on the differences of the data. With four times series to track, the number of coefficients will grow quickly: at three lags and including constants, we would have to estimate 52 coefficients! So we will hope that the automated selection procedure identifies a low lag order.</p>
+<p>Using <code>vars::VAR</code>, we will fine-tune our model by selecting a number of lags using the “SBC” (also called “BIC”) information criterion, which penalizes extra terms a little more strongly than the original AIC. We will fit constants to each time series but not trends (we have already differenced each series, so a constant in differences is the same as a trend in levels). And since the data are pre-seasonally adjusted, we will not fit quarterly seasonal effects, which would normally be suggested for economic data series.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>us.econ.var <span class="ot">&lt;-</span> <span class="fu">VAR</span>(<span class="fu">diff</span>(USeconomic),<span class="at">type=</span><span class="st">'const'</span>,<span class="at">ic=</span><span class="st">'SC'</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(us.econ.var)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+VAR Estimation Results:
+========================= 
+Endogenous variables: log.M1., log.GNP., rs, rl 
+Deterministic variables: const 
+Sample size: 134 
+Log Likelihood: 1969.102 
+Roots of the characteristic polynomial:
+0.4443 0.4443 0.08215 0.08215
+Call:
+VAR(y = diff(USeconomic), type = "const", ic = "SC")
+
+
+Estimation results for equation log.M1.: 
+======================================== 
+log.M1. = log.M1..l1 + log.GNP..l1 + rs.l1 + rl.l1 + const 
+
+              Estimate Std. Error t value Pr(&gt;|t|)    
+log.M1..l1   0.4377481  0.0579758   7.551 6.97e-12 ***
+log.GNP..l1  0.1568151  0.0729949   2.148   0.0336 *  
+rs.l1       -0.4818413  0.1053116  -4.575 1.10e-05 ***
+rl.l1       -1.0158523  0.2168221  -4.685 7.00e-06 ***
+const        0.0008599  0.0008230   1.045   0.2980    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+
+Residual standard error: 0.00747 on 129 degrees of freedom
+Multiple R-Squared: 0.6561, Adjusted R-squared: 0.6455 
+F-statistic: 61.54 on 4 and 129 DF,  p-value: &lt; 2.2e-16 
+
+
+Estimation results for equation log.GNP.: 
+========================================= 
+log.GNP. = log.M1..l1 + log.GNP..l1 + rs.l1 + rl.l1 + const 
+
+             Estimate Std. Error t value Pr(&gt;|t|)    
+log.M1..l1   0.283757   0.072158   3.932 0.000137 ***
+log.GNP..l1  0.170395   0.090851   1.876 0.062979 .  
+rs.l1       -0.019157   0.131074  -0.146 0.884027    
+rl.l1        0.191263   0.269862   0.709 0.479764    
+const        0.005604   0.001024   5.471 2.24e-07 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+
+Residual standard error: 0.009298 on 129 degrees of freedom
+Multiple R-Squared: 0.1884, Adjusted R-squared: 0.1632 
+F-statistic: 7.485 on 4 and 129 DF,  p-value: 1.872e-05 
+
+
+Estimation results for equation rs: 
+=================================== 
+rs = log.M1..l1 + log.GNP..l1 + rs.l1 + rl.l1 + const 
+
+              Estimate Std. Error t value Pr(&gt;|t|)   
+log.M1..l1   0.1952621  0.0638869   3.056  0.00272 **
+log.GNP..l1  0.0887833  0.0804374   1.104  0.27175   
+rs.l1        0.0025457  0.1160490   0.022  0.98253   
+rl.l1        0.3978306  0.2389290   1.665  0.09833 . 
+const       -0.0009630  0.0009069  -1.062  0.29026   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+
+Residual standard error: 0.008232 on 129 degrees of freedom
+Multiple R-Squared: 0.1319, Adjusted R-squared: 0.1049 
+F-statistic: 4.898 on 4 and 129 DF,  p-value: 0.00104 
+
+
+Estimation results for equation rl: 
+=================================== 
+rl = log.M1..l1 + log.GNP..l1 + rs.l1 + rl.l1 + const 
+
+              Estimate Std. Error t value Pr(&gt;|t|)  
+log.M1..l1  -0.0013273  0.0322926  -0.041   0.9673  
+log.GNP..l1  0.0256948  0.0406583   0.632   0.5285  
+rs.l1        0.0139946  0.0586587   0.239   0.8118  
+rl.l1        0.2028224  0.1207701   1.679   0.0955 .
+const        0.0002076  0.0004584   0.453   0.6513  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+
+Residual standard error: 0.004161 on 129 degrees of freedom
+Multiple R-Squared: 0.06043,    Adjusted R-squared: 0.0313 
+F-statistic: 2.074 on 4 and 129 DF,  p-value: 0.08788 
+
+
+
+Covariance matrix of residuals:
+            log.M1.  log.GNP.         rs         rl
+log.M1.   5.581e-05 2.176e-05 -7.857e-06 -4.530e-06
+log.GNP.  2.176e-05 8.645e-05  1.795e-05  8.167e-06
+rs       -7.857e-06 1.795e-05  6.777e-05  2.368e-05
+rl       -4.530e-06 8.167e-06  2.368e-05  1.731e-05
+
+Correlation matrix of residuals:
+         log.M1. log.GNP.      rs      rl
+log.M1.   1.0000   0.3132 -0.1278 -0.1457
+log.GNP.  0.3132   1.0000  0.2346  0.2111
+rs       -0.1278   0.2346  1.0000  0.6913
+rl       -0.1457   0.2111  0.6913  1.0000</code></pre>
+</div>
+</div>
+<p>Interesting results!</p>
 <ul>
-<li><p><em>Forecasting: Principles and Practice</em> 3rd edition, by Rob Hyndman and George Athanasopoulos</p>
-<p>This book is <a href="https://otexts.com/fpp3/">freely available</a> and one of our two major reference sources. The book relies heavily on R code using the <code>tidyverse</code> constellation of packages and the new <code>fable</code> package written by the authors, which interleaves specifically with the <code>tsibble</code> package. Readers who prefer base R may instead read the book’s <a href="https://otexts.com/fpp3/">second edition</a> (also freely available), and readers who prefer Python will benefit from the new <a href="https://otexts.com/fpppy/">Python edition</a> (also freely available).</p></li>
-<li><p><em>Practical Time Series Analysis</em>, by Aileen Nielsen</p>
-<p>This is the second of our two major reference sources. In contrast to the Hyndman and Athanasopoulos textbook, Nielsen includes more on-the-job tips about working with real datasets, structuring and storing the data, and putting forecasting models into production. She uses a combination of R (using the less-common <code>data.table</code> environment) and Python examples, and describes time series analysis from both a statistical and a machine learning perspective.</p></li>
-<li><p><em>Time Series Analysis: Forecasting and Control</em> 5th edition, by George Box, et al.</p>
-<p>One of the classic texts in the field. Box and his co-authors have introduced and refined (over several decades) the best all-purpose textbook from a purely statistical perspective. They spend less time discussing programming considerations or machine learning models.</p></li>
+<li><p>Happily, only one lag was selected (we are still fitting 20 coefficients…)</p></li>
+<li><p>Money supply looks very reactive to lags of itself and every other series.</p></li>
+<li><p>GNP looks reactive to lags of itself (perhaps) and money supply.</p></li>
+<li><p>Short term rates and long term rates both possibly react to lags of long-term rates and nothing else.</p></li>
+<li><p>As a diagnostic, the roots of the AR polynomials for these regressions are all far from the unit circle, suggesting a stable, stationary fit.</p></li>
+<li><p>R<sup>2</sup> measures range from 66% for money supply to 6% for the long-term rates.</p></li>
+<li><p>The correlation matrix of the residuals from these series shows a small to moderate amount of correlation except between the two interest rates, which have strongly correlated residuals.</p></li>
 </ul>
-</section>
-<section id="how-these-notes-were-made" class="level2">
-<h2 class="anchored" data-anchor-id="how-these-notes-were-made">How these notes were made</h2>
-<p>I assembled these notes using <a href="https://quarto.org">Quarto</a>, a publishing system built around the Pandoc markdown language. I wrote all the code backing these notes in <a href="https://cran.r-project.org">R</a>, and alongside every figure or table you can find the corresponding R code.</p>
-<p>Neither the text nor the R code in these notes were generated by AI tools: for better and worse the opinions expressed here are my own, and the I’ve described these concepts in my own voice.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> Complaints can be submitted <a href="https://chatgpt.com">here</a>.</p>
+<p>From here we have two paths forward: we can pursue Granger causality or we can build a structural VAR (SVAR).<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> Let’s tackle the Granger causality first, as it might suggest restrictions to help us reconstruct an SVAR.</p>
+<p>Bivariate Granger tests suitable for a simply X-Y model are available through the base R function <code>lmtest::grangertest</code>. However, we will use <code>vars::causality</code> since it handles more than two series and was written explicitly for the <code>vars::VAR</code> model class. The function performs two different tests:</p>
+<ol type="1">
+<li><p>Whether lags of one or more “cause” variables Granger-cause <em>any of the other variables in the system</em></p></li>
+<li><p>Whether the data suggest “instantaneous” (same-period) causality between the same sets of variables</p></li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">causality</span>(us.econ.var,<span class="st">'log.M1.'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$Granger
+
+    Granger causality H0: log.M1. do not Granger-cause log.GNP. rs rl
+
+data:  VAR object us.econ.var
+F-Test = 10.215, df1 = 3, df2 = 516, p-value = 1.521e-06
 
 
-</section>
-</section>
+$Instant
+
+    H0: No instantaneous causality between: log.M1. and log.GNP. rs rl
+
+data:  VAR object us.econ.var
+Chi-squared = 17.665, df = 3, p-value = 0.0005156</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">causality</span>(us.econ.var,<span class="st">'log.GNP.'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$Granger
+
+    Granger causality H0: log.GNP. do not Granger-cause log.M1. rs rl
+
+data:  VAR object us.econ.var
+F-Test = 2.1821, df1 = 3, df2 = 516, p-value = 0.08922
+
+
+$Instant
+
+    H0: No instantaneous causality between: log.GNP. and log.M1. rs rl
+
+data:  VAR object us.econ.var
+Chi-squared = 20.817, df = 3, p-value = 0.0001149</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">causality</span>(us.econ.var,<span class="st">'rs'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$Granger
+
+    Granger causality H0: rs do not Granger-cause log.M1. log.GNP. rl
+
+data:  VAR object us.econ.var
+F-Test = 7.8226, df1 = 3, df2 = 516, p-value = 4.093e-05
+
+
+$Instant
+
+    H0: No instantaneous causality between: rs and log.M1. log.GNP. rl
+
+data:  VAR object us.econ.var
+Chi-squared = 44.075, df = 3, p-value = 1.455e-09</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">causality</span>(us.econ.var,<span class="st">'rl'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$Granger
+
+    Granger causality H0: rl do not Granger-cause log.M1. log.GNP. rs
+
+data:  VAR object us.econ.var
+F-Test = 9.1279, df1 = 3, df2 = 516, p-value = 6.78e-06
+
+
+$Instant
+
+    H0: No instantaneous causality between: rl and log.M1. log.GNP. rs
+
+data:  VAR object us.econ.var
+Chi-squared = 43.884, df = 3, p-value = 1.597e-09</code></pre>
+</div>
+</div>
+<p>These results suggest lots of lagged and instantaneous causation across all four variables, with the only possible exception that changs in GNP might not Granger-cause changes in any of the other variables.</p>
+<p>To form an SVAR, we will then have to rely upon domain knowledge and possibly-counterfactual hypotheses. Let’s start by forming a <em>recursive</em> or <em>Cholesky-decomposition</em> <span class="math inline">\(\mathbf{A}\)</span> matrix, one which inverts as clearly as possible.</p>
+<p>We will assume:</p>
+<ol type="1">
+<li><p>Money supply contemporaneously reacts to GNP but little else. A change in the bond yields does not affect how much money is <em>currently</em> available, even if it changes how much <em>will be lent going forward</em>.</p></li>
+<li><p>GNP/output is exogenous. Although it’s in some ways the slowest to evolve, that means it’s largely immune to the immediate actions of the other variables, and so it’s “fastest” to act. When GNP acts, the other variables <em>react.</em> GNP cannot react to the other variables in the same quarter.</p></li>
+<li><p>Short-term rates do not react contemporaneously to long-term rates. Short-term rates are a <em>policy</em> change (keyed closely to the federal funds overnight banking rate), while long term rates are about far-future expectations and risk premia.</p></li>
+<li><p>Long-term rates are the most reactive. All meaningful economic actions immediately change our expectations of the future, and the long-term rates are a proxy for future expectations.</p></li>
+</ol>
+<p>These combine to suggest the following <span class="math inline">\(A\)</span> matrix.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> From the top left, and following our data, the rows and columns represent <em>(1)</em> money supply, <em>(2)</em> output/GNP, <em>(3)</em> short-term rates, <em>(4)</em> long-term rates:</p>
+<p><span class="math display">\[\mathbf{A} = \left[ \begin{array}{cccc} 1 &amp; a_{1,2} &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; 0 &amp; 0 \\ a_{3,1} &amp; a_{3,2} &amp; 1 &amp; 0 \\ a_{4,1} &amp; a_{4,2} &amp; a_{4,3} &amp; 1 \end{array} \right] \quad \begin{array}{c} {\scriptstyle money} \\ {\scriptstyle output} \\ {\scriptstyle short} \\ {\scriptstyle long} \end{array}\]</span></p>
+<p>Fitting an SVAR can be quite tricky, not just conceptually, but as a matter of pure algorithmic convergence. If using the <code>vars::SVAR</code> function, I highly recommend setting the argument <code>estmethod='direct'</code> for a direct likelihood minimization. Even so, you may need to play around with the settings of the unseen call to the <code>optim()</code> function, or increase the maximum number of iterations.</p>
+<p>We will estimate <span class="math inline">\(\mathbf{A}\)</span>, and then solve for its inverse, the imapct matrix:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>Amatrix <span class="ot">=</span> <span class="fu">rbind</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="cn">NA</span>,<span class="dv">0</span>,<span class="dv">0</span>),</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>                <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>),</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>                <span class="fu">c</span>(<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="dv">1</span>,<span class="dv">0</span>),</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>                <span class="fu">c</span>(<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="dv">1</span>))</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>(us.econ.svar <span class="ot">&lt;-</span> <span class="fu">SVAR</span>(us.econ.var,<span class="at">estmethod=</span><span class="st">'direct'</span>,<span class="at">Amat=</span>Amatrix,<span class="at">max.iter=</span><span class="dv">1000</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+SVAR Estimation Results:
+======================== 
+
+
+Estimated A matrix:
+         log.M1. log.GNP.      rs rl
+log.M1.   1.0000  -0.2192  0.0000  0
+log.GNP.  0.0000   1.0000  0.0000  0
+rs        0.3380  -0.2374  1.0000  0
+rl        0.3035  -0.1412 -0.2687  1</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">solve</span>(us.econ.svar<span class="sc">$</span>A),<span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         log.M1. log.GNP.     rs rl
+log.M1.   1.0000   0.2192 0.0000  0
+log.GNP.  0.0000   1.0000 0.0000  0
+rs       -0.3380   0.1633 1.0000  0
+rl       -0.3943   0.1186 0.2687  1</code></pre>
+</div>
+</div>
+<p>These results are defensible, though hardly uncontestable. We can say things like “a one-unit shock to the change in log-money supply contemporaneously increases change in log-GNP by 0.22 units”, though we might want to calculate some more concerete scenarios in line with proposed policy changes and express the result as a proportional change in GNP levels.</p>
+
+
 <section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr>
 <ol>
-<li id="fn1"><p>AI assistance was used to brainstorm case studies and examples, and to help with the layout and coding of the website itself.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>Two other possibilities: building impulse response functions and determining the forecast error variance decomposition, are left as extension topics.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>If we swapped the first two rows it would be a nice lower-diagonal matrix.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 
@@ -812,13 +1169,13 @@ ul.task-list li input[type="checkbox"] {
     }
   });
   </script>
-<nav class="page-navigation column-body">
+<nav class="page-navigation column-page-right">
   <div class="nav-page nav-page-previous">
+      <a href="./granger.html" class="pagination-link" aria-label="Granger causality">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Granger causality</span></span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./whatisatimeseries.html" class="pagination-link" aria-label="What is a time series?">
-        <span class="nav-page-text"><span class="chapter-title">What is a time series?</span></span> <i class="bi bi-arrow-right-short"></i>
-      </a>
   </div>
 </nav>
 </div> <!-- /content -->

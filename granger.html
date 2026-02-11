@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Forecasting Essentials and Notes: Online Resource</title>
+<title>Granger causality – Forecasting Essentials and Notes: Online Resource</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -30,7 +65,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./whatisatimeseries.html" rel="next">
+<link href="./causalityinr.html" rel="next">
+<link href="./vars.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -70,7 +106,39 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -83,7 +151,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Introduction</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./vars.html">6. Modeling systems of variables</a></li><li class="breadcrumb-item"><a href="./granger.html"><span class="chapter-title">Granger causality</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -112,7 +180,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Introduction</span></a>
   </div>
 </li>
@@ -292,7 +360,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./granger.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Granger causality</span></a>
+  <a href="./granger.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Granger causality</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -312,20 +380,22 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#sec-intro" id="toc-sec-intro" class="nav-link active" data-scroll-target="#sec-intro">Introduction</a>
+  <li><a href="#defining-granger-causality" id="toc-defining-granger-causality" class="nav-link active" data-scroll-target="#defining-granger-causality">Defining Granger causality</a></li>
+  <li><a href="#testing-for-granger-causality" id="toc-testing-for-granger-causality" class="nav-link" data-scroll-target="#testing-for-granger-causality">Testing for Granger causality</a>
   <ul class="collapse">
-  <li><a href="#sec-referencetexts" id="toc-sec-referencetexts" class="nav-link" data-scroll-target="#sec-referencetexts">Recommended textbooks</a></li>
-  <li><a href="#how-these-notes-were-made" id="toc-how-these-notes-were-made" class="nav-link" data-scroll-target="#how-these-notes-were-made">How these notes were made</a></li>
+  <li><a href="#univariate-causality" id="toc-univariate-causality" class="nav-link" data-scroll-target="#univariate-causality">Univariate causality</a></li>
+  <li><a href="#multivariate-causality" id="toc-multivariate-causality" class="nav-link" data-scroll-target="#multivariate-causality">Multivariate causality</a></li>
   </ul></li>
+  <li><a href="#cautions-regarding-use-and-interpretation" id="toc-cautions-regarding-use-and-interpretation" class="nav-link" data-scroll-target="#cautions-regarding-use-and-interpretation">Cautions regarding use and interpretation</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content column-body" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./vars.html">6. Modeling systems of variables</a></li><li class="breadcrumb-item"><a href="./granger.html"><span class="chapter-title">Granger causality</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Forecasting Essentials and Notes: Online Resource</h1>
+<h1 class="title"><span class="chapter-title">Granger causality</span></h1>
 </div>
 
 
@@ -342,33 +412,194 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="sec-intro" class="level1 unnumbered">
-<h1 class="unnumbered">Introduction</h1>
-<p>Hello! I’m Jonathan, and I want to teach you time series analysis I have designed this website to accompany the University of Chicago course ADSP 31006 “Time Series Analysis and Forecasting”. Although the course will mostly be taught in a traditional lecture format, I would like to use this website to provide backing material for the lectures.</p>
-<section id="sec-referencetexts" class="level2">
-<h2 class="anchored" data-anchor-id="sec-referencetexts">Recommended textbooks</h2>
-<p>Unlike <a href="https://adsp-stats.github.io/statisticalmodels">my statistics course website</a>, I do <em>not</em> intend that this course website be considered the principle text for the class. We will have two primary textbooks (described below), and the notes in these pages <em>supplement</em> the readings without <em>replacing</em> the readings.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(urca)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(vars)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>As taught in classical experimental design courses, “causality” is a dangerous term which can only be studied within the relatively safe confines of a randomized controlled trial (RCT), such as a clinical experiment.</p>
+<p>I agree that causality <em>is</em> a dangerous term. Our stakeholders always want to know whether one variable causes another, and they grow frustrated with the statistician’s reply that “correlation is not causation”. We ourselves are eager to tell the data’s story, and might feel lost as to how to prove a causal link which seems obvious. Even if we could establish causality, it’s often impossible to know whether we are observing causality, reverse causality, mutual causality, or the effects of an unobserved confounding variable which directly causes the observed variables (which do not then cause each other).</p>
+<div class="quarto-layout-panel" data-layout="[[1,1], [1,1]]">
+<div class="quarto-layout-row">
+<div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+    A((Radicalization)) --&gt; B((Isolation))
+</pre>
+</div>
+<p></p><figcaption> Causality</figcaption> </figure><p></p>
+</div>
+</div>
+</div>
+<div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart RL
+    A((Radicalization)) 
+    B((Isolation))
+    B --&gt; A
+</pre>
+</div>
+<p></p><figcaption> Reverse Causality</figcaption> </figure><p></p>
+</div>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+    A((Radicalization)) &lt;--&gt; B((Isolation))
+</pre>
+</div>
+<p></p><figcaption> Mutual Causality</figcaption> </figure><p></p>
+</div>
+</div>
+</div>
+<div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+    A((Misinformation))
+    B((Radicalization)) x--x C((Isolation))
+    A --&gt; B &amp; C
+</pre>
+</div>
+<p></p><figcaption> Lurking Confounder</figcaption> </figure><p></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>We do not always have recourse to a RCT; we often have to make guesses at causal effects from observational studies, which classically do not permit a causal interpretation. This is particularly true in many time series contexts, for example:</p>
 <ul>
-<li><p><em>Forecasting: Principles and Practice</em> 3rd edition, by Rob Hyndman and George Athanasopoulos</p>
-<p>This book is <a href="https://otexts.com/fpp3/">freely available</a> and one of our two major reference sources. The book relies heavily on R code using the <code>tidyverse</code> constellation of packages and the new <code>fable</code> package written by the authors, which interleaves specifically with the <code>tsibble</code> package. Readers who prefer base R may instead read the book’s <a href="https://otexts.com/fpp3/">second edition</a> (also freely available), and readers who prefer Python will benefit from the new <a href="https://otexts.com/fpppy/">Python edition</a> (also freely available).</p></li>
-<li><p><em>Practical Time Series Analysis</em>, by Aileen Nielsen</p>
-<p>This is the second of our two major reference sources. In contrast to the Hyndman and Athanasopoulos textbook, Nielsen includes more on-the-job tips about working with real datasets, structuring and storing the data, and putting forecasting models into production. She uses a combination of R (using the less-common <code>data.table</code> environment) and Python examples, and describes time series analysis from both a statistical and a machine learning perspective.</p></li>
-<li><p><em>Time Series Analysis: Forecasting and Control</em> 5th edition, by George Box, et al.</p>
-<p>One of the classic texts in the field. Box and his co-authors have introduced and refined (over several decades) the best all-purpose textbook from a purely statistical perspective. They spend less time discussing programming considerations or machine learning models.</p></li>
+<li><p>To test whether Eurodollar futures contract spot prices cause or are caused by LIBOR rates, we cannot blow up the international economy by randomly choosing LIBOR rates for different days and observing the corresponding change in Eurodollar futures.</p></li>
+<li><p>To test whether Mercury’s orbital path being “in retrograde” causes a run of misfortune in our personal lives, we cannot randomly order Mercury’s position in the heavens.</p></li>
 </ul>
+<section id="defining-granger-causality" class="level2">
+<h2 class="anchored" data-anchor-id="defining-granger-causality">Defining Granger causality</h2>
+<p>Many techniques have been devised which attempt to lend a causal interpretation to the results of non-randomized observational studies. Within economics, the most popular pseudo-causal method has been the concept of <em>Granger causality</em>, first introduced in 1969 by Clive Granger. Granger causality allows for many wrinkles or edge cases, and even Granger was unsure of exactly how best to parameterize his definition, but this is a stripped-down attempt:</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series variable regularly observed over time index <span class="math inline">\(T = 1, 2, \ldots,N\)</span>, and let <span class="math inline">\(U_t\)</span> represent “all the information in the universe” at time <span class="math inline">\(T=t\)</span>, or, more dangerously but more simply, all the observed information relevant to <span class="math inline">\(\boldsymbol{Y}\)</span> at time <span class="math inline">\(T=t\)</span>.</p>
+<ol type="1">
+<li><em>Base case (univariate cause, 1-ahead prediction)</em>: Let <span class="math inline">\(\boldsymbol{X}\)</span> be a time series variable regularly observed over time index <span class="math inline">\(T = 1, 2, \ldots,N\)</span>, possibly containing information relevant to <span class="math inline">\(\boldsymbol{Y}\)</span>. Let <span class="math inline">\(U_t\backslash \boldsymbol{X}\)</span> represent “all the information in the universe <em>except for</em> <span class="math inline">\(\boldsymbol{X}\)</span>” at time <span class="math inline">\(T=t\)</span>. Then, if</li>
+</ol>
+<p><span class="math display">\[\mathbb{V}[\hat{y}_{t+1} | U_t] \lt \mathbb{V}[\hat{y}_{t+1} | U_t\backslash \boldsymbol{X}]\]</span></p>
+<p>We say that “<span class="math inline">\(\boldsymbol{X}\)</span> <strong>Granger-causes</strong> <span class="math inline">\(\boldsymbol{Y}\)</span>”.</p>
+<ol start="2" type="1">
+<li><em>Multivariate causes</em>: Let <span class="math inline">\(\boldsymbol{X} = \{\boldsymbol{X}_1, \ldots, \boldsymbol{X}_k\}\)</span> be a set of time series variables regularly observed over time index <span class="math inline">\(T = 1, 2, \ldots,N\)</span>, some or all of which possibly containing information relevant to <span class="math inline">\(\boldsymbol{Y}\)</span>. Let <span class="math inline">\(U_t\backslash \boldsymbol{X}\)</span> represent “all the information in the universe <em>except for</em> <span class="math inline">\(\boldsymbol{X}\)</span>” at time <span class="math inline">\(T=t\)</span>. Then, if</li>
+</ol>
+<p><span class="math display">\[\mathbb{V}[\hat{y}_{t+1} | U_t] \lt \mathbb{V}[\hat{y}_{t+1} | U_t\backslash \boldsymbol{X}]\]</span></p>
+<p>We say that “some or all of the variables <span class="math inline">\(\boldsymbol{X}_1, \ldots, \boldsymbol{X}_k\)</span> <strong>Granger-cause</strong> <span class="math inline">\(\boldsymbol{Y}\)</span>”.</p>
+<ol start="3" type="1">
+<li><em>h-ahead prediction:</em> Let <span class="math inline">\(\boldsymbol{X}\)</span> be a time series variable regularly observed over time index <span class="math inline">\(T = 1, 2, \ldots,N\)</span>, possibly containing information relevant to <span class="math inline">\(\boldsymbol{Y}\)</span>. Let <span class="math inline">\(U_t\backslash \boldsymbol{X}\)</span> represent “all the information in the universe <em>except for</em> <span class="math inline">\(\boldsymbol{X}\)</span>” at time <span class="math inline">\(T=t\)</span>. Then, if</li>
+</ol>
+<p><span class="math display">\[\mathbb{V}[\hat{y}_{t+h} | U_t] \lt \mathbb{V}[\hat{y}_{t+h} | U_t\backslash \boldsymbol{X}]\]</span></p>
+<p>We say that “<span class="math inline">\(\boldsymbol{X}\)</span> <strong>Granger-causes h-ahead</strong> <span class="math inline">\(\boldsymbol{Y}\)</span>”.</p>
+</div>
+</div>
+<p>In all cases, the basic idea is that the information contained in the past and present values of <span class="math inline">\(\boldsymbol{X}\)</span> improves our forecasts of the future values of <span class="math inline">\(\boldsymbol{Y}\)</span>. Granger referred to this as “predictive causality” and also “causality in levels” or “causality in means”, since the variance of <span class="math inline">\(\hat{y}_{t+h}\)</span> will only shrink when we become more certain of the mean.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
 </section>
-<section id="how-these-notes-were-made" class="level2">
-<h2 class="anchored" data-anchor-id="how-these-notes-were-made">How these notes were made</h2>
-<p>I assembled these notes using <a href="https://quarto.org">Quarto</a>, a publishing system built around the Pandoc markdown language. I wrote all the code backing these notes in <a href="https://cran.r-project.org">R</a>, and alongside every figure or table you can find the corresponding R code.</p>
-<p>Neither the text nor the R code in these notes were generated by AI tools: for better and worse the opinions expressed here are my own, and the I’ve described these concepts in my own voice.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> Complaints can be submitted <a href="https://chatgpt.com">here</a>.</p>
+<section id="testing-for-granger-causality" class="level2">
+<h2 class="anchored" data-anchor-id="testing-for-granger-causality">Testing for Granger causality</h2>
+<p>How then would we know if, indeed:</p>
+<p><span class="math display">\[\mathbb{V}[\hat{y}_{t+1} | U_t] \lt \mathbb{V}[\hat{y}_{t+1} | U_t\backslash \boldsymbol{X}]\]</span></p>
+<section id="univariate-causality" class="level3">
+<h3 class="anchored" data-anchor-id="univariate-causality">Univariate causality</h3>
+<p>One very straightforward way is to use an ADL framework. Consider the simplest case, with one time series variable <span class="math inline">\(\boldsymbol{Y}\)</span> potentially caused by a second time series variable <span class="math inline">\(\boldsymbol{Y}\)</span>. Consider two models:</p>
+<p><span class="math display">\[\begin{aligned} M_1: \qquad y_t &amp;= c_0 + \alpha_1 y_{t-1} + \ldots + \alpha_p y_{t-p} + \omega_t \\ \\ M_2: \qquad y_t &amp;= c_0 + \alpha_1 y_{t-1} + \ldots + \alpha_p y_{t-p} + \beta_1 x_t + \ldots + \beta_p x_{t-p} + \omega_t \end{aligned}\]</span></p>
+<p>That is, <span class="math inline">\(M_1\)</span> is a simple AR(<em>p</em>) model for <span class="math inline">\(\boldsymbol{Y}\)</span> and <span class="math inline">\(M_2\)</span> is an autoregressive distributed lag model which adds in <em>p</em> lags of <span class="math inline">\(\boldsymbol{X}\)</span>, which means that <span class="math inline">\(M_1\)</span> is nested within <span class="math inline">\(M_2\)</span>. Both of these models use a least-squares solution method, and if an <em>F</em>-test shows that the larger model explains significantly more of <span class="math inline">\(\boldsymbol{Y}\)</span> than the smaller model, we will have proven that the forecasting variance of <span class="math inline">\(\hat{y_t}\)</span> is smaller <em>with</em> the information in <span class="math inline">\(\boldsymbol{X}\)</span> than <em>without</em> <span class="math inline">\(\boldsymbol{X}\)</span>.</p>
+</section>
+<section id="multivariate-causality" class="level3">
+<h3 class="anchored" data-anchor-id="multivariate-causality">Multivariate causality</h3>
+<p>We can extend this framework to see how three or more variables Granger-cause each other, or to see whether the information in two variables jointly Granger-causes a third (even if neither Granger-causes the third individually). Suppose a VAR for a vector of time series variables <span class="math inline">\(\boldsymbol{Y} =  \boldsymbol{Y}_1, \ldots, \boldsymbol{Y}_K\)</span>, represented <a href="./vars.html">as we saw earlier</a>:</p>
+<p><span class="math display">\[\boldsymbol{y}_t = \boldsymbol{c} + \mathbf{A}_1 \boldsymbol{y}_{t-1} + \ldots + \mathbf{A}_p \boldsymbol{y}_{t-p} + \boldsymbol{\omega}_t\]</span></p>
+<p>Where each <span class="math inline">\(K \times K\)</span> matrix <span class="math inline">\(\mathbf{A}_j\)</span> contains the autoregressive coefficients for lag <span class="math inline">\(j\)</span>:</p>
+<p><span class="math display">\[\mathbf{A}_j = \left[\begin{array}{ccc} \phi_{j;1,1} &amp; \cdots &amp; \phi_{j;1,K} \\ \vdots &amp; \ddots &amp; \vdots \\ \phi_{j;K,1} &amp; \cdots &amp; \phi_{j;K,K} \end{array}\right]\]</span></p>
+<p>Then for any pair of variables <span class="math inline">\(\boldsymbol{Y}_a\)</span> and <span class="math inline">\(\boldsymbol{Y}_b\)</span>, we can say that <span class="math inline">\(\boldsymbol{Y}_b\)</span> Granger causes <span class="math inline">\(\boldsymbol{Y}_a\)</span> if <em>any</em> of the coefficients <span class="math inline">\(\phi_{1;a,b}, \ldots, \phi_{p;a,b}\)</span> are nonzero (which can also be tested with a <em>F</em>-test).</p>
+<p>Every software environment (R, Python, SAS, Stata, etc.) has its own packages and routines which perform Granger causality tests. The exact test is not standardized and different environments or different packages might use different likelihood frameworks or reach different <em>p</em>-values. Wald tests, <em>F</em>-tests, and ANOVA tests are all common ways forward.</p>
+<p>Continuing the example from <a href="./vars.html">the VAR lecture notes</a>, we can see some evidence that changes in income both Granger-cause and are Granger-caused by changes in consumption, though at a 1% significance threshold we would only claim that income Granger-causes consumption and not the other way around.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(UKconinc)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>diffUK <span class="ot">&lt;-</span> <span class="fu">diff</span>(<span class="fu">as.matrix</span>(UKconinc))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>coninc.var <span class="ot">&lt;-</span> <span class="fu">VAR</span>(diffUK,<span class="at">type=</span><span class="st">'const'</span>,<span class="at">p=</span><span class="dv">3</span>,<span class="at">season=</span><span class="dv">4</span>) </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">causality</span>(coninc.var,<span class="st">'incl'</span>)<span class="sc">$</span>Granger</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Granger causality H0: incl do not Granger-cause conl
+
+data:  VAR object coninc.var
+F-Test = 3.8837, df1 = 3, df2 = 212, p-value = 0.00989</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">causality</span>(coninc.var,<span class="st">'conl'</span>)<span class="sc">$</span>Granger</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Granger causality H0: conl do not Granger-cause incl
+
+data:  VAR object coninc.var
+F-Test = 3.1029, df1 = 3, df2 = 212, p-value = 0.02759</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="cautions-regarding-use-and-interpretation" class="level2">
+<h2 class="anchored" data-anchor-id="cautions-regarding-use-and-interpretation">Cautions regarding use and interpretation</h2>
+<p>As Clive Granger himself was well aware, Granger causality is <em>not</em> true causality. When we say that <span class="math inline">\(\boldsymbol{X}\)</span> Granger-causes <span class="math inline">\(\boldsymbol{Y}\)</span>, we are only using the term as a shorthand for saying, “The information in <span class="math inline">\(\boldsymbol{X}\)</span> can be added to a linear model to decrease the forecast errors of <span class="math inline">\(\boldsymbol{Y}\)</span>.”</p>
+<p>Still, the idea has merit, and helps to better define and test a common phenomenon in the data. Even without an RCT to prove the notion of causality to us, we notice when “shocks in <span class="math inline">\(\boldsymbol{X}\)</span>” are quickly followed by “shocks in <span class="math inline">\(\boldsymbol{Y}\)</span>”, and we might further notice that “shocks in <span class="math inline">\(\boldsymbol{Y}\)</span>” are <em>not</em> followed by “shocks in <span class="math inline">\(\boldsymbol{X}\)</span>”. This pattern can be measured by Granger causality, and certainly gives the appearance that <span class="math inline">\(\boldsymbol{X}\)</span> is truly <em>causing</em> <span class="math inline">\(\boldsymbol{Y}\)</span>, even without a formal proof:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0209</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="dv">7</span> <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">24</span>,<span class="dv">0</span>,<span class="fl">0.5</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">24</span>,<span class="dv">0</span>,<span class="fl">0.5</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>y[<span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">12</span>,<span class="dv">15</span>)] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">10</span>,<span class="dv">10</span>,<span class="dv">4</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>x[<span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">13</span>,<span class="dv">16</span>,<span class="dv">21</span>)] <span class="ot">&lt;-</span><span class="fu">c</span>(<span class="dv">6</span>,<span class="dv">6</span>,<span class="dv">0</span>,<span class="dv">0</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">matplot</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">24</span>,<span class="fu">cbind</span>(y,x),<span class="at">type=</span><span class="st">'l'</span>,<span class="at">xlab=</span><span class="st">'Time index'</span>,<span class="at">ylab=</span><span class="st">'Series values'</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">lty=</span><span class="dv">1</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#0000ff'</span>))</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'bottomleft'</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'X'</span>,<span class="st">'Y'</span>),<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#0000ff'</span>),<span class="at">bty=</span><span class="st">'n'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="granger_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Illustration of one-way Granger causality</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The causality we infer can mislead us. Unobserved variables may be causing both <span class="math inline">\(\boldsymbol{X}\)</span> and <span class="math inline">\(\boldsymbol{Y}\)</span> at different lags, giving the false appearance that <span class="math inline">\(\boldsymbol{X}\)</span> causes <span class="math inline">\(\boldsymbol{Y}\)</span> (or vice versa). We might even see instances of “backwards” causality. For instance, consider a boxer who conditions in the weeks before their fights to lose or gain weight for a particular weight class. An unsophisticated analysis of the data might lead to the conclusion that “weight change Granger-causes fights”, when of course it is the upcoming fight that has caused the weight change.</p>
+<p>I will finally caution that Granger causality is very sensitive. Adding or removing a few dozen observations, using one fewer lag or one more lag, including one more variable or not — all these choices can reverse a finding of Granger causality, so it’s best to “stress test” your findings before rushing to conclusions.</p>
 
 
-</section>
 </section>
 <section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr>
 <ol>
-<li id="fn1"><p>AI assistance was used to brainstorm case studies and examples, and to help with the layout and coding of the website itself.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>Analogous forms of Granger causality “in variances” have been proposed which describe situations in which knowledge of <span class="math inline">\(\boldsymbol{X}\)</span> improves predictions for the variance of <span class="math inline">\(\boldsymbol{Y}\)</span>, but they are uncommon.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 
@@ -814,10 +1045,13 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation column-body">
   <div class="nav-page nav-page-previous">
+      <a href="./vars.html" class="pagination-link" aria-label="Vector autoregressions (VARs)">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Vector autoregressions (VARs)</span></span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./whatisatimeseries.html" class="pagination-link" aria-label="What is a time series?">
-        <span class="nav-page-text"><span class="chapter-title">What is a time series?</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./causalityinr.html" class="pagination-link" aria-label="VARs in R">
+        <span class="nav-page-text"><span class="chapter-title">VARs in R</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
