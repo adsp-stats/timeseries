@@ -1,0 +1,198 @@
+# Vector autoregressions (VARs)
+
+```{r}
+#| output: false
+library(urca)
+library(vars)
+```
+
+Now we will learn about vector autoregressions (VARs). VARs look complicated, but they are in fact quite simple --- too simple, in fact, for many applications. Please, review this material without worrying that you are missing something!
+
+## Motivation as an extension of ADLs
+
+Previously, we explored [dynamic regressions](dynamicregression.qmd), which included a class of model known as autoregressive distributed lag (ADL) models. They use a regression framework to predict one time series based on its own past values, external predictors, and (optionally) the past values of those predictors:
+
+$$y_t = \alpha_0 + \alpha_1 y_{t-1} + \ldots + \alpha_p y_{t-p} + \beta_1 x_t + \beta_2 x_{t-2} + \ldots + \beta_p x_{t-p} + \omega_t$$
+
+(Where $\alpha$ and $\beta$ terms are constant coefficients, $p$ is the maximum lag order, and $\omega_t$ is a white noise process.)
+
+In the equation above, we predict $\boldsymbol{Y}$ as a function of itself and of $\boldsymbol{X}$. What about $\boldsymbol{X}$ --- what if it in turn is predicted by its *own* past values, and perhaps by $\boldsymbol{Y}$ and *its* lags?
+
+$$x_t = \gamma_0 + \gamma_1 x_{t-1} + \ldots + \gamma_{p} x_{t-p} + \delta_1 y_t + \delta_2 y_{t-2} + \ldots + \delta_{p} y_{t-p} + \omega_t'$$
+
+(Where $\gamma$ and $\delta$ terms are constant coefficients, $p$is the maximum lag order, and $\omega'_t$ is a white noise process which might be different from $\omega_t$.)
+
+We could even add a third or fourth random variable to the mix. Many random variables, all affecting themselves and each other through their lagged values. Meanwhile, the error terms of these equations are each believed to be white noise (optionally, we could say Gaussian white noise), free of any ARIMA-like dependencies. However, since these variables are linked by time and usually by some sort of subject-matter domain, *the error terms are presumed to be independent of their own past values, but not independent of each other's current values:* a shock to $\boldsymbol{Y}$ at time index $t$ may also be seen in $\boldsymbol{X}$ at time index $t$.
+
+## Reduced-form VARs
+
+Rather than call our random variables $Y$ and $X$ (and optionally $W$ and $Z$, *etc.*), let's recognize the fact that they are *all* response variables by naming them $Y_1, \ldots, Y_i, \ldots, Y_K$.  We *could* write a data generating process for each variable separately:
+
+$$y_{i,t} = c_{i,0} + \left(\sum_{i=1}^K \sum_{j=1}^p \alpha_{i,j} \, y_{i,t-j}\right) + \omega_{i,t}$$
+
+
+Where $c_{i,0}$ is a mean-fitting constant and $\alpha_{i,j}$ is an autoregressive coefficient.^[Similar to $\beta_0$ and $\beta_1$ if you are more familiar with regression notation.] However this problem is screaming out for a matrix representation, so let me show that instead.  
+
+::: {.callout-note}
+
+Let $\boldsymbol{y}_t = y_{1,t}, \ldots, y_{K,t}$ be a vector of $K$ different time series variables observed at time index $t$ (and other regularly-sampled time indices). Let $\boldsymbol{c} = c_1, \ldots, c_K$ be a vector of constants, and let $\boldsymbol{\omega}_t = \omega_{1,t}, \ldots, \omega_{K,t}$ be a vector of $K$ different white noise processes observed at time index $t$, serially independent ($\omega_{i,s} \perp \omega_{i,t} \forall s \ne t$) but potentially cross-correlated ($\textrm{Cor}(\omega_{i,t} \perp \omega_{j,t}) \ge 0$). Then, a **reduced-form VAR** $R$ can be written:
+
+$$R: \quad \boldsymbol{y}_t = \boldsymbol{c} + \mathbf{A}_1 \boldsymbol{y}_{t-1} + \ldots + \mathbf{A}_p \boldsymbol{y}_{t-p} + \boldsymbol{\omega}_t$$
+
+Where each $K \times K$ matrix $\mathbf{A}_j$ contains the autoregressive coefficients for lag $j$:
+
+$$\mathbf{A}_j = \left[\begin{array}{ccc} \phi_{j;1,1} & \cdots & \phi_{j;1,K} \\ \vdots & \ddots & \vdots \\ \phi_{j;K,1} & \cdots & \phi_{j;K,K} \end{array}\right]$$
+
+:::
+
+The beauty of the reduced-form VAR is that it can be fit as a series of *independent ordinary least-squares (OLS) regressions*, a rarity in the field of time series modeling. Each response variable can essentially be fit as its own autoregressive distributed lag (ADL) model, without needing to link the equations in any way!
+
+Let's consider a simple example with only two series. The dataset describes consumption (*i.e.* expenditures) and incomes in the United Kingdom, during the 120 quarters from 1955 through 1984.
+
+```{r}
+#| code-fold: true
+data(UKconinc)
+par(mfrow=c(1,2))
+plot(UKconinc,xlab='log(Consumption)',ylab='log(Income)',
+     main='X-Y plot of UK data',
+     col=colorRampPalette(c('#0000ff','#7f007f','#ff0000'))(120))
+text(UKconinc[1,],labels='1955Q1',cex=0.75,pos=4)
+text(UKconinc[120,],labels='1984Q4',cex=0.75,pos=2)
+matplot(seq(1955,1984.75,0.25),UKconinc,type='l',lwd=2,xlab='Year',ylab='Log value',
+        main='Plot of UK data over time',col=c('#000000','#0000ff'))
+legend(x='bottomright',bty='n',lwd=2,col=c('#000000','#0000ff'),
+       legend=c('Consumption','Income'))
+```
+
+The data are clearly nonstationary and at least one series is also strongly seasonal. We should difference the data, but we may not want to de-seasonalize. We are trying to study how movements in each variable create movements in the other --- removing the seasonal movement might rob us of important information. Let's plot the differenced data and then run a reduced-form VAR, adding seasonal dummies:
+
+```{r}
+#| code-fold: true
+diffUK <- diff(as.matrix(UKconinc))
+par(mfrow=c(1,2))
+plot(diffUK,xlab='log(Consumption)',ylab='log(Income)',
+     main='X-Y plot of differenced UK data',
+     col=colorRampPalette(c('#0000ff','#7f007f','#ff0000'))(120))
+text(diffUK[1,],labels='1955Q2',cex=0.75,pos=4)
+text(diffUK[119,],labels='1984Q4',cex=0.75,pos=2)
+matplot(seq(1955.25,1984.75,0.25),diffUK,type='l',lwd=2,xlab='Year',ylab='Log value',
+        main='Plot of differenced UK data over time',col=c('#000000','#0000ff'),
+        ylim=c(-0.12,0.12))
+legend(x='topright',bty='n',lwd=2,col=c('#000000','#0000ff'),
+       legend=c('Consumption','Income'))
+
+coninc.var <- VAR(diffUK,type='const',p=3,season=4) 
+summary(coninc.var)
+```
+
+By adding the seasonal terms to the VAR equations, we allow the model to disentangle the seasonal effects from the regressive and autoregressive effects.
+
+We see two separate sets of regression results as well as some data helping us to unify the two regressions:
+
+ * None of the AR roots are very close to 1, building confidence that we have eliminated spurious regression and random walk behavior through our differencing.
+ 
+ * The seasonal dummies are very important in both regressions, which is no surprise.
+ 
+ * Past values of consumption and income seem important at least through the second or third lag in each equation.
+ 
+ * As expected, when past income has been increasing, present consumption is expected to increase.
+ 
+ * As expected, when past consumption has been increased, present income is expected to increase.
+ 
+ * More interestingly, changes in both income and consumption are negatively predicted by their own past values, perhaps a result of data smoothing, reporting adjustments, etc.
+ 
+ * The two residual series are strongly cross-correlated, with $\hat{\rho} \approx 0.61$.
+ 
+In fact, we can take a look at the residuals and see how they move together. Notice the sharp downward spike in Q1 of 1980 which began an economic depression in the United Kingdom, brought about by new Thatcherite/Tory monetary policies as well as broader international shocks such as the oil crisis.
+
+```{r}
+#| code-fold: true
+matplot(seq(1956,1984.75,0.25),residuals(coninc.var),type='l',lwd=2,xlab='Year',ylab='Log value',
+        main='Correlated VAR residuals',lty=1,col=c('#000000','#0000ff'))
+legend(x='bottomleft',bty='n',lwd=1,col=c('#000000','#0000ff'),
+       legend=c('Consumption','Income'))
+```
+
+Forecasting from this series would be easy: we have already modeled $Y_{1,t}$ (changes in log consumption) and $Y_{2,t}$ (changes in log income) as functions of their past values, creating a natural recursive forecasting strategy for future values:
+
+$$\hat{\boldsymbol{y}}_{N+1} = \boldsymbol{c} + \hat{\mathbf{A}}_1 \boldsymbol{y}_N + \ldots + \hat{\mathbf{A}}_p \boldsymbol{y}_{N-p+1}$$
+
+What have we accomplished with this reduced-form VAR?
+
+ * Estimation process is very straightforward and computationally lightweight
+ 
+ * Explicit identification of how past lags from both series affects the current values of each series
+ 
+ * Estimation of a cross-correlated residual
+ 
+ * Easy recursive forecasting process
+ 
+Still, this doesn't seem much different than what we could create by fitting several autoregressive distributed lag (ADL) models to each series individually. And reduced-form VARs have two glaring weaknesses:
+
+ * The model is entirely atheoretical.^[Whether you find this a strength or a weakness might be a personal decision!] State space models, exponential smoothing models, error correction models (ECMs), and the MA terms of an ARIMA model all try to define, structure, and estimate a hidden data generating process. By constrast, VAR models simply measure the correlation between observed series (the multiple series of $\boldsymbol{y}$ and their past values).
+ 
+ * The residuals are serially independent but cross-correlated, which leaves some ambiguity as to how each series truly affects the other, and prevents us from fully decomposing the source or effects of new shocks.
+ 
+## Structural VARs
+
+Into this gap steps a solution, the *structural VAR* (or *SVAR*). By re-expressing a reduced-form VAR under one or more parameter constraints, we can learn more about the dynamics of the data-generating system.
+
+::: {.callout-note}
+
+Let the variables, errors, and coefficients of a reduced-form VAR $R$ be defined as above. Let $\boldsymbol{c}' = c'_1, \ldots, c'_K$ be a vector of constants, and let $\boldsymbol{\varepsilon}_t = \varepsilon_{1,t}, \ldots, \varepsilon_{K,t}$ be a vector of $K$ different *serially and cross-independent* white noise processes observed at time index $t$. Consider the equation $S$:
+
+$$S: \quad \mathbf{A} \boldsymbol{y}_t = \boldsymbol{c}' + \mathbf{A}'_1 \boldsymbol{y}_{t-1} + \ldots + \mathbf{A}'_p \boldsymbol{y}_{t-p} + \mathbf{B} \boldsymbol{\varepsilon}_t$$
+
+Where the $K \times K$ matrix $\mathbf{A}$ codes for contemporaneous effects of the variables $\boldsymbol{Y}$ on each other, and each $K \times K$ matrix $\mathbf{A}'_j$ codes for the lagged effects of the variables $\boldsymbol{Y}$ on each other, and where the $K \times K$ matrix $\mathbf{B}$ codes for the contemporaneous effects of the shocks $\boldsymbol{\varepsilon}$ on $\boldsymbol{Y}$.
+
+If $\mathbf{A}$ is defined such that:
+
+$$\begin{aligned} \mathbf{A}^{-1}(\mathbf{A} \boldsymbol{y}_t) &= \\ \boldsymbol{y}_t &= \mathbf{A}^{-1}\boldsymbol{c}' + \mathbf{A}^{-1}\mathbf{A}'_1 \boldsymbol{y}_{t-1} + \ldots + \mathbf{A}^{-1}\mathbf{A}'_p \boldsymbol{y}_{t-p} + \mathbf{A}^{-1}\mathbf{B} \boldsymbol{\varepsilon}_t \\ &= \boldsymbol{c} + \mathbf{A}_1 \boldsymbol{y}_{t-1} + \ldots + \mathbf{A}_p \boldsymbol{y}_{t-p} + \boldsymbol{\omega}_t \\ &= R\end{aligned}$$
+
+  Then we say that $S$ is **a structural VAR (SVAR)** for $R$ and that $\mathbf{A}^{-1}\mathbf{B}$ is the **impact matrix** for $R$.
+:::
+
+The equations for a structural VAR look difficult, but algorithmic methods will find a solution where one (and only one) exists. The *real* problem is finding only one solution: these equations above are actually underdetermined, meaning that many different solutions present themselves. We will have to make some restrictive assumptions to proceed:
+
+### Restricting and estimating the contemporaneous effects A
+
+We usually assume that the contemporaneous effects matrix $\mathbf{A}$ contains 1s along the diagonal. In a two-variable system, we could write:
+
+$$\begin{aligned} \mathbf{A} \boldsymbol{y}_t &= \boldsymbol{c}' + \ldots \longrightarrow \\ \\ \left[\begin{array}{cc} 1 & a_{1,2} \\ a_{2,1} & 1 \end{array}\right]\left[\begin{array}{c} y_{1,t} \\ y_{2,t} \end{array}\right] &= \boldsymbol{c}' + \ldots \longrightarrow \\ \\ \left[\begin{array}{c} y_{1,t} + a_{1,2} y_{2,t} \\ y_{2,t} + a_{2,1} y_{1,t} \end{array}\right] &= \boldsymbol{c}' + \ldots \longrightarrow \\ \\ \left[\begin{array}{c} y_{1,t} \\ y_{2,t} \end{array}\right] &= \boldsymbol{c}' - \left[\begin{array}{c} a_{1,2} y_{2,t} \\ a_{2,1} y_{1,t} \end{array}\right]+ \ldots\end{aligned}$$
+
+Meaning that the terms $a_{1,2}$ and $a_{2,1}$ contain information on how the variables affect each other contemporaneously. However, this model is underdetermined: $\boldsymbol{y}_1$ and $\boldsymbol{y}_2$ can't *both simultaneously* affect each other in a way that we can measure. Furthermore, the error coefficients $\mathbf{B}$ have not been specified, and might scale or rotate our contemporaneous effects in unknown ways.
+
+If we impose some model constraints, we might be able to forge ahead. Which and how many constraints to impose will depend upon the number of variables in the system, particulars of your estimation method, and the domain context. For now, let's suppose it to be *a priori* economic truth that a same-quarter rise in income might immediately generate additional consumption, but that same-quarter changes in consumption do not typically immediately affect income. Further, let's assume without loss of generality that the errors remain unscaled and fully diagonalized:
+
+$$\mathbf{A} = \left[\begin{array}{cc} 1 & 0 \\ a_{2,1} & 1 \end{array}\right], \quad \mathbf{B} = \left[\begin{array}{cc} 1 & 0 \\ 0 & 1 \end{array}\right]$$
+This allows us to solve for the missing coefficient $a_{2,1}$. Technically, to measure the effect of same-quarter income on consumption, we need to invert this new matrix and calculate $a^{-1}_{2,1}$, since $\boldsymbol{\omega}_t = \mathbf{A}^{-1} \mathbf{B} \boldsymbol{\varepsilon}_t = \mathbf{A}^{-1} \boldsymbol{\varepsilon}_t$:
+
+```{r}
+svar.a <- SVAR(coninc.var,estmethod='direct',Amat=matrix(c(1,NA,0,1),nrow=2),method='BFGS')
+solve(svar.a$A)
+```
+
+We find here that a one-unit increase in log-income creates a 0.7-unit increase in log-consumption. Since we are working with a model of differenced logs, we could as well say that a 10\% increase in raw income levels is expected to translate to an immediate, same-quarter 6.9\% increase in consumption.^[$\approx e^{0.6986 \times \log 1.1} - 1$]
+
+### Restricting and estimating the structural shocks B
+
+We saw earlier that the residuals from a reduced-form VAR can be quite strongly correlated. These residuals are in turn generated by the expression $\boldsymbol{\omega}_t = \mathbf{A}^{-1} \mathbf{B} \boldsymbol{\varepsilon}_t$. If we make a different set of restrictions to the SVAR, we can understand exactly how the "structural shocks" $\boldsymbol{\varepsilon}$ are translated into our series residuals.
+
+Let us now assume that $\mathbf{A}$ is an identity matrix, that is, that there are *no contemporaneous* effects, and that the error coefficients $\mathbf{B}$ are no longer diagonalized. Just as before, we can't measure how $\varepsilon_{1,t}$ and $\varepsilon_{2,t}$ contribute to $\omega_{1,t}$ and $\omega_{2,t}$ if we allow both of them to contribute without restriction: there are too many free parameters in the model. However, we might assume that whatever structural forces are at play, they take the form of *(1)* pure income shocks, which have nothing to do with consumption patterns (such as monetary deflation), and *(2)* generic spending shocks, which could include consumer preferences, demand shifts, exchange rates, and other factors which affect incomes as well as consumption:
+
+$$\mathbf{A} = \left[\begin{array}{cc} 1 & 0 \\ 0 & 1 \end{array}\right], \quad \mathbf{B} = \left[\begin{array}{cc} 1 & 0 \\ b_{2,1} & 1 \end{array}\right]$$
+
+This allows us to solve for the missing coefficient $a_{2,1}$. Technically, to measure the effect of same-quarter income on consumption, we need to invert this new matrix and calculate $a^{-1}_{2,1}$, since $\boldsymbol{\omega}_t = \mathbf{A}^{-1} \mathbf{B} \boldsymbol{\varepsilon}_t = \mathbf{A}^{-1} \boldsymbol{\varepsilon}_t$:
+
+```{r}
+SVAR(coninc.var,estmethod='direct',Bmat=matrix(c(1,NA,0,1),nrow=2),method='BFGS')
+```
+
+In this small two-variable example, with very symmetric restrictions on $\mathbf{A}$ and $\mathbf{B}$, we landed on the same matrix, which muddies my lesson. However, for larger systems, these two matrices are not guaranteed or even expected to converge. On a conceptual level, they represent different structural ideals:
+
+ * $\mathbf{A}$ defines how shocks enter the system as a linear combination of contemporaneous information from different variables. It *describes shocks*, and clarifies which variables contribute to each others' shocks and which don't.
+ 
+ * $\mathbf{A}^{-1}$ *should* measure the impact of shocks in terms of how many "standard deviations" a one-unit shock of each type should have on each variable in the system. I write "should" because: estimation is messy, matrix inversion can be fickle, and depending on the types of restrictions to $\mathbf{A}$ and $\mathbf{B}$ (including possible overdetermination, or uncommon restrictions such as symmetric off-diagonal entries), unexpected behavior might result.
+ 
+ * $\mathbf{B}$ *does* directly measure the impact of shocks, though it does not describe how the shocks were "created".
+

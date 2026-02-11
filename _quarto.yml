@@ -37,6 +37,11 @@ book:
         - dynamicregression.qmd
         - harmonics.qmd
         - dynamicregressioninr.qmd
+    - part: "6. Modeling systems of variables"
+      chapters:
+        - vars.qmd
+        - granger.qmd
+        - causalityinr.qmd
 format:
   html:
     toc: true

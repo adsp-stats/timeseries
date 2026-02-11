@@ -1,0 +1,123 @@
+# VARs in R
+
+```{r}
+#| output: false
+library(tseries)
+library(vars)
+```
+
+Our data are four seasonally adjusted quarterly macroeconomic time series describing the United States economy. Specifically, we will be relating money supply (M1), output (GNP), short term interest rates, and long term interest rates.
+
+```{r}
+data(USeconomic)
+head(USeconomic)
+plot(USeconomic,main='Levels of four macroeconomic indicators')
+```
+
+The data are clearly not stationary and differencing would be suggested. Further, plots of the data suggest *cointegration* --- in a real analysis, this could invalidate the use of a VAR and instead suggest the use of a VECM to capture the error-correction mechanisms inherent to cointegrated data. We can quickly test for two hypothesized cointegrations.
+
+First, cointegration between money supply and output:
+
+```{r}
+# M1 levels stationary
+suppressWarnings(adf.test(log(M1))$p.value<0.05)
+# GNP levels stationary
+suppressWarnings(adf.test(log(GNP))$p.value<0.05)
+# M1 diffs stationary
+suppressWarnings(adf.test(diff(log(M1)))$p.value<0.05)
+# GNP diffs stationary
+suppressWarnings(adf.test(diff(log(GNP)))$p.value<0.05)
+# M1/GNP resids stationary
+suppressWarnings(adf.test(lm(log(M1)~log(GNP))$residuals)$p.value<0.05)
+```
+
+These in fact are not cointegrated! But the interest rates probably are:
+
+```{r}
+# Short levels stationary
+suppressWarnings(adf.test(rs)$p.value<0.05)
+# Long levels stationary
+suppressWarnings(adf.test(rl)$p.value<0.05)
+# Short diffs stationary
+suppressWarnings(adf.test(diff(rs))$p.value<0.05)
+# Long diffs stationary
+suppressWarnings(adf.test(diff(rl))$p.value<0.05)
+# Short/Long resids stationary
+suppressWarnings(adf.test(lm(rs~rl)$residuals)$p.value<0.05)
+```
+
+The evidence here is muddied --- perhaps the short-term rates are I(0) while the long-term rates are I(1), but this seems implausible since they track very similar concepts and [we have found them to be cointegrated series before](cointegration.qmd). Instead, these two series are likely cointegrated, which will be a caveat for our analysis.
+
+We will move ahead and perform a VAR on the differences of the data.  With four times series to track, the number of coefficients will grow quickly: at three lags and including constants, we would have to estimate 52 coefficients! So we will hope that the automated selection procedure identifies a low lag order. 
+
+Using `vars::VAR`, we will fine-tune our model by selecting a number of lags using the "SBC" (also called "BIC") information criterion, which penalizes extra terms a little more strongly than the original AIC. We will fit constants to each time series but not trends (we have already differenced each series, so a constant in differences is the same as a trend in levels). And since the data are pre-seasonally adjusted, we will not fit quarterly seasonal effects, which would normally be suggested for economic data series.
+
+```{r}
+us.econ.var <- VAR(diff(USeconomic),type='const',ic='SC')
+summary(us.econ.var)
+```
+
+Interesting results! 
+
+ * Happily, only one lag was selected (we are still fitting 20 coefficients...) 
+ 
+ * Money supply looks very reactive to lags of itself and every other series. 
+ 
+ * GNP looks reactive to lags of itself (perhaps) and money supply. 
+ 
+ * Short term rates and long term rates both possibly react to lags of long-term rates and nothing else.
+ 
+ * As a diagnostic, the roots of the AR polynomials for these regressions are all far from the unit circle, suggesting a stable, stationary fit. 
+ 
+ * R^2^ measures range from 66\% for money supply to 6\% for the long-term rates. 
+ 
+ * The correlation matrix of the residuals from these series shows a small to moderate amount of correlation except between the two interest rates, which have strongly correlated residuals.
+
+From here we have two paths forward: we can pursue Granger causality or we can build a structural VAR (SVAR).^[Two other possibilities: building impulse response functions and determining the forecast error variance decomposition, are left as extension topics.] Let's tackle the Granger causality first, as it might suggest restrictions to help us reconstruct an SVAR.
+
+Bivariate Granger tests suitable for a simply X-Y model are available through the base R function `lmtest::grangertest`. However, we will use `vars::causality` since it handles more than two series and was written explicitly for the `vars::VAR` model class. The function performs two different tests:
+
+ 1. Whether lags of one or more "cause" variables Granger-cause *any of the other variables in the system*
+ 
+ 2. Whether the data suggest "instantaneous" (same-period) causality between the same sets of variables
+
+
+```{r}
+causality(us.econ.var,'log.M1.')
+causality(us.econ.var,'log.GNP.')
+causality(us.econ.var,'rs')
+causality(us.econ.var,'rl')
+```
+
+These results suggest lots of lagged and instantaneous causation across all four variables, with the only possible exception that changs in GNP might not Granger-cause changes in any of the other variables.
+
+To form an SVAR, we will then have to rely upon domain knowledge and possibly-counterfactual hypotheses. Let's start by forming a *recursive* or *Cholesky-decomposition* $\mathbf{A}$ matrix, one which inverts as clearly as possible.
+
+We will assume:
+
+ 1. Money supply contemporaneously reacts to GNP but little else. A change in the bond yields does not affect how much money is *currently* available, even if it changes how much *will be lent going forward*.
+
+ 2. GNP/output is exogenous. Although it's in some ways the slowest to evolve, that means it's largely immune to the immediate actions of the other variables, and so it's "fastest" to act. When GNP acts, the other variables *react.* GNP cannot react to the other variables in the same quarter.
+ 
+ 3. Short-term rates do not react contemporaneously to long-term rates. Short-term rates are a *policy* change (keyed closely to the federal funds overnight banking rate), while long term rates are about far-future expectations and risk premia.
+ 
+ 4. Long-term rates are the most reactive. All meaningful economic actions immediately change our expectations of the future, and the long-term rates are a proxy for future expectations.
+ 
+These combine to suggest the following $A$ matrix.^[If we swapped the first two rows it would be a nice lower-diagonal matrix.] From the top left, and following our data, the rows and columns represent *(1)* money supply, *(2)* output/GNP, *(3)* short-term rates, *(4)* long-term rates:
+
+$$\mathbf{A} = \left[ \begin{array}{cccc} 1 & a_{1,2} & 0 & 0 \\ 0 & 1 & 0 & 0 \\ a_{3,1} & a_{3,2} & 1 & 0 \\ a_{4,1} & a_{4,2} & a_{4,3} & 1 \end{array} \right] \quad \begin{array}{c} {\scriptstyle money} \\ {\scriptstyle output} \\ {\scriptstyle short} \\ {\scriptstyle long} \end{array}$$
+
+Fitting an SVAR can be quite tricky, not just conceptually, but as a matter of pure algorithmic convergence. If using the `vars::SVAR` function, I highly recommend setting the argument `estmethod='direct'` for a direct likelihood minimization. Even so, you may need to play around with the settings of the unseen call to the `optim()` function, or increase the maximum number of iterations.
+
+We will estimate $\mathbf{A}$, and then solve for its inverse, the imapct matrix:
+
+```{r}
+Amatrix = rbind(c(1,NA,0,0),
+                c(0,1,0,0),
+                c(NA,NA,1,0),
+                c(NA,NA,NA,1))
+(us.econ.svar <- SVAR(us.econ.var,estmethod='direct',Amat=Amatrix,max.iter=1000))
+round(solve(us.econ.svar$A),4)
+```
+
+These results are defensible, though hardly uncontestable. We can say things like "a one-unit shock to the change in log-money supply contemporaneously increases change in log-GNP by 0.22 units", though we might want to calculate some more concerete scenarios in line with proposed policy changes and express the result as a proportional change in GNP levels.
