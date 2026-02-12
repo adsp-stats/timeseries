@@ -646,8 +646,11 @@ Note
 <p>If we impose some model constraints, we might be able to forge ahead. Which and how many constraints to impose will depend upon the number of variables in the system, particulars of your estimation method, and the domain context. For now, let’s suppose it to be <em>a priori</em> economic truth that a same-quarter rise in income might immediately generate additional consumption, but that same-quarter changes in consumption do not typically immediately affect income. Further, let’s assume without loss of generality that the errors remain unscaled and fully diagonalized:</p>
 <p><span class="math display">\[\mathbf{A} = \left[\begin{array}{cc} 1 &amp; 0 \\ a_{2,1} &amp; 1 \end{array}\right], \quad \mathbf{B} = \left[\begin{array}{cc} 1 &amp; 0 \\ 0 &amp; 1 \end{array}\right]\]</span> This allows us to solve for the missing coefficient <span class="math inline">\(a_{2,1}\)</span>. Technically, to measure the effect of same-quarter income on consumption, we need to invert this new matrix and calculate <span class="math inline">\(a^{-1}_{2,1}\)</span>, since <span class="math inline">\(\boldsymbol{\omega}_t = \mathbf{A}^{-1} \mathbf{B} \boldsymbol{\varepsilon}_t = \mathbf{A}^{-1} \boldsymbol{\varepsilon}_t\)</span>:</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>svar.a <span class="ot">&lt;-</span> <span class="fu">SVAR</span>(coninc.var,<span class="at">estmethod=</span><span class="st">'direct'</span>,<span class="at">Amat=</span><span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="cn">NA</span>,<span class="dv">0</span>,<span class="dv">1</span>),<span class="at">nrow=</span><span class="dv">2</span>),<span class="at">method=</span><span class="st">'BFGS'</span>)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">solve</span>(svar.a<span class="sc">$</span>A)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>          conl incl
 conl 1.0000000    0
@@ -663,7 +666,10 @@ incl 0.6985695    1</code></pre>
 <p><span class="math display">\[\mathbf{A} = \left[\begin{array}{cc} 1 &amp; 0 \\ 0 &amp; 1 \end{array}\right], \quad \mathbf{B} = \left[\begin{array}{cc} 1 &amp; 0 \\ b_{2,1} &amp; 1 \end{array}\right]\]</span></p>
 <p>This allows us to solve for the missing coefficient <span class="math inline">\(a_{2,1}\)</span>. Technically, to measure the effect of same-quarter income on consumption, we need to invert this new matrix and calculate <span class="math inline">\(a^{-1}_{2,1}\)</span>, since <span class="math inline">\(\boldsymbol{\omega}_t = \mathbf{A}^{-1} \mathbf{B} \boldsymbol{\varepsilon}_t = \mathbf{A}^{-1} \boldsymbol{\varepsilon}_t\)</span>:</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">SVAR</span>(coninc.var,<span class="at">estmethod=</span><span class="st">'direct'</span>,<span class="at">Bmat=</span><span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="cn">NA</span>,<span class="dv">0</span>,<span class="dv">1</span>),<span class="at">nrow=</span><span class="dv">2</span>),<span class="at">method=</span><span class="st">'BFGS'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 SVAR Estimation Results:
