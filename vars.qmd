@@ -168,6 +168,7 @@ $$\mathbf{A} = \left[\begin{array}{cc} 1 & 0 \\ a_{2,1} & 1 \end{array}\right], 
 This allows us to solve for the missing coefficient $a_{2,1}$. Technically, to measure the effect of same-quarter income on consumption, we need to invert this new matrix and calculate $a^{-1}_{2,1}$, since $\boldsymbol{\omega}_t = \mathbf{A}^{-1} \mathbf{B} \boldsymbol{\varepsilon}_t = \mathbf{A}^{-1} \boldsymbol{\varepsilon}_t$:
 
 ```{r}
+#| code-fold: true
 svar.a <- SVAR(coninc.var,estmethod='direct',Amat=matrix(c(1,NA,0,1),nrow=2),method='BFGS')
 solve(svar.a$A)
 ```
@@ -185,6 +186,7 @@ $$\mathbf{A} = \left[\begin{array}{cc} 1 & 0 \\ 0 & 1 \end{array}\right], \quad 
 This allows us to solve for the missing coefficient $a_{2,1}$. Technically, to measure the effect of same-quarter income on consumption, we need to invert this new matrix and calculate $a^{-1}_{2,1}$, since $\boldsymbol{\omega}_t = \mathbf{A}^{-1} \mathbf{B} \boldsymbol{\varepsilon}_t = \mathbf{A}^{-1} \boldsymbol{\varepsilon}_t$:
 
 ```{r}
+#| code-fold: true
 SVAR(coninc.var,estmethod='direct',Bmat=matrix(c(1,NA,0,1),nrow=2),method='BFGS')
 ```
 
