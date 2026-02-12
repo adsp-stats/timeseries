@@ -689,7 +689,7 @@ Chi-squared = 43.884, df = 3, p-value = 1.597e-09</code></pre>
 <p>These combine to suggest the following <span class="math inline">\(A\)</span> matrix.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> From the top left, and following our data, the rows and columns represent <em>(1)</em> money supply, <em>(2)</em> output/GNP, <em>(3)</em> short-term rates, <em>(4)</em> long-term rates:</p>
 <p><span class="math display">\[\mathbf{A} = \left[ \begin{array}{cccc} 1 &amp; a_{1,2} &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; 0 &amp; 0 \\ a_{3,1} &amp; a_{3,2} &amp; 1 &amp; 0 \\ a_{4,1} &amp; a_{4,2} &amp; a_{4,3} &amp; 1 \end{array} \right] \quad \begin{array}{c} {\scriptstyle money} \\ {\scriptstyle output} \\ {\scriptstyle short} \\ {\scriptstyle long} \end{array}\]</span></p>
 <p>Fitting an SVAR can be quite tricky, not just conceptually, but as a matter of pure algorithmic convergence. If using the <code>vars::SVAR</code> function, I highly recommend setting the argument <code>estmethod='direct'</code> for a direct likelihood minimization. Even so, you may need to play around with the settings of the unseen call to the <code>optim()</code> function, or increase the maximum number of iterations.</p>
-<p>We will estimate <span class="math inline">\(\mathbf{A}\)</span>, and then solve for its inverse, the imapct matrix:</p>
+<p>We will estimate <span class="math inline">\(\mathbf{A}\)</span>, and then solve for its inverse, the impact matrix, which describes four hidden “column shocks” (the uncorrelated epsilons, <span class="math inline">\(\boldsymbol{\varepsilon}_1, \ldots, \boldsymbol{\varepsilon}_4\)</span>):</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>Amatrix <span class="ot">=</span> <span class="fu">rbind</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="cn">NA</span>,<span class="dv">0</span>,<span class="dv">0</span>),</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>                <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>),</span>
@@ -709,16 +709,17 @@ log.GNP.  0.0000   1.0000  0.0000  0
 rs        0.3380  -0.2374  1.0000  0
 rl        0.3035  -0.1412 -0.2687  1</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">solve</span>(us.econ.svar<span class="sc">$</span>A),<span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">matrix</span>(<span class="fu">round</span>(<span class="fu">solve</span>(us.econ.svar<span class="sc">$</span>A),<span class="dv">4</span>),<span class="at">ncol=</span><span class="dv">4</span>,</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">dimnames=</span><span class="fu">list</span>(<span class="fu">rownames</span>(us.econ.svar<span class="sc">$</span>A),<span class="fu">c</span>(<span class="st">'eps1'</span>,<span class="st">'eps2'</span>,<span class="st">'eps3'</span>,<span class="st">'eps4'</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>         log.M1. log.GNP.     rs rl
-log.M1.   1.0000   0.2192 0.0000  0
-log.GNP.  0.0000   1.0000 0.0000  0
-rs       -0.3380   0.1633 1.0000  0
-rl       -0.3943   0.1186 0.2687  1</code></pre>
+<pre><code>            eps1   eps2   eps3 eps4
+log.M1.   1.0000 0.2192 0.0000    0
+log.GNP.  0.0000 1.0000 0.0000    0
+rs       -0.3380 0.1633 1.0000    0
+rl       -0.3943 0.1186 0.2687    1</code></pre>
 </div>
 </div>
-<p>These results are defensible, though hardly uncontestable. We can say things like “a one-unit shock to the change in log-money supply contemporaneously increases change in log-GNP by 0.22 units”, though we might want to calculate some more concerete scenarios in line with proposed policy changes and express the result as a proportional change in GNP levels.</p>
+<p>These results are defensible, though hardly uncontestable. Looking at the lower left of the <span class="math inline">\(\mathbf{A}\)</span> matrix, we can say things like “When money supply increases by one unit, then long-term rates are expected to decrease by 0.3035 units <em>in the same period</em>.” Looking at the lower right of the impact matrix estimated by <span class="math inline">\(\mathbf{A}^{-1}\)</span>, we read something different: “There’s a type of economic pattern (the ‘eps1’ shock) which affects money supply by 1 SD and simultaneously affects long-term rates by -0.3943 SD”. These two results are not inconsistent: another shocks to the system (the ‘eps2’ shock) <em>also</em> affects both money supply and long-term rates, which is why the full contemporaneous movement is not the same as either shock individually.</p>
 
 
 <section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">

@@ -644,31 +644,52 @@ Note
 <p><span class="math display">\[\begin{aligned} \mathbf{A} \boldsymbol{y}_t &amp;= \boldsymbol{c}' + \ldots \longrightarrow \\ \\ \left[\begin{array}{cc} 1 &amp; a_{1,2} \\ a_{2,1} &amp; 1 \end{array}\right]\left[\begin{array}{c} y_{1,t} \\ y_{2,t} \end{array}\right] &amp;= \boldsymbol{c}' + \ldots \longrightarrow \\ \\ \left[\begin{array}{c} y_{1,t} + a_{1,2} y_{2,t} \\ y_{2,t} + a_{2,1} y_{1,t} \end{array}\right] &amp;= \boldsymbol{c}' + \ldots \longrightarrow \\ \\ \left[\begin{array}{c} y_{1,t} \\ y_{2,t} \end{array}\right] &amp;= \boldsymbol{c}' - \left[\begin{array}{c} a_{1,2} y_{2,t} \\ a_{2,1} y_{1,t} \end{array}\right]+ \ldots\end{aligned}\]</span></p>
 <p>Meaning that the terms <span class="math inline">\(a_{1,2}\)</span> and <span class="math inline">\(a_{2,1}\)</span> contain information on how the variables affect each other contemporaneously. However, this model is underdetermined: <span class="math inline">\(\boldsymbol{y}_1\)</span> and <span class="math inline">\(\boldsymbol{y}_2\)</span> can’t <em>both simultaneously</em> affect each other in a way that we can measure. Furthermore, the error coefficients <span class="math inline">\(\mathbf{B}\)</span> have not been specified, and might scale or rotate our contemporaneous effects in unknown ways.</p>
 <p>If we impose some model constraints, we might be able to forge ahead. Which and how many constraints to impose will depend upon the number of variables in the system, particulars of your estimation method, and the domain context. For now, let’s suppose it to be <em>a priori</em> economic truth that a same-quarter rise in income might immediately generate additional consumption, but that same-quarter changes in consumption do not typically immediately affect income. Further, let’s assume without loss of generality that the errors remain unscaled and fully diagonalized:</p>
-<p><span class="math display">\[\mathbf{A} = \left[\begin{array}{cc} 1 &amp; 0 \\ a_{2,1} &amp; 1 \end{array}\right], \quad \mathbf{B} = \left[\begin{array}{cc} 1 &amp; 0 \\ 0 &amp; 1 \end{array}\right]\]</span> This allows us to solve for the missing coefficient <span class="math inline">\(a_{2,1}\)</span>. Technically, to measure the effect of same-quarter income on consumption, we need to invert this new matrix and calculate <span class="math inline">\(a^{-1}_{2,1}\)</span>, since <span class="math inline">\(\boldsymbol{\omega}_t = \mathbf{A}^{-1} \mathbf{B} \boldsymbol{\varepsilon}_t = \mathbf{A}^{-1} \boldsymbol{\varepsilon}_t\)</span>:</p>
+<p><span class="math display">\[\mathbf{A} = \left[\begin{array}{cc} 1 &amp; a \\ 0 &amp; 1 \end{array}\right], \quad \mathbf{B} = \left[\begin{array}{cc} 1 &amp; 0 \\ 0 &amp; 1 \end{array}\right]\]</span></p>
+<p>Implying,</p>
+<p><span class="math display">\[\begin{array}{rcl} \nabla y_{\textrm{Conl},t} &amp; = &amp; c_\textrm{Conl} - a \nabla y_{\textrm{Incl},t} + \ldots \\  \nabla y_{\textrm{Incl},t} &amp; = &amp; c_\textrm{Incl} - 0 \nabla y_{\textrm{Conl},t} + \ldots \end{array}\]</span></p>
+<p>This allows us to solve for the missing coefficient <span class="math inline">\(a\)</span>.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>svar.a <span class="ot">&lt;-</span> <span class="fu">SVAR</span>(coninc.var,<span class="at">estmethod=</span><span class="st">'direct'</span>,<span class="at">Amat=</span><span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="cn">NA</span>,<span class="dv">0</span>,<span class="dv">1</span>),<span class="at">nrow=</span><span class="dv">2</span>),<span class="at">method=</span><span class="st">'BFGS'</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">solve</span>(svar.a<span class="sc">$</span>A)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>(svar.a <span class="ot">&lt;-</span> <span class="fu">SVAR</span>(coninc.var,<span class="at">estmethod=</span><span class="st">'direct'</span>,<span class="at">Amat=</span><span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="cn">NA</span>,<span class="dv">1</span>),<span class="at">nrow=</span><span class="dv">2</span>),<span class="at">method=</span><span class="st">'BFGS'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>          conl incl
-conl 1.0000000    0
-incl 0.6985695    1</code></pre>
+<pre><code>
+SVAR Estimation Results:
+======================== 
+
+
+Estimated A matrix:
+     conl    incl
+conl    1 -0.5276
+incl    0  1.0000</code></pre>
 </div>
 </div>
-<p>We find here that a one-unit increase in log-income creates a 0.7-unit increase in log-consumption. Since we are working with a model of differenced logs, we could as well say that a 10% increase in raw income levels is expected to translate to an immediate, same-quarter 6.9% increase in consumption.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<p>Suggesting that a one-unit change in log income will <em>increase</em><a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> log consumption by about 0.53 units.</p>
+<p>We can use this <span class="math inline">\(\mathbf{A}\)</span> matrix to indirectly estimate the impact matrix, since due to our assumption that <span class="math inline">\(\mathbf{B}\)</span> is the identity matrix we have <span class="math inline">\(\boldsymbol{\omega}_t = \mathbf{A}^{-1} \mathbf{B} \boldsymbol{\varepsilon}_t = \mathbf{A}^{-1} \boldsymbol{\varepsilon}_t\)</span>:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">solve</span>(svar.a<span class="sc">$</span>A)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>     conl      incl
+conl    1 0.5275981
+incl    0 1.0000000</code></pre>
+</div>
+</div>
+<p>Ignore the column headings here; they are somewhat misleading. The two columns represent two types of uncorrelated shocks (<span class="math inline">\(\boldsymbol{\varepsilon}_1\)</span> and <span class="math inline">\(\boldsymbol{\varepsilon}_2\)</span>) that we believe are “hidden” behind the observed variables in our system. A one-SD change in <span class="math inline">\(\boldsymbol{\varepsilon}_1\)</span> will shock changes in log consumption by one SD as well, with no change to log income. A one-SD change <span class="math inline">\(\boldsymbol{\varepsilon}_1\)</span> will shock changes in log consumption by 0.53 SDs and shock changes in log income by one SD.</p>
 </section>
 <section id="restricting-and-estimating-the-structural-shocks-b" class="level3">
 <h3 class="anchored" data-anchor-id="restricting-and-estimating-the-structural-shocks-b">Restricting and estimating the structural shocks B</h3>
-<p>We saw earlier that the residuals from a reduced-form VAR can be quite strongly correlated. These residuals are in turn generated by the expression <span class="math inline">\(\boldsymbol{\omega}_t = \mathbf{A}^{-1} \mathbf{B} \boldsymbol{\varepsilon}_t\)</span>. If we make a different set of restrictions to the SVAR, we can understand exactly how the “structural shocks” <span class="math inline">\(\boldsymbol{\varepsilon}\)</span> are translated into our series residuals.</p>
-<p>Let us now assume that <span class="math inline">\(\mathbf{A}\)</span> is an identity matrix, that is, that there are <em>no contemporaneous</em> effects, and that the error coefficients <span class="math inline">\(\mathbf{B}\)</span> are no longer diagonalized. Just as before, we can’t measure how <span class="math inline">\(\varepsilon_{1,t}\)</span> and <span class="math inline">\(\varepsilon_{2,t}\)</span> contribute to <span class="math inline">\(\omega_{1,t}\)</span> and <span class="math inline">\(\omega_{2,t}\)</span> if we allow both of them to contribute without restriction: there are too many free parameters in the model. However, we might assume that whatever structural forces are at play, they take the form of <em>(1)</em> pure income shocks, which have nothing to do with consumption patterns (such as monetary deflation), and <em>(2)</em> generic spending shocks, which could include consumer preferences, demand shifts, exchange rates, and other factors which affect incomes as well as consumption:</p>
-<p><span class="math display">\[\mathbf{A} = \left[\begin{array}{cc} 1 &amp; 0 \\ 0 &amp; 1 \end{array}\right], \quad \mathbf{B} = \left[\begin{array}{cc} 1 &amp; 0 \\ b_{2,1} &amp; 1 \end{array}\right]\]</span></p>
-<p>This allows us to solve for the missing coefficient <span class="math inline">\(a_{2,1}\)</span>. Technically, to measure the effect of same-quarter income on consumption, we need to invert this new matrix and calculate <span class="math inline">\(a^{-1}_{2,1}\)</span>, since <span class="math inline">\(\boldsymbol{\omega}_t = \mathbf{A}^{-1} \mathbf{B} \boldsymbol{\varepsilon}_t = \mathbf{A}^{-1} \boldsymbol{\varepsilon}_t\)</span>:</p>
+<p>The restrictions we place on the <span class="math inline">\(\mathbf{A}\)</span> matrix reflect our assumptions for what type of contemporaneous effects we believe can exist in the system; from this assumption we can indirectly estimate an impact matrix. However, we can directly estimate the impact matrix by considering the <span class="math inline">\(\mathbf{B}\)</span> matrix. We saw earlier that the correlated residuals from a reduced-form VAR and the uncorrelated “hidden” shocks are related by the equation <span class="math inline">\(\boldsymbol{\omega}_t = \mathbf{A}^{-1} \mathbf{B} \boldsymbol{\varepsilon}_t\)</span>. By restricting <span class="math inline">\(\mathbf{B}\)</span> instead of <span class="math inline">\(\mathbf{A}\)</span>, we can directly define how the “structural shocks” <span class="math inline">\(\boldsymbol{\varepsilon}\)</span> are translated into our series residuals.</p>
+<p>Let us now assume that <span class="math inline">\(\mathbf{A}\)</span> is an identity matrix, that is, that there are <em>no contemporaneous</em> effects, and that the error coefficients <span class="math inline">\(\mathbf{B}\)</span> are no longer diagonalized. Just as before, we can’t measure how <span class="math inline">\(\varepsilon_{1,t}\)</span> and <span class="math inline">\(\varepsilon_{2,t}\)</span> contribute to <span class="math inline">\(\omega_{1,t}\)</span> and <span class="math inline">\(\omega_{2,t}\)</span> if we allow both of them to contribute without restriction: there are too many free parameters in the model. However, we might assume that whatever structural forces are at play, they take the form of <em>(1)</em> generic spending shocks, which could include consumer preferences, demand shifts, exchange rates, and other factors which affect incomes as well as consumption, and <em>(2)</em> pure consumption shocks, which are not yet entangled with income (such as a change in interest rates):</p>
+<p><span class="math display">\[\mathbf{A} = \left[\begin{array}{cc} 1 &amp; 0 \\ 0 &amp; 1 \end{array}\right], \quad \mathbf{B} = \left[\begin{array}{cc} 1 &amp; b \\ 0 &amp; 1 \end{array}\right]\]</span></p>
+<p>This allows us to solve for the missing coefficient <span class="math inline">\(b\)</span> and directly recover the impact matrix:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">SVAR</span>(coninc.var,<span class="at">estmethod=</span><span class="st">'direct'</span>,<span class="at">Bmat=</span><span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="cn">NA</span>,<span class="dv">0</span>,<span class="dv">1</span>),<span class="at">nrow=</span><span class="dv">2</span>),<span class="at">method=</span><span class="st">'BFGS'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">SVAR</span>(coninc.var,<span class="at">estmethod=</span><span class="st">'direct'</span>,<span class="at">Bmat=</span><span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="cn">NA</span>,<span class="dv">1</span>),<span class="at">nrow=</span><span class="dv">2</span>),<span class="at">method=</span><span class="st">'BFGS'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -677,16 +698,16 @@ SVAR Estimation Results:
 
 
 Estimated B matrix:
-       conl incl
-conl 1.0000    0
-incl 0.6986    1</code></pre>
+     conl   incl
+conl    1 0.5276
+incl    0 1.0000</code></pre>
 </div>
 </div>
 <p>In this small two-variable example, with very symmetric restrictions on <span class="math inline">\(\mathbf{A}\)</span> and <span class="math inline">\(\mathbf{B}\)</span>, we landed on the same matrix, which muddies my lesson. However, for larger systems, these two matrices are not guaranteed or even expected to converge. On a conceptual level, they represent different structural ideals:</p>
 <ul>
 <li><p><span class="math inline">\(\mathbf{A}\)</span> defines how shocks enter the system as a linear combination of contemporaneous information from different variables. It <em>describes shocks</em>, and clarifies which variables contribute to each others’ shocks and which don’t.</p></li>
-<li><p><span class="math inline">\(\mathbf{A}^{-1}\)</span> <em>should</em> measure the impact of shocks in terms of how many “standard deviations” a one-unit shock of each type should have on each variable in the system. I write “should” because: estimation is messy, matrix inversion can be fickle, and depending on the types of restrictions to <span class="math inline">\(\mathbf{A}\)</span> and <span class="math inline">\(\mathbf{B}\)</span> (including possible overdetermination, or uncommon restrictions such as symmetric off-diagonal entries), unexpected behavior might result.</p></li>
-<li><p><span class="math inline">\(\mathbf{B}\)</span> <em>does</em> directly measure the impact of shocks, though it does not describe how the shocks were “created”.</p></li>
+<li><p><span class="math inline">\(\mathbf{A}^{-1}\)</span> <em>should</em> measure the impact of a series of hidden “column shocks” in terms of how many standard deviations they shift each variable in the system (the rows). I write “should” because: estimation is messy, matrix inversion can be fickle, and depending on the types of restrictions to <span class="math inline">\(\mathbf{A}\)</span> and <span class="math inline">\(\mathbf{B}\)</span> (including possible overdetermination, or uncommon restrictions such as symmetric off-diagonal entries), unexpected behavior might result.</p></li>
+<li><p><span class="math inline">\(\mathbf{B}\)</span> <em>does</em> directly measure the impact of shocks, though it does not describe how the shocks were created.</p></li>
 </ul>
 
 
@@ -697,7 +718,7 @@ incl 0.6986    1</code></pre>
 <ol>
 <li id="fn1"><p>Similar to <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> if you are more familiar with regression notation.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p>Whether you find this a strength or a weakness might be a personal decision!<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p><span class="math inline">\(\approx e^{0.6986 \times \log 1.1} - 1\)</span><a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>note the sign flip implied in the equation above<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 
