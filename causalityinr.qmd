@@ -109,7 +109,7 @@ $$\mathbf{A} = \left[ \begin{array}{cccc} 1 & a_{1,2} & 0 & 0 \\ 0 & 1 & 0 & 0 \
 
 Fitting an SVAR can be quite tricky, not just conceptually, but as a matter of pure algorithmic convergence. If using the `vars::SVAR` function, I highly recommend setting the argument `estmethod='direct'` for a direct likelihood minimization. Even so, you may need to play around with the settings of the unseen call to the `optim()` function, or increase the maximum number of iterations.
 
-We will estimate $\mathbf{A}$, and then solve for its inverse, the imapct matrix:
+We will estimate $\mathbf{A}$, and then solve for its inverse, the impact matrix, which describes four hidden "column shocks" (the uncorrelated epsilons, $\boldsymbol{\varepsilon}_1, \ldots, \boldsymbol{\varepsilon}_4$):
 
 ```{r}
 Amatrix = rbind(c(1,NA,0,0),
@@ -117,7 +117,8 @@ Amatrix = rbind(c(1,NA,0,0),
                 c(NA,NA,1,0),
                 c(NA,NA,NA,1))
 (us.econ.svar <- SVAR(us.econ.var,estmethod='direct',Amat=Amatrix,max.iter=1000))
-round(solve(us.econ.svar$A),4)
+matrix(round(solve(us.econ.svar$A),4),ncol=4,
+       dimnames=list(rownames(us.econ.svar$A),c('eps1','eps2','eps3','eps4')))
 ```
 
-These results are defensible, though hardly uncontestable. We can say things like "a one-unit shock to the change in log-money supply contemporaneously increases change in log-GNP by 0.22 units", though we might want to calculate some more concerete scenarios in line with proposed policy changes and express the result as a proportional change in GNP levels.
+These results are defensible, though hardly uncontestable. Looking at the lower left of the $\mathbf{A}$ matrix, we can say things like "When money supply increases by one unit, then long-term rates are expected to decrease by 0.3035 units *in the same period*." Looking at the lower right of the impact matrix estimated by $\mathbf{A}^{-1}$, we read something different: "There's a type of economic pattern (the 'eps1' shock) which affects money supply by 1 SD and simultaneously affects long-term rates by -0.3943 SD". These two results are not inconsistent: another shocks to the system (the 'eps2' shock) *also* affects both money supply and long-term rates, which is why the full contemporaneous movement is not the same as either shock individually.
