@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Backshift notation – Forecasting Essentials and Notes: Online Resource</title>
+<title>GARCH models and kin – Forecasting Essentials and Notes: Online Resource</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -30,8 +65,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./arima.html" rel="next">
-<link href="./ma.html" rel="prev">
+<link href="./archgarchinr.html" rel="next">
+<link href="./arch.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -113,7 +148,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ar.html">2. ARIMA models</a></li><li class="breadcrumb-item"><a href="./backshift.html"><span class="chapter-title">Backshift notation</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./arch.html">7. Conditional heteroskedasticity</a></li><li class="breadcrumb-item"><a href="./garch.html"><span class="chapter-title">GARCH models and kin</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -208,7 +243,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./backshift.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Backshift notation</span></a>
+  <a href="./backshift.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Backshift notation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -348,7 +383,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./garch.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">GARCH models and kin</span></a>
+  <a href="./garch.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">GARCH models and kin</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -368,18 +403,19 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#the-backshift-operator" id="toc-the-backshift-operator" class="nav-link active" data-scroll-target="#the-backshift-operator">The backshift operator</a></li>
-  <li><a href="#the-ar-and-ma-characteristic-polynomials" id="toc-the-ar-and-ma-characteristic-polynomials" class="nav-link" data-scroll-target="#the-ar-and-ma-characteristic-polynomials">The AR and MA characteristic polynomials</a></li>
-  <li><a href="#roots-of-the-characteristic-polynomials" id="toc-roots-of-the-characteristic-polynomials" class="nav-link" data-scroll-target="#roots-of-the-characteristic-polynomials">Roots of the characteristic polynomials</a></li>
+  <li><a href="#motivation-and-definition" id="toc-motivation-and-definition" class="nav-link active" data-scroll-target="#motivation-and-definition">Motivation and definition</a></li>
+  <li><a href="#how-garch-models-see-conditional-heteroskedasticity" id="toc-how-garch-models-see-conditional-heteroskedasticity" class="nav-link" data-scroll-target="#how-garch-models-see-conditional-heteroskedasticity">How GARCH models “see” conditional heteroskedasticity</a></li>
+  <li><a href="#when-to-use-or-not-use-a-garch11-model" id="toc-when-to-use-or-not-use-a-garch11-model" class="nav-link" data-scroll-target="#when-to-use-or-not-use-a-garch11-model">When to use or not use a GARCH(1,1) model</a></li>
+  <li><a href="#arma-garch" id="toc-arma-garch" class="nav-link" data-scroll-target="#arma-garch">ARMA-GARCH</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content column-body" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ar.html">2. ARIMA models</a></li><li class="breadcrumb-item"><a href="./backshift.html"><span class="chapter-title">Backshift notation</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./arch.html">7. Conditional heteroskedasticity</a></li><li class="breadcrumb-item"><a href="./garch.html"><span class="chapter-title">GARCH models and kin</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-title">Backshift notation</span></h1>
+<h1 class="title"><span class="chapter-title">GARCH models and kin</span></h1>
 </div>
 
 
@@ -396,13 +432,71 @@ window.Quarto = {
 </header>
 
 
-<p>When we learned linear regression techniques, it was convenient to move away from an arithmetic expansion such as:</p>
-<p><span class="math display">\[y_i = \beta_0 + \beta_1 x_{1,i} + \beta_2 x_{2,i} + \beta_k x_{k,i} + \varepsilon_i\]</span></p>
-<p>And instead move toward a matrix representation, such as:</p>
-<p><span class="math display">\[\boldsymbol{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\varepsilon}\]</span></p>
-<p>We will now learn a similar technique for time series analysis, which collapses all lags and their coefficients using the <em>backshift operator</em>.</p>
-<section id="the-backshift-operator" class="level2">
-<h2 class="anchored" data-anchor-id="the-backshift-operator">The backshift operator</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rugarch)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Robert Engle won a Nobel prize for coming up with ARCH models, but they aren’t widely used anymore. His doctoral student, Bollerslev, extended the original idea into <em>GARCH (Generalized Autoregressive Conditional Heteroskedasticity)</em>, and with a few exceptions this newer class of model is generally found to be superior in describing conditional heteroskedasticity.</p>
+<section id="motivation-and-definition" class="level2">
+<h2 class="anchored" data-anchor-id="motivation-and-definition">Motivation and definition</h2>
+<p>Let’s return briefly to the model we fit to the IBM data on the <a href="./arch.html">ARCH page.</a> It used five lagged residuals to estimate the variance of the current residual. However, those five parameters might seem both <em>(1)</em> too many for capturing such a simple idea, as well as <em>(2)</em> somewhat arbitrary. Even if an AIC test suggested five lags was optimal, would we really believe that the past five days of IBM returns offer useful information about current volatility but that the sixth lag does not?</p>
+<p>We have two sources of strong evidence that the sixth lag could be an informative addition. First we have common diagnostic plots, which check the ACF of the residuals and separately the <em>squared</em> residuals. Neither plot should show significant autocorrelation, and if we do see autocorrelation in the squared residuals the conclusion would be that need to incorporate more past information:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(dji30ret)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>ibm <span class="ot">&lt;-</span> dji30ret<span class="sc">$</span>IBM[<span class="fu">rownames</span>(dji30ret)<span class="sc">&gt;</span><span class="st">'1999-01-31'</span> <span class="sc">&amp;</span> <span class="fu">rownames</span>(dji30ret)<span class="sc">&lt;</span><span class="st">'2009-02-01'</span>]</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>dates <span class="ot">&lt;-</span> <span class="fu">rownames</span>(dji30ret)[<span class="fu">rownames</span>(dji30ret)<span class="sc">&gt;</span><span class="st">'1999-01-31'</span> <span class="sc">&amp;</span> <span class="fu">rownames</span>(dji30ret)<span class="sc">&lt;</span><span class="st">'2009-02-01'</span>]</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>ibm.train <span class="ot">&lt;-</span> ibm[<span class="sc">-</span>(<span class="fu">length</span>(ibm) <span class="sc">-</span> <span class="dv">9</span><span class="sc">:</span><span class="dv">0</span>)]</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>ibm.arch5 <span class="ot">&lt;-</span> <span class="fu">ugarchfit</span>(<span class="at">spec=</span><span class="fu">ugarchspec</span>(<span class="at">variance.model=</span><span class="fu">list</span>(<span class="at">model=</span><span class="st">'sGARCH'</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                                                           <span class="at">garchOrder=</span><span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">0</span>)),</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">mean.model=</span><span class="fu">list</span>(<span class="at">armaOrder=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>))),</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                       <span class="at">data=</span>ibm.train)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ibm.arch5,<span class="at">which=</span><span class="dv">4</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ibm.arch5,<span class="at">which=</span><span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="garch_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Diagnostic plots for ARCH(5) model</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The other piece of evidence would come from directly fitting a larger model and comparing AICs or performing a likelihood-based test of whether the additional terms are more helpful. At the end of the day, we need not wonder – an ARCH(6) term would also be significant. In fact, we could create an ARCH(11) model if we want!</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ibm.arch11 <span class="ot">&lt;-</span> <span class="fu">ugarchfit</span>(<span class="at">spec=</span><span class="fu">ugarchspec</span>(<span class="at">variance.model=</span><span class="fu">list</span>(<span class="at">model=</span><span class="st">'sGARCH'</span>,</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                                                           <span class="at">garchOrder=</span><span class="fu">c</span>(<span class="dv">11</span>,<span class="dv">0</span>)),</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">mean.model=</span><span class="fu">list</span>(<span class="at">armaOrder=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>))),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">data=</span>ibm.train)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">round</span>(ibm.arch11<span class="sc">@</span>fit<span class="sc">$</span>robust.matcoef,<span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>         Estimate  Std. Error  t value Pr(&gt;|t|)
+mu          0.000       0.000    0.771    0.441
+omega       0.000       0.000    5.135    0.000
+alpha1      0.166       0.055    3.029    0.002
+alpha2      0.087       0.025    3.460    0.001
+alpha3      0.031       0.015    2.124    0.034
+alpha4      0.176       0.064    2.756    0.006
+alpha5      0.048       0.036    1.324    0.186
+alpha6      0.110       0.055    1.992    0.046
+alpha7      0.046       0.055    0.830    0.407
+alpha8      0.031       0.025    1.208    0.227
+alpha9      0.067       0.024    2.768    0.006
+alpha10     0.091       0.042    2.169    0.030
+alpha11     0.147       0.054    2.738    0.006</code></pre>
+</div>
+</div>
+<p>At the daily frequency, high- and low-volatility regimes can last for dozens of observations, and R finds very similar variance-prediction power from many past (squared) residuals.</p>
+<p>We do not want to fit ARCH(11) models: even if they accurately forecast future variance periods, they would not be <em>parsimonious</em>, and the details of these coefficients may suggest ridiculous ideas. There should be a better, simpler way forward.</p>
+<p>Recall that an infinite-order AR model can be represented as a finite-order MA model and <em>vice versa</em>. For example, consider an MA(1) model with parameter <span class="math inline">\(\theta \lt 1:\)</span></p>
+<p><span class="math display">\[\begin{aligned} \textrm{MA}(1) : \quad y_t &amp;= \omega_t + \theta \omega_{t-1} \longrightarrow \\ \omega_t &amp;= y_t - \theta \omega_{t-1} \\ &amp;= y_t - \theta(y_{t-1} - \theta \omega_{t - 2}) \\ &amp;= y_t - \theta(y_{t-1} - \theta (y_{t-2} - \theta \omega_{t - 3})) \\ &amp;\ldots \\ \omega_t &amp;= \sum_{p=0}^\infty -\theta^p y_{t-p} \quad : \textrm{AR}(\infty)\end{aligned}\]</span></p>
+<p>This ARMA process is stationary and identical whether we represent it as an MA(1) or an AR(<span class="math inline">\(\infty\)</span>) process, but the first way requires only one parameter while the second contains infinite parameters.</p>
+<p>We can harness this idea to provide our ARCH model with a long “memory” while only estimating one or two parameters. We will add MA-style terms which use the past <em>error variances</em> of <span class="math inline">\(\boldsymbol{Y}\)</span> alongside the AR-style terms which use the past <em>errors</em> of <span class="math inline">\(\boldsymbol{Y}\)</span>:</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -413,59 +507,136 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>. Then the unary operator <span class="math inline">\(B\)</span> (<strong>backshift</strong>) is defined as follows:</p>
-<p><span class="math display">\[B \, Y_t = Y_{t-1}\]</span></p>
-<p><span class="math display">\[B^k \, Y_t = Y_{t-k}\]</span></p>
+<p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series observed at regular time periods <span class="math inline">\(T = \{1,2,\ldots,n\}\)</span> and following a linear model such that:</p>
+<p><span class="math display">\[Y_t = \mu(\boldsymbol{X}_t) + \varepsilon_t\]</span></p>
+<p>Where <span class="math inline">\(\mu(\cdot)\)</span> is a linear mean function, <span class="math inline">\(\boldsymbol{X}_t\)</span> is a vector of predictive features at time index <span class="math inline">\(t\)</span> (such as past lags of <span class="math inline">\(Y\)</span>, exogenous predictors, or dummy-coded indicator functions), and <span class="math inline">\(\varepsilon_t\)</span> is a heteroskedastic error process. Now assume that:</p>
+<p><span class="math display">\[\varepsilon_t = \sigma_t \omega_t\]</span></p>
+<p>Where <span class="math inline">\(\sigma_t\)</span> is some constant which scales <span class="math inline">\(\omega_t\)</span>, a mean zero white noise process with independent and identically distributed (IID) innovations. Further assume that:</p>
+<p><span class="math display">\[\sigma^2_t = \mathbb{E}[\varepsilon_t^2] = a_0 + \sum_{i=1}^q a_i \varepsilon_{t-i}^2 + \sum_{j=1}^p b_j \sigma^2_{t-j}\]</span></p>
+<p>Where <span class="math inline">\(a_0 \ge 0\)</span>, and <span class="math inline">\(a_1, \ldots, a_q, b_1, \ldots, b_p \gt 0\)</span>.</p>
+<p>Then we say that <span class="math inline">\(\sigma^2_t = \mathbb{E}[\varepsilon_t^2]\)</span> follows a <strong>generalized autoregressive conditional heteroskedasticity (GARCH) model</strong> with orders <em>q,p</em>.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
 </div>
 </div>
-<p>Written thus, we can treat <span class="math inline">\(B\)</span> almost as a separate variable,<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> and use it to remove lagged terms from our equations:</p>
-<p><span class="math display">\[\begin{aligned} &amp; \, Y_t = 1.3\,Y_{t-1} - 0.36\,Y_{t-2} + \omega_t \\ \\ \Longrightarrow &amp; \,Y_t = 1.3\,B\,Y_t - 0.36\,B^2\,Y_t + \omega_t \\ \\ \Longrightarrow &amp; \, Y_t = Y_t(0.5B - 0.36B^2) + \omega_t \\ \\ \Longrightarrow &amp; \,\omega_t = Y_t(1 - 1.3B + 0.36B^2)  \end{aligned}\]</span></p>
-<p>The model above was an AR(2) process, but we can equally use this notation with MA models:</p>
-<p><span class="math display">\[\begin{aligned} &amp; \, Y_t = \omega_t + 0.8\,\omega_{t-1} + 0.16\,\omega_{t-2} \\ \\ \Longrightarrow &amp; \,Y_t = \omega_t + 0.8\,B\,\omega_t + 0.16\,B^2\,\omega_t \\ \\ \Longrightarrow &amp; \, Y_t = \omega_t(1 + 0.8B + 0.16B^2) \end{aligned}\]</span></p>
 </section>
-<section id="the-ar-and-ma-characteristic-polynomials" class="level2">
-<h2 class="anchored" data-anchor-id="the-ar-and-ma-characteristic-polynomials">The AR and MA characteristic polynomials</h2>
-<p>So far, this hasn’t seemed to save much space or offer us any new possibilities. We can bring it altogether by introducing two <em>characteristic polynomials</em>. These equations aren’t any sort of theorem or result, just a definition:</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
+<section id="how-garch-models-see-conditional-heteroskedasticity" class="level2">
+<h2 class="anchored" data-anchor-id="how-garch-models-see-conditional-heteroskedasticity">How GARCH models “see” conditional heteroskedasticity</h2>
+<p>The ARCH terms we’ve used so far are extremely short-term: an ARCH(1) model uses only the previous residual alongside a long-term scaling factor to predict the size of the current residual. This short-term focus can make the volatility forecasts very noisy. Adding even a single GARCH term effectively gives us a second set of exponentially-damped ARCH weights which can extract information from a longer time horizon.</p>
+<p>Consider the GARCH(1,1) model:</p>
+<p><span class="math display">\[\sigma^2_t = a_0 + a_1 \varepsilon_{t-1}^2 + b_1 \sigma^2_{t-1}\]</span></p>
+<p>Note that we <em>could</em> use substitution as we did with the MA(1) model above to show that the last term can be expanded into an infinite geometric series. But instead, let’s try something else: assume that <span class="math inline">\(\boldsymbol{Y}\)</span> is stationary and so has a single long-term (unconditional) variance <span class="math inline">\(\bar{\sigma}^2\)</span>. Now we may assume some constant <span class="math inline">\(a'_0\)</span> such that <span class="math inline">\(a_0 = a'_0 \cdot \bar{\sigma}^2\)</span>. From here we may rewrite the equation above:</p>
+<p><span class="math display">\[\sigma^2_t = a'_0 \bar{\sigma}^2 + a_1 \varepsilon_{t-1}^2 + b_1 \sigma^2_{t-1}\]</span></p>
+<p>In other words, a GARCH(1,1) model claims that the conditional variance of <span class="math inline">\(Y_t\)</span> is a weighted average of three elements:</p>
+<ol type="1">
+<li><p>The unconditional variance of <span class="math inline">\(\boldsymbol{Y}\)</span>, as proxied by the constant term <span class="math inline">\(a_0\)</span> (long-term behavior)</p></li>
+<li><p>The size of the most recent squared residual (short-term behavior)</p></li>
+<li><p>The forecasted size of the most recent squared residual, based on a damped set of past observations (intermediate-term behavior).</p></li>
+</ol>
+<p>We can see some of this at work by fitting a GARCH(1,1) model to the IBM data seen previously.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>ibm.garch11 <span class="ot">&lt;-</span> <span class="fu">ugarchfit</span>(<span class="at">spec=</span><span class="fu">ugarchspec</span>(<span class="at">variance.model=</span><span class="fu">list</span>(<span class="at">model=</span><span class="st">'sGARCH'</span>,</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                                                           <span class="at">garchOrder=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>)),</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">mean.model=</span><span class="fu">list</span>(<span class="at">armaOrder=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>))),</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">data=</span>ibm.train)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">round</span>(ibm.garch11<span class="sc">@</span>fit<span class="sc">$</span>robust.matcoef,<span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>        Estimate  Std. Error  t value Pr(&gt;|t|)
+mu         0.000       0.001    0.249    0.803
+omega      0.000       0.000    0.040    0.968
+alpha1     0.076       0.559    0.135    0.892
+beta1      0.922       0.552    1.671    0.095</code></pre>
 </div>
-<div class="callout-title-container flex-fill">
-Note
+</div>
+<p>As we might expect, the remaining ARCH term (<code>alpha1</code>) does not carry much weight. Instead, the new GARCH term (<code>beta1</code>) has a large coefficient indicating a slow decay of information over many past lags. We can also see it in a side-by-side comparison of the in-sample predicted volatility for these two models:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ibm.train[<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>],<span class="at">ylab=</span><span class="st">'IBM log-return'</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.15</span>,<span class="fl">0.15</span>),<span class="at">type=</span><span class="st">'p'</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">matplot</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>,<span class="dv">2</span><span class="sc">*</span><span class="fu">cbind</span>(<span class="sc">-</span>ibm.arch5<span class="sc">@</span>fit<span class="sc">$</span>sigma,<span class="sc">-</span>ibm.garch11<span class="sc">@</span>fit<span class="sc">$</span>sigma,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                      ibm.arch5<span class="sc">@</span>fit<span class="sc">$</span>sigma,ibm.garch11<span class="sc">@</span>fit<span class="sc">$</span>sigma)[<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>,],</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">type=</span><span class="st">'l'</span>,<span class="at">add=</span><span class="cn">TRUE</span>,<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#0000ff'</span>,<span class="st">'#ff00ff'</span>),<span class="at">lty=</span><span class="dv">1</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'bottomleft'</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Actual'</span>,<span class="st">'2 SD: ARCH(5)'</span>,<span class="st">'2 SD: GARCH(1,1)'</span>),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">pch=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="cn">NA</span>,<span class="cn">NA</span>),<span class="at">lwd=</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="dv">1</span>,<span class="dv">1</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#0000ff'</span>,<span class="st">'#ff00ff'</span>),</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">bty=</span><span class="st">'n'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="garch_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Conditional volatility of IBM stock from ARCH(5) and GARCH(1,1)</figcaption>
+</figure>
 </div>
 </div>
-<div class="callout-body-container callout-body">
-<p>The <strong>characteristic polynomial of an AR process</strong> of order <em>p</em> is defined as follows:</p>
-<p><span class="math display">\[\Phi(B) = 1 - \phi_1 B - \phi_2 B^2 - ... - \phi_p B^p\]</span></p>
-<p>The <strong>characteristic polynomial of an MA process</strong> of order <em>q</em> is defined as follows:</p>
-<p><span class="math display">\[\Theta(B) = 1 + \theta_1 B + \theta_2 B^2 + ... + \theta_q B^q\]</span></p>
 </div>
-</div>
-<p>With these two “shortcuts” we can represent every AR process as follows:</p>
-<p><span class="math display">\[\omega_t = \Phi(B) \cdot Y_t\]</span></p>
-<p>And we can represent every MA process as follows:</p>
-<p><span class="math display">\[Y_t = \Theta(B) \cdot \omega_t\]</span></p>
 </section>
-<section id="roots-of-the-characteristic-polynomials" class="level2">
-<h2 class="anchored" data-anchor-id="roots-of-the-characteristic-polynomials">Roots of the characteristic polynomials</h2>
-<p>In the examples I gave above, we could say that for the AR(2) process,</p>
-<p><span class="math display">\[\Phi(B) = 1 - 1.3B + 0.36B^2\]</span></p>
-<p>Keen-eyed mathemagicians might have already noticed that we can factor and solve for the roots of this equation:</p>
-<p><span class="math display">\[\Phi(B) = (1 - 0.4B)(1 - 0.9B)\]</span></p>
-<p><span class="math display">\[\Phi(B) = 0 \iff B \in \{2.5, 1.111\ldots\}\]</span></p>
-<p>Likewise, we could solve for the roots of the MA(2) characteristic polynomial</p>
-<p><span class="math display">\[\Theta(B) = 1 + 0.8B + 0.16B^2\]</span></p>
-<p><span class="math display">\[\Theta(B) = (1 + 0.4B)^2\]</span></p>
-<p><span class="math display">\[\Theta(B) = 0 \iff B = -2.5\]</span></p>
-<p>The dramatic reveal of <em>why</em> we would want to solve the roots of these polynomials must wait for the next page.</p>
+<section id="when-to-use-or-not-use-a-garch11-model" class="level2">
+<h2 class="anchored" data-anchor-id="when-to-use-or-not-use-a-garch11-model">When to use or not use a GARCH(1,1) model</h2>
+<p>GARCH(1,1) is almost a default choice at this point when fitting ARCH/GARCH models to a new dataset. Its combination of short- and intermediate-term dependence usually provides an adequate fit to many datasets</p>
+<p>The short answer is to use it when it fits and don’t when it doesn’t. By this point we have our choice of information criteria, test statistics, residual analysis, <em>etc.</em> to help us make that decision. However, two generalities bear mention:</p>
+<ul>
+<li><p>A GARCH(q,2) process may fit large datasets better in cases where some information decays quickly and other information decays slowly, such short-term oil price/supply shocks and long-term demand volatility. The two different GARCH terms will allow for a mix of two different time-decaying signals.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p></li>
+<li><p>A GARCH(q,0) process — <em>i.e.</em> an ARCH(q) process — may fit some datasets better in which the volatility is very abrupt, perhaps even captured fully by ARCH(1) or ARCH(2). In these cases, any GARCH terms will dilute the immediate volatility effects of the ARCH terms. Examples might include monthly index returns or weekly insurance claims.</p></li>
+</ul>
+</section>
+<section id="arma-garch" class="level2">
+<h2 class="anchored" data-anchor-id="arma-garch">ARMA-GARCH</h2>
+<p>One popular combination for univariate time series models is to fit the <em>mean</em> process with an ARMA model and the <em>variance</em> process with a GARCH model. These models are called <em>ARMA-GARCH</em>, and allow both mean and variance to vary with their past values (or past shocks) in symmetrical ways.</p>
+<p>For example, even though single-ticker stock prices are generally believed to behave as a random walk, over a long time horizon their changing “alpha” (their excess return over the market) can create ARMA-like dependency. We can test this out by fitting 2000 daily Exxon Mobil stock returns (~8 years) as a function of <em>(1)</em> a static linear predictor (the S&amp;P 500 returns), <em>(2)</em> an ARMA(1,1) model for the mean, and <em>(3)</em> a GARCH(1,2) model for the variance, which we would expect to be heteroskedastic over a long time period:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(sp500ret)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>stocks <span class="ot">&lt;-</span> <span class="fu">merge</span>(dji30ret,sp500ret,<span class="at">by=</span><span class="dv">0</span>)[<span class="dv">2001</span><span class="sc">:</span><span class="dv">4000</span>,]</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>xom.armagarch <span class="ot">&lt;-</span> <span class="fu">ugarchfit</span>(<span class="at">spec=</span><span class="fu">ugarchspec</span>(<span class="at">variance.model=</span><span class="fu">list</span>(<span class="at">model=</span><span class="st">'sGARCH'</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                           <span class="at">garchOrder=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)),<span class="at">mean.model=</span><span class="fu">list</span>(<span class="at">armaOrder=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>),</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                           <span class="at">external.regressors=</span><span class="fu">cbind</span>(stocks<span class="sc">$</span>SP500RET))),</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                           <span class="at">data=</span>stocks<span class="sc">$</span>XOM,<span class="at">out.sample=</span><span class="dv">20</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">round</span>(xom.armagarch<span class="sc">@</span>fit<span class="sc">$</span>robust.matcoef,<span class="dv">4</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>        Estimate  Std. Error  t value Pr(&gt;|t|)
+mu        0.0004      0.0002   1.9362   0.0528
+ar1       0.7181      0.0666  10.7770   0.0000
+ma1      -0.8180      0.0544 -15.0274   0.0000
+mxreg1    0.6630      0.0525  12.6276   0.0000
+omega     0.0000      0.0000   0.3898   0.6967
+alpha1    0.1015      0.0633   1.6025   0.1090
+beta1     0.3430      0.1784   1.9226   0.0545
+beta2     0.5418      0.1420   3.8159   0.0001</code></pre>
+</div>
+</div>
+<p>We see a now-familiar bevy of coefficients:</p>
+<ul>
+<li><p>The mean (<code>mu</code> or “alpha” in finance, though here we are using that term for another coefficient) which is positive and significant at a 10% level, suggesting that Exxon Mobil did beat the market over this time period.</p></li>
+<li><p><code>ar1</code> and <code>ma1</code> terms for the mean, suggesting strong autocorrelation with both the prior day’s return but an equally strong correction from any new information in the prior day. Because economics would suggest the entirety of each daily return is due to new shocks, this might indicate misspecification.</p></li>
+<li><p>A coefficient on the S&amp;P 500 index (the “beta” in finance), <code>mxreg</code> (for external regressor) suggesting that Exxon is strongly but not perfectly correlated to broader market movements.</p></li>
+<li><p>No discernible <code>omega</code>, suggesting that Exxon Mobil volatility is completely driven by recent behavior and not any long-term average volatility.</p></li>
+<li><p>Uncertain and insignificant <code>alpha1</code>, indicating that yesterday’s residual size is only weakly predictive of today’s residual size, if at all.</p></li>
+<li><p>Stronger <code>beta1</code> and especially <code>beta2</code>, indicating one or two decaying sets of weights on past volatility, one short-term (<code>beta1</code> decays to about 1% when compounded four times), and the other medium-term (<code>beta2</code> decays to about 1% when compounded ten times).</p></li>
+</ul>
+<p>We could forecast both the mean and the variance from here:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">ugarchforecast</span>(xom.armagarch,<span class="at">n.ahead=</span><span class="dv">20</span>),<span class="at">which=</span><span class="dv">1</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">ugarchforecast</span>(xom.armagarch,<span class="at">n.ahead=</span><span class="dv">20</span>),<span class="at">which=</span><span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="garch_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 
 
 </section>
 <section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr>
 <ol>
-<li id="fn1"><p>Not a <em>random</em> variable, but a variable we could solve for, such as <span class="math inline">\(x\)</span> in the equation <span class="math inline">\(x^2 - 4x = -3\)</span><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>To make it explicit, in a GARCH model ‘q’ refers to the order of the ARCH terms <span class="math inline">\(a_i \varepsilon_{t-i}^2\)</span> while ‘p’ refers to the order of the GARCH terms <span class="math inline">\(b_j \sigma^2_{t-j}\)</span>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>I mentioned large datasets because with small datasets it’s difficult to disambiguate the two effects.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 
@@ -911,13 +1082,13 @@ Note
   </script>
 <nav class="page-navigation column-body">
   <div class="nav-page nav-page-previous">
-      <a href="./ma.html" class="pagination-link" aria-label="MA models">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">MA models</span></span>
+      <a href="./arch.html" class="pagination-link" aria-label="ARCH models">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">ARCH models</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./arima.html" class="pagination-link" aria-label="ARIMA models">
-        <span class="nav-page-text"><span class="chapter-title">ARIMA models</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./archgarchinr.html" class="pagination-link" aria-label="ARCH/GARCH in R">
+        <span class="nav-page-text"><span class="chapter-title">ARCH/GARCH in R</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

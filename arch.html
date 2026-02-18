@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>ARCH models – Forecasting Essentials and Notes: Online Resource</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./garch.html" rel="next">
+<link href="./causalityinr.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-635ebee939b5a5ef3c54ffc98530d095.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./arch.html">7. Conditional heteroskedasticity</a></li><li class="breadcrumb-item"><a href="./arch.html"><span class="chapter-title">ARCH models</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Forecasting Essentials and Notes: Online Resource</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Introduction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">1. Time series basics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./whatisatimeseries.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">What is a time series?</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./autocovariance.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Autocovariance and autocorrelation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./whitenoise.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">White noise</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./randomwalk.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Random walks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stationarity.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Stationarity</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./basicsinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Time series basics in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">2. ARIMA models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ar.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">AR models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ma.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">MA models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./backshift.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Backshift notation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arima.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">ARIMA models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./identificationinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">ARIMA identification in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">3. ETS and SARIMA models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ets.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">ETS models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sarima.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">SARIMA models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./seasonalityinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Seasonal models in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">4. Forecasting and validation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./forecasts.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Forecast strategies</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./validation.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Model validation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./validationinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Validation in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">5. Incorporating external regressors</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cointegration.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Cointegration</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dynamicregression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Dynamic regression and “ARIMAX” models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./harmonics.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Harmonic predictors and multiple seasonality</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dynamicregressioninr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Dynamic regression in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">6. Modeling systems of variables</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./vars.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Vector autoregressions (VARs)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./granger.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Granger causality</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./causalityinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">VARs in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">7. Conditional heteroskedasticity</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arch.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">ARCH models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./garch.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">GARCH models and kin</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./archgarchinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">ARCH/GARCH in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#concept-and-definition-of-an-arch-model" id="toc-concept-and-definition-of-an-arch-model" class="nav-link active" data-scroll-target="#concept-and-definition-of-an-arch-model">Concept and definition of an ARCH model</a></li>
+  <li><a href="#fitting-and-describing-an-arch-model" id="toc-fitting-and-describing-an-arch-model" class="nav-link" data-scroll-target="#fitting-and-describing-an-arch-model">Fitting and describing an ARCH model</a></li>
+  <li><a href="#testing-for-an-arch-model" id="toc-testing-for-an-arch-model" class="nav-link" data-scroll-target="#testing-for-an-arch-model">Testing for an ARCH model</a></li>
+  <li><a href="#an-example-of-a-garch-model" id="toc-an-example-of-a-garch-model" class="nav-link" data-scroll-target="#an-example-of-a-garch-model">An example of a GARCH model</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./arch.html">7. Conditional heteroskedasticity</a></li><li class="breadcrumb-item"><a href="./arch.html"><span class="chapter-title">ARCH models</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-title">ARCH models</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta column-body">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rugarch)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(zoo)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Until now, we have been using time series models to understand the data generating process and to forecast the <em>mean</em> or <em>expectation</em> of a time series. That choice might be so obvious that the choice itself disappears from view: what else might we do with a time series model?</p>
+<ul>
+<li><p>We could forecast a full <em>distribution of outcomes</em>. (Statistical models such as (S)ARIMA and VARs already do this.) With this distribution we could make predictions, <em>e.g.</em>, of the probability that a series would or would exceed a threshold value.</p></li>
+<li><p>We could <em>classify</em> instead of making point estimates. This could mean collapsing series movements into “up” and “down”, or it could involve more complex tasks (like predicting which of several corporate strategies will yield the highest rate of return.)</p></li>
+<li><p>We could forecast the <em>maximum (or minimum) value</em>. This branch of modeling is known as extreme value theory, and can tell us whether a bridge would collapse under a magnitude 8.0 earthquake or whether an investment bank has enough reserves to survive an economic collapse.</p></li>
+<li><p>We could forecast the <em>variance</em> instead of the <em>expectation</em> of a series.</p></li>
+</ul>
+<p>Forecasting the variance does not sound as useful or important as those other goals, but it can be a vital asset for understanding (and profiting from) many economic or financial series. Forecasting variance is also crucial for any regression-like problem which experiences <strong>volatility clustering</strong> — a heteroskedasticity in which observations with smaller or larger variances are grouped together temporally, as opposed to the classic case in which variance is related to the predicted level of the series.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0215</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>sigma <span class="ot">&lt;-</span> <span class="fu">abs</span>(<span class="fu">arima.sim</span>(<span class="at">model=</span><span class="fu">list</span>(<span class="at">ar=</span><span class="fl">0.93</span>),<span class="at">n=</span><span class="dv">1000</span>))</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>eps <span class="ot">&lt;-</span> sigma<span class="sc">^</span><span class="dv">2</span><span class="sc">*</span><span class="fu">rnorm</span>(<span class="dv">1000</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>,eps,<span class="at">main=</span><span class="st">'Hypothetical regression residuals'</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">'Value'</span>,<span class="at">xlab=</span><span class="st">'Time index'</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">11</span><span class="sc">:</span><span class="dv">990</span>,<span class="fu">rollapply</span>(eps,<span class="at">width=</span><span class="dv">21</span>,sd),<span class="at">main=</span><span class="st">'Rolling SD of residuals'</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">'Rolling SD'</span>,<span class="at">xlab=</span><span class="st">'Time index'</span>,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1000</span>),</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">type=</span><span class="st">'l'</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="arch_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Illustration of volatility clustering</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>I will show one (of several) models for volatility-clustered data, and then we will explore more when and how it could be useful.</p>
+<section id="concept-and-definition-of-an-arch-model" class="level2">
+<h2 class="anchored" data-anchor-id="concept-and-definition-of-an-arch-model">Concept and definition of an ARCH model</h2>
+<p>Let’s assume for a moment that we have built a good regression-style model which predicts the <em>mean</em> of a time series.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> For now, it doesn’t matter what type of model this is: OLS regression, ARIMA models, autoregressive distributed lag (ADL)… anything which generates residuals, or estimated innovations.</p>
+<p>An <em>autoregressive conditional heteroskedasticity (ARCH) model</em> replaces the familiar assumption that the error process is IID (Normal/Gaussian or otherwise), with a more nuanced belief that the residuals will be larger or smaller as defined by an AR(<em>q</em>) process: the expected variance of the <em>current</em> residual is a weighted sum of several <em>past</em> residuals squared.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series observed at regular time periods <span class="math inline">\(T = \{1,2,\ldots,n\}\)</span> and following a linear model such that:</p>
+<p><span class="math display">\[Y_t = \mu(\boldsymbol{X}_t) + \varepsilon_t\]</span></p>
+<p>Where <span class="math inline">\(\mu(\cdot)\)</span> is a linear mean function, <span class="math inline">\(\boldsymbol{X}_t\)</span> is a vector of predictive features at time index <span class="math inline">\(t\)</span> (such as past lags of <span class="math inline">\(Y\)</span>, exogenous predictors, or dummy-coded indicator functions), and <span class="math inline">\(\varepsilon_t\)</span> is a heteroskedastic error process. Now assume that:</p>
+<p><span class="math display">\[\varepsilon_t = \sigma_t \omega_t\]</span></p>
+<p>Where <span class="math inline">\(\sigma_t\)</span> is some constant which scales <span class="math inline">\(\omega_t\)</span>, a mean zero white noise process with independent and identically distributed (IID) innovations. (Without loss of generality, we may assume that <span class="math inline">\(\mathbb{V}[\omega_t]=1\)</span>.)<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> Further assume that:</p>
+<p><span class="math display">\[\sigma^2_t = \mathbb{E}[\varepsilon_t^2] = a_0 + \sum_{i=1}^q a_i \varepsilon_{t-i}^2\]</span></p>
+<p>Where <span class="math inline">\(a_0 \gt 0\)</span> and <span class="math inline">\(a_1, \ldots, a_q \ge 0\)</span>.</p>
+<p>Then we say that <span class="math inline">\(\boldsymbol{Y}\)</span> displays <em>conditional heteroskedasticity</em> and that <span class="math inline">\(\sigma^2_t = \mathbb{E}[\varepsilon_t^2]\)</span> follows an <strong>autoregressive conditional heteroskedasticity (ARCH) model</strong> with order <em>q</em>.<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></p>
+</div>
+</div>
+<p>Put another way, we claim that the current error variance is a weighted average of some long-term constant and the last few variances. By setting the weights <span class="math inline">\(a_0, a_1, \ldots, a_q differently, we can prioritize the long-term constant (\)</span>a_0$), or the last few variances <span class="math inline">\(a_1, \ldots, a_q\)</span>.</p>
+<p>If you recall our discussion of <a href="./ar.html">autoregressive (AR) models</a> and <a href="./arima.html">ARIMA models</a>, you’ll not be surprised to know that an ARCH process will only have a finite variance if all the roots of the characteristic polynomial defined by <span class="math inline">\(a_1, \ldots, a_q\)</span> lie outside the unit circle. Otherwise, the compounding effect of the autoregresive terms will push the error variance to infinity.</p>
+<p>(For an ARCH(1) process, this simplifies to requiring that <span class="math inline">\(a_1 \lt 1\)</span>.)</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0211</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>omega <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">123</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>epsilon <span class="ot">&lt;-</span> omega</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>var <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">1</span>,<span class="dv">103</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">3</span><span class="sc">:</span><span class="dv">103</span>){</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  var[i] <span class="ot">&lt;-</span> <span class="fl">0.5</span><span class="sc">*</span>(epsilon<span class="sc">^</span><span class="dv">2</span>)[i<span class="dv">-1</span>] <span class="sc">+</span> <span class="fl">0.4</span><span class="sc">*</span>(epsilon<span class="sc">^</span><span class="dv">2</span>)[i<span class="dv">-2</span>] <span class="sc">+</span> <span class="fl">0.3</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  epsilon[i] <span class="ot">&lt;-</span> epsilon[i]<span class="sc">*</span><span class="fu">sqrt</span>(var)[i]}</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">101</span>,epsilon[<span class="dv">3</span><span class="sc">:</span><span class="dv">103</span>],<span class="at">xlab=</span><span class="st">'Time index'</span>,<span class="at">ylab=</span><span class="st">'Residual'</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">col=</span><span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">'#000000'</span>,<span class="dv">100</span>),<span class="st">'#ff0000'</span>),<span class="at">pch=</span><span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>,<span class="dv">100</span>),<span class="dv">19</span>),</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">6</span>,<span class="dv">6</span>))</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>)<span class="sc">*</span><span class="fu">qt</span>(<span class="fl">0.05</span>,<span class="dv">99</span>)<span class="sc">*</span><span class="fu">sd</span>(epsilon[<span class="dv">3</span><span class="sc">:</span><span class="dv">102</span>]),<span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">lty=</span><span class="dv">2</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">101</span>,<span class="fu">qt</span>(<span class="fl">0.05</span>,<span class="dv">99</span>)<span class="sc">*</span><span class="fu">sqrt</span>(var[<span class="dv">3</span><span class="sc">:</span><span class="dv">103</span>]),<span class="at">col=</span><span class="st">'#ff0000'</span>,<span class="at">lty=</span><span class="dv">2</span>)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">101</span>,<span class="fu">qt</span>(<span class="fl">0.95</span>,<span class="dv">99</span>)<span class="sc">*</span><span class="fu">sqrt</span>(var[<span class="dv">3</span><span class="sc">:</span><span class="dv">103</span>]),<span class="at">col=</span><span class="st">'#ff0000'</span>,<span class="at">lty=</span><span class="dv">2</span>)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'bottomleft'</span>,<span class="at">pch=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">19</span>,<span class="cn">NA</span>,<span class="cn">NA</span>),<span class="at">lwd=</span><span class="fu">c</span>(<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="dv">2</span>,<span class="dv">2</span>),</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Past Obs'</span>,<span class="st">'New Obs'</span>,<span class="st">'90% CI (static)'</span>,<span class="st">'90% CI (ARCH)'</span>),</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#ff0000'</span>,<span class="st">'#0000ff'</span>,<span class="st">'#ff0000'</span>),<span class="at">bty=</span><span class="st">'n'</span>,<span class="at">cex=</span><span class="fl">0.8</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="arch_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Illustration of an ARCH(2) error process</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Even though ARCH models are backwards-looking and cannot actually see the future, they can give us a much more accurate idea of a time series error process than what we’d find by assuming a constant variance across the entire sample.</p>
+</section>
+<section id="fitting-and-describing-an-arch-model" class="level2">
+<h2 class="anchored" data-anchor-id="fitting-and-describing-an-arch-model">Fitting and describing an ARCH model</h2>
+<p>As with all other models we’ve discussed, ARCH models are now fit by automated software routines. However — and as Robert Engle proved in the 1982 paper which first described ARCH models — we can split the estimation of the mean process coefficients <span class="math inline">\(\hat{\boldsymbol{\beta}} = \hat{\beta}_0, \hat{\beta}_1, \ldots, \hat{\beta}_k\)</span> from the estimation of the ARCH coefficients <span class="math inline">\(\hat{\boldsymbol{\alpha}} = \hat{\alpha}_0, \hat{\alpha}_1, \ldots, \hat{\alpha}_q\)</span>, solving one and then the other, which greatly simplifies the fitting procedures.<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a></p>
+<p>Once our solutions for <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> and <span class="math inline">\(\hat{\boldsymbol{\alpha}}\)</span> converges, we’ll be able to estimate several new pieces of information:</p>
+<ul>
+<li><p><span class="math inline">\(\hat{a}_0:\)</span> a scaling factor for the long-term variance</p></li>
+<li><p><span class="math inline">\(\hat{a}_1, \ldots, \hat{a}_q:\)</span> the ARCH parameters which pick the number of prior residuals which update our short-term variance estimate, and their relative weights.</p></li>
+<li><p><span class="math inline">\(\hat{\sigma}^2_1, \ldots, \hat{\sigma}^2_N:\)</span> estimated error variances at every time step in our sample (these can be extended to help forecast into the future)</p></li>
+<li><p><span class="math inline">\(\hat{\boldsymbol{\beta}}:\)</span> a vector of coefficients for the mean model. These might include some or all of the following:</p>
+<ul>
+<li><p>An overall mean/intercept</p></li>
+<li><p>A deterministic trend over time</p></li>
+<li><p>Linear coefficients, or dummy-coded categorical information from external predictors, such as used in OLS regression</p></li>
+<li><p>ARIMA coefficients (including terms from extensions like SARIMA and ARFIMA), in case the mean is also time-varying and follows an ARMA-like process.</p></li>
+</ul></li>
+</ul>
+</section>
+<section id="testing-for-an-arch-model" class="level2">
+<h2 class="anchored" data-anchor-id="testing-for-an-arch-model">Testing for an ARCH model</h2>
+<p>“Conditional heteroskedasticity”. “Volatility clustering”. I imagine that many readers might think to themselves, “Surely all datasets display at least <em>a little</em> conditional heteroskedasticity, by chance alone, or perhaps omitted variable bias. Does that mean we should apply ARCH everywhere?” But if ARCH needed to be applied everywhere, you would have learned it before now!</p>
+<p>We can test whether any conditional heteroskedasticity in our data seem to come from the vaolitility clustering using a <em>Lagrange multiplier (LM)</em> test, similar to those seen in regression classes when validating regression models with a Breusch-Pagan test for heteroskedasicity.</p>
+<ol type="1">
+<li><p>Run the mean model with a constant variance, creating a series of residuals <span class="math inline">\(e_1, \ldots, e_N\)</span> which in turn should be unbiased estimators of the hidden errors <span class="math inline">\(\varepsilon_1, \ldots, \varepsilon_N\)</span>.</p></li>
+<li><p>Choose an ARCH lag order <em>q</em>, as suggested by the data (say, AIC scores) or <em>a priori</em> assumption.</p></li>
+<li><p>Use your squared residuals as the inputs to a new autoregression, regressing them on their own past values up to lag <em>q</em>:</p></li>
+</ol>
+<p><span class="math display">\[e_t^2 = \alpha_0 + \alpha_1 e^2_{t-1} + \ldots + \alpha_q e^2_{t-q} + \omega_t\]</span></p>
+<ol start="4" type="1">
+<li>Test the regression summary information to see whether any of the selected lags of your residual sizes (their squares) are significantly predictive of the current residual sizes. In particular, the R<sup>2</sup> information can be tested against the chi-square distribution:</li>
+</ol>
+<p><span class="math display">\[(N \cdot R^2) \sim \chi^2_{q}\]</span></p>
+<p>It’s really as simple as this: a GARCH model is useful when the size of past residuals is predictive of the size of the current residuals.<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a></p>
+</section>
+<section id="an-example-of-a-garch-model" class="level2">
+<h2 class="anchored" data-anchor-id="an-example-of-a-garch-model">An example of a GARCH model</h2>
+<p>Consider the returns on a large stock, such as IBM. Single stocks are influenced not just by market volatility, but also by information specific to their sector and to their company, such as news stories, earnings surprises, the success of their competitors, <em>etc.</em> and this information is sometimes spread out over multiple days giving rise to both brief and longer periods of high volatility.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(dji30ret)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>ibm <span class="ot">&lt;-</span> dji30ret<span class="sc">$</span>IBM[<span class="fu">rownames</span>(dji30ret)<span class="sc">&gt;</span><span class="st">'1999-01-31'</span> <span class="sc">&amp;</span> <span class="fu">rownames</span>(dji30ret)<span class="sc">&lt;</span><span class="st">'2009-02-01'</span>]</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>dates <span class="ot">&lt;-</span> <span class="fu">rownames</span>(dji30ret)[<span class="fu">rownames</span>(dji30ret)<span class="sc">&gt;</span><span class="st">'1999-01-31'</span> <span class="sc">&amp;</span> <span class="fu">rownames</span>(dji30ret)<span class="sc">&lt;</span><span class="st">'2009-02-01'</span>]</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ibm,<span class="at">type=</span><span class="st">'l'</span>,<span class="at">ylab=</span><span class="st">'Log return'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="arch_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>IBM log-returns, Feb 1999 - Jan 2009</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>KPSS and ADF tests suggest this dataset is stationary. An ARIMA-fitting procedure finds slight evidence for an MA(1) model, but the mean for these log-returns are fit reasonably well by no model at all — in line with standard economic theory.<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a></p>
+<p>When we fit an ARCH model to the variance, we would see the following information (and more besides):</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>ibm.train <span class="ot">&lt;-</span> ibm[<span class="sc">-</span>(<span class="fu">length</span>(ibm) <span class="sc">-</span> <span class="dv">9</span><span class="sc">:</span><span class="dv">0</span>)]</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>ibm.arch5 <span class="ot">&lt;-</span> <span class="fu">ugarchfit</span>(<span class="at">spec=</span><span class="fu">ugarchspec</span>(<span class="at">variance.model=</span><span class="fu">list</span>(<span class="at">model=</span><span class="st">'sGARCH'</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                                                           <span class="at">garchOrder=</span><span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">0</span>)),</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">mean.model=</span><span class="fu">list</span>(<span class="at">armaOrder=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>))),</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                       <span class="at">data=</span>ibm.train)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">round</span>(ibm.arch5<span class="sc">@</span>fit<span class="sc">$</span>robust.matcoef,<span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>        Estimate  Std. Error  t value Pr(&gt;|t|)
+mu         0.000       0.000    0.481    0.631
+omega      0.000       0.000    5.352    0.000
+alpha1     0.252       0.063    4.016    0.000
+alpha2     0.111       0.032    3.477    0.001
+alpha3     0.069       0.030    2.308    0.021
+alpha4     0.218       0.062    3.534    0.000
+alpha5     0.342       0.132    2.596    0.009</code></pre>
+</div>
+</div>
+<p>This model is actually quite simple. Define <span class="math inline">\(p_t\)</span> to be the price of IBM stock on day <span class="math inline">\(t\)</span>. Then we may define the log return as:</p>
+<p><span class="math display">\[r_t = \log \frac{p_t}{p_{t-1}} = \log p_t - \log p_{t-1}\]</span></p>
+<p>We are claiming that log prices are a Gaussian random walk, meaning that log returns (differenced log prices) should be a mean zero time series.<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a> In fact, not just <em>unconditionally</em> mean zero, but <em>conditionally</em> mean zero. The returns are memoryless and show no ARMA-like behavior.</p>
+<p><span class="math display">\[\begin{aligned} r_t &amp;= \varepsilon_t \sim \textrm{N}(0,\sigma^2_t) \\ \\ \mathbb{E}[r_t] &amp;= \mathbb{E}[\varepsilon_t] \approx 0 \\ \\ \mathbb{E}[r_t|r_1, \ldots, r_{t-1}] &amp;= \mathbb{E}[\varepsilon_t|\varepsilon_1, \ldots, \varepsilon_{t-1}] \approx 0 \end{aligned}\]</span></p>
+<p>However, the variance may show more complexity. We are claiming that:</p>
+<p><span class="math display">\[\mathbb{V}[r_t] = \hat{\sigma}^2_t = 0.252\varepsilon_{t-1}^2 + 0.111\varepsilon_{t-2}^2 + 0.069\varepsilon_{t-3}^2 + 0.218\varepsilon_{t-4}^2 + 0.342\varepsilon_{t-5}^2\]</span></p>
+<p>Although the estimated coefficients are all different from each other, taking into account their standard errors we might say that we believe that a roughly equal-weighted average of the past five (squared) returns gives a good forecast of today’s (squared) return size.</p>
+<p>The data used to train this ARCH model end January 15th, 2009. Early 2009 was a very volatile period, as it followed the collapse of the banking sector in Fall 2008. A shareholder of IBM stock might wonder, on January 15th, 2009, how much they were likely to gain or lose over the next ten trading days.</p>
+<p>A naive model might fit a single mean and variance to the data, using a sample period which tries to maximize sample size without losing relevance due to parameter drift. However, the ARCH model allows us to “have our cake and eat it too” — we can learn from the entire dataset, while forecasting volatility using only the most recent observations:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>ibm.port <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="fu">cumsum</span>(ibm[<span class="dv">2487</span><span class="sc">:</span><span class="dv">2516</span>]))<span class="sc">/</span><span class="fu">exp</span>(<span class="fu">sum</span>(ibm[<span class="dv">2487</span><span class="sc">:</span><span class="dv">2506</span>]))<span class="sc">*</span><span class="dv">100</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>mu.naive <span class="ot">&lt;-</span> <span class="fu">mean</span>(ibm.train[<span class="dv">2001</span><span class="sc">:</span><span class="dv">2506</span>])</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>sigma.naive <span class="ot">&lt;-</span> <span class="fu">sd</span>(ibm.train[<span class="dv">2001</span><span class="sc">:</span><span class="dv">2506</span>])</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>p05.naive <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(<span class="fl">0.05</span>,<span class="fu">cumsum</span>(<span class="fu">rep</span>(mu.naive,<span class="dv">10</span>)),<span class="fu">sqrt</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>)<span class="sc">*</span>sigma.naive)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>p95.naive <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(<span class="fl">0.95</span>,<span class="fu">cumsum</span>(<span class="fu">rep</span>(mu.naive,<span class="dv">10</span>)),<span class="fu">sqrt</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>)<span class="sc">*</span>sigma.naive)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">ugarchforecast</span>(ibm.arch5,<span class="at">n.ahead=</span><span class="dv">10</span>)<span class="sc">@</span>forecast<span class="sc">$</span>seriesFor[<span class="dv">1</span>]</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>sigmas <span class="ot">&lt;-</span> <span class="fu">ugarchforecast</span>(ibm.arch5,<span class="at">n.ahead=</span><span class="dv">10</span>)<span class="sc">@</span>forecast<span class="sc">$</span>sigmaFor</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>ibm.path <span class="ot">&lt;-</span> <span class="fu">replicate</span>(<span class="at">n=</span><span class="dv">1000</span>,<span class="fu">cumsum</span>(<span class="fu">rnorm</span>(<span class="dv">10</span>,mu,sigmas)))</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>p05.arch <span class="ot">&lt;-</span> <span class="fu">apply</span>(ibm.path,<span class="dv">1</span>,<span class="cf">function</span>(z) <span class="fu">quantile</span>(z,<span class="fl">0.05</span>))</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>p95.arch <span class="ot">&lt;-</span> <span class="fu">apply</span>(ibm.path,<span class="dv">1</span>,<span class="cf">function</span>(z) <span class="fu">quantile</span>(z,<span class="fl">0.95</span>))</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">30</span>,ibm.port,<span class="at">type=</span><span class="st">'l'</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">30</span>),<span class="at">xaxt=</span><span class="st">'n'</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Trading day'</span>,<span class="at">ylab=</span><span class="st">'Portfolio value'</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">80</span>,<span class="dv">120</span>))</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="at">side=</span><span class="dv">1</span>,<span class="at">at=</span><span class="fu">seq</span>(<span class="dv">5</span>,<span class="dv">30</span>,<span class="dv">5</span>),<span class="at">labels=</span>dates[<span class="fu">seq</span>(<span class="dv">2491</span>,<span class="dv">2516</span>,<span class="dv">5</span>)])</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="dv">1</span>,<span class="at">y=</span><span class="dv">83</span>,<span class="at">pos=</span><span class="dv">4</span>,<span class="at">labels=</span><span class="st">'Portfolio indexed to $100 at 2009-01-15'</span>,<span class="at">cex=</span><span class="fl">0.8</span>)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="fu">matplot</span>(<span class="dv">21</span><span class="sc">:</span><span class="dv">30</span>,<span class="dv">100</span><span class="sc">*</span><span class="fu">exp</span>(<span class="fu">cbind</span>(p05.naive,p95.naive,p05.arch,p95.arch)),<span class="at">add=</span><span class="cn">TRUE</span>,<span class="at">lty=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">2</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#ff0000'</span>,<span class="st">'#ff0000'</span>,<span class="st">'#0000ff'</span>,<span class="st">'#0000ff'</span>),<span class="at">type=</span><span class="st">'l'</span>)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topleft'</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Actual'</span>,<span class="st">'90% CI (Naive)'</span>, <span class="st">'90% CI (ARCH)'</span>),</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">lwd=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">1</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#ff0000'</span>,<span class="st">'#0000ff'</span>),<span class="at">lty=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">2</span>),</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">bty=</span><span class="st">'n'</span>,<span class="at">cex=</span><span class="fl">0.8</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="arch_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Comparison of Naive Gaussian and ARCH(5) forecasts</figcaption>
+</figure>
+</div>
+</div>
+</div>
+
+
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>By “regression-style” I mean a model for the mean which simplifies to a linear combination of endogenous or exogenous predictive features.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>In a regression-style model, the mean of the residuals is typically 0, meaning that the square of a residual is a good estimate of its own variance.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p><span class="math inline">\(\omega_t\)</span> is often assumed to be Gaussian (that is, Normal), but this is not required to describe the ARCH model or to estimate unbiased coefficients.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>When we learned ARIMA models, the autoregressive component was always indexed with ‘p’, but now here with ‘q’. The full explanation of why this indexing came about is boring and unhelpful, but please either <em>(1)</em> accept my apologies and deal with it, or <em>(2)</em> consider by analogy that ‘q’ was used in ARIMA models for the MA terms which are coefficients on lags of the hidden innovations, and that here we are doing the same thing, even if they are now “AR” type terms because of our different response variable!<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>For those students who wondered when to use OLS and ML in fitting regression models, this fitting process is instructive. Maximizing the likelihood of both <span class="math inline">\(\hat{\boldsymbol{\beta}\)</span> <em>and</em> <span class="math inline">\(\hat{\boldsymbol{\alpha}}\)</span> at the same time is difficult, but we can use OLS to produce an unbiased, consistent, but inefficient estimator <span class="math inline">\(\hat{\boldsymbol{\beta}}_\textrm{OLS}\)</span>, which allows us to solve for <span class="math inline">\(\hat{\boldsymbol{\alpha}}\)</span> using ML, which in turn allows us to iteratively improve our estimators <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> using ML.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>Here we follow convention and define “size” using the square of the residual. However, in some applications it may be more convenient to use the absolute magnitude of the residual, or even (less commonly) the exponentiation of the residuals. I would not recommend picking these alternatives unless you have a solid reason for doing so.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>We are using log-returns here which are econometrically better-behaved than arithmetic returns: more symmetric and more normally distributed.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p>Technically, the estimated mean is slightly positive, but less than 0.001.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        const annoteTargets = window.document.querySelectorAll('.code-annotation-anchor');
+        for (let i=0; i<annoteTargets.length; i++) {
+          const annoteTarget = annoteTargets[i];
+          const targetCell = annoteTarget.getAttribute("data-target-cell");
+          const targetAnnotation = annoteTarget.getAttribute("data-target-annotation");
+          const contentFn = () => {
+            const content = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+            if (content) {
+              const tipContent = content.cloneNode(true);
+              tipContent.classList.add("code-annotation-tip-content");
+              return tipContent.outerHTML;
+            }
+          }
+          const config = {
+            allowHTML: true,
+            content: contentFn,
+            onShow: (instance) => {
+              selectCodeLines(instance.reference);
+              instance.reference.classList.add('code-annotation-active');
+              window.tippy.hideAll();
+            },
+            onHide: (instance) => {
+              unselectCodeLines();
+              instance.reference.classList.remove('code-annotation-active');
+            },
+            maxWidth: 300,
+            delay: [50, 0],
+            duration: [200, 0],
+            offset: [5, 10],
+            arrow: true,
+            appendTo: function(el) {
+              return el.parentElement.parentElement.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'quarto',
+            placement: 'right',
+            popperOptions: {
+              modifiers: [
+              {
+                name: 'flip',
+                options: {
+                  flipVariations: false, // true by default
+                  allowedAutoPlacements: ['right'],
+                  fallbackPlacements: ['right', 'top', 'top-start', 'top-end', 'bottom', 'bottom-start', 'bottom-end', 'left'],
+                },
+              },
+              {
+                name: 'preventOverflow',
+                options: {
+                  mainAxis: false,
+                  altAxis: false
+                }
+              }
+              ]        
+            }      
+          };
+          window.tippy(annoteTarget, config); 
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation column-body">
+  <div class="nav-page nav-page-previous">
+      <a href="./causalityinr.html" class="pagination-link" aria-label="VARs in R">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">VARs in R</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./garch.html" class="pagination-link" aria-label="GARCH models and kin">
+        <span class="nav-page-text"><span class="chapter-title">GARCH models and kin</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
