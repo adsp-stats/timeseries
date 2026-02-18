@@ -42,6 +42,11 @@ book:
         - vars.qmd
         - granger.qmd
         - causalityinr.qmd
+    - part: "7. Conditional heteroskedasticity"
+      chapters:
+        - arch.qmd
+        - garch.qmd
+        - archgarchinr.qmd
 format:
   html:
     toc: true
