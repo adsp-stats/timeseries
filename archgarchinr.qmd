@@ -1,3 +1,114 @@
 # ARCH/GARCH in R
 
-This page under development. Sorry for any inconvenience!
+```{r}
+#| output: false
+library(tseries)
+library(fGarch)
+library(rugarch)
+library(MASS)
+```
+
+## tseries package (not recommended)
+
+The most basic GARCH fitting I know is done in the tseries package. I do not recommend it because it does not allow you to easily combine the variance model with a mean model.
+
+```{r}
+data(SP500)
+
+tseries.arma <- arma(SP500,order=c(1,1))
+summary(tseries.arma)
+
+tseries.garch <- garch(residuals(tseries.arma)[-1],order=c(1,1))
+summary(tseries.garch)
+
+# estimates of iid normal errors omega_t
+(tseries.omega <- head(residuals(tseries.garch)))
+# estimates of past conditional sd sigma_t
+(tseries.sigma_past <- head(fitted(tseries.garch)[,1]))
+# forecasts of future conditional sd sigma_t
+(tseries.sigma_future <- head(predict(tseries.garch)[,1]))
+```
+
+In my opinion, this package has the most limited implementation and is strictly dominated for every use case by one of the two packages below.
+
+## fGarch package (functional but not my first choice)
+
+ARCH/GARCH analysis in R was, in years past, primarily performed through the `fGarch` package, which offers model definition, prediction, plotting, etc. through familiar interfaces. The package is still maintained and offers solid support for basic and intermediate use cases.
+
+Although not shown in the code below, the `predict()` method simultaneously predicts for both the mean and the variance (we are extracting only the variance).
+
+```{r}
+fgarch.armagarch <- garchFit(SP500 ~ arma(1,1) + garch(1,1), data=SP500)
+summary(fgarch.armagarch)
+
+# estimates of iid normal errors omega_t
+(fgarch.omega <- head(residuals(fgarch.armagarch,standardize=TRUE)))
+# estimates of past conditional sd sigma_t
+(fgarch.sigma_past <- head(fgarch.armagarch@sigma.t))
+# forecasts of future conditional sd sigma_t
+(fgarch.sigma_future <- head(predict(fgarch.armagarch)[,3]))
+```
+
+`fGARCH` also allows the user to create fixed specifications which can be used for simulation purposes, and it has a nice array of diagnostic plotting tools with some user interactivity. The plots below come from a menu of 16 total diagnostics which the user can shuffle back and forth:
+
+```{r}
+#| fig-asp: 1.1
+par(mfrow=c(2,2),mar=c(4,3,3,1)+0.1)
+plot(fgarch.armagarch,which=c(2,3,7,11))
+```
+
+Ultimately, for student work, fGarch is more than enough "horsepower" for most jobs. I was tempted to use it for the two previous pages on [ARCH](arch.qmd) and [GARCH](garch.qmd) models. However, it has lost some industry support in favor of a newer package with more functionality and control.
+
+## rugarch package (reluctantly recommended)
+
+`rugarch` (R univariate GARCH, as opposed to the companion package `rmgarch` for R multivariate GARCH) is more actively developed, has added more functionality, allows the user more control over the fitting details and estimation routines, contains more diagnostic tests, and has become more standard in industry use, partly because of various helper funcitons that directly solve common quesitons such as value-at-risk (VaR).
+
+It would be very easy to recommend `rugarch` except that the interface is less intuitive and "user-friendly" than the earlier packages. However, on balance it would be my pick if you had to familiarize yourself with a package you intended to use professionally.
+
+Users should specify a mean model (if any) and a variance model separately. Simulation, forecasting, and bootstrapping methods can all be used either with models fit to data or with predefined model specifications.
+
+Although not used in the example below, external regressors can be added to both the mean and the variance equations, which is perhaps the most important upgrade over the `fGarch` functionality. This would allow you, for example, to add Fourier harmonics to adjust the seasonality of a mean model, or to perform a Fama-French or CAPM-style stock price analysis which controls for market behavior.
+
+```{r}
+rug.spec <- ugarchspec(variance.model=list(model='sGARCH',
+                                           garchOrder=c(1,1)),
+                       mean.model=list(armaOrder=c(1,1)))
+(rugarch.armagarch <- ugarchfit(spec=rug.spec,data=SP500))
+
+# estimates of iid normal errors omega_t
+(rugarch.omega <- head(residuals(rugarch.armagarch,standardize=TRUE)))
+# estimates of past conditional sd sigma_t
+(rugarch.sigma_past <- head(sigma(rugarch.armagarch)))
+# forecasts of future conditional sd sigma_t
+(rugarch.sigma_future <- head(sigma(ugarchforecast(rugarch.armagarch))))
+```
+
+The `rugarch` package also contains most of the same plotting tools as `fGarch`:
+
+```{r}
+#| fig-asp: 1.1
+par(mfrow=c(2,2),mar=c(4,3,3,1)+0.1)
+plot(rugarch.armagarch,which=c(1))
+plot(rugarch.armagarch,which=c(3))
+plot(rugarch.armagarch,which=c(8))
+plot(rugarch.armagarch,which=c(11))
+```
+
+In the end, your results should not vary wildly between `fGarch` and `rugarch`, though the more limited functionality of `tseries` may well affect your results:
+
+```{r}
+# Standardized residuals:
+cbind(tseries=tseries.omega,
+      fGarch=fgarch.omega,
+      rugarch=rugarch.omega)
+
+# In-sample conditional volatility:
+cbind(tseries=tseries.sigma_past,
+      fGarch=fgarch.sigma_past,
+      rugarch=rugarch.sigma_past)
+
+# Forecasted conditional volatility:
+cbind(tseries=tseries.sigma_future,
+      fGarch=fgarch.sigma_future,
+      rugarch=c(rugarch.sigma_future))
+```

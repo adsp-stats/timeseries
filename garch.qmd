@@ -121,7 +121,7 @@ GARCH(1,1) is almost a default choice at this point when fitting ARCH/GARCH mode
 
 The short answer is to use it when it fits and don't when it doesn't. By this point we have our choice of information criteria, test statistics, residual analysis, *etc.* to help us make that decision. However, two generalities bear mention:
 
- * A GARCH(q,2) process may fit large datasets better in cases where some information decays quickly and other information decays slowly, such short-term oil price/supply shocks and long-term demand volatility. The two different GARCH terms will allow for a mix of two different time-decaying signals.^[I mentioned large datasets because with small datasets it's difficult to disambiguate the two effects.]
+ * A GARCH(q,2) process may fit large datasets better in cases where some information decays quickly and other information decays slowly, such short-term oil price/supply shocks and long-term demand volatility. The two different GARCH terms will allow for a very complex decay of volatility information over time.^[I mentioned large datasets because with small datasets it's difficult to disambiguate the two effects.]
  
  * A GARCH(q,0) process --- *i.e.* an ARCH(q) process --- may fit some datasets better in which the volatility is very abrupt, perhaps even captured fully by ARCH(1) or ARCH(2). In these cases, any GARCH terms will dilute the immediate volatility effects of the ARCH terms. Examples might include monthly index returns or weekly insurance claims.
  
@@ -154,7 +154,7 @@ We see a now-familiar bevy of coefficients:
  
  * Uncertain and insignificant `alpha1`, indicating that yesterday's residual size is only weakly predictive of today's residual size, if at all.
  
- * Stronger `beta1` and especially `beta2`, indicating one or two decaying sets of weights on past volatility, one short-term (`beta1` decays to about 1\% when compounded four times), and the other medium-term (`beta2` decays to about 1\% when compounded ten times).
+ * Stronger `beta1` and especially `beta2`, indicating a long-memory process (similar to an AR(2) with the same weights) in which information persists and decays in a more complex fashion, instead of just exponentially damping to zero.
  
 We could forecast both the mean and the variance from here:
 

@@ -59,7 +59,7 @@ Where $a_0 \gt 0$ and $a_1, \ldots, a_q \ge 0$.
 Then we say that $\boldsymbol{Y}$ displays *conditional heteroskedasticity* and that $\sigma^2_t = \mathbb{E}[\varepsilon_t^2]$ follows an **autoregressive conditional heteroskedasticity (ARCH) model** with order *q*.^[When we learned ARIMA models, the autoregressive component was always indexed with 'p', but now here with 'q'. The full explanation of why this indexing came about is boring and unhelpful, but please either *(1)* accept my apologies and deal with it, or *(2)* consider by analogy that 'q' was used in ARIMA models for the MA terms which are coefficients on lags of the hidden innovations, and that here we are doing the same thing, even if they are now "AR" type terms because of our different response variable!]
 :::
 
-Put another way, we claim that the current error variance is a weighted average of some long-term constant and the last few variances. By setting the weights $a_0, a_1, \ldots, a_q differently, we can prioritize the long-term constant ($a_0$), or the last few variances $a_1, \ldots, a_q$. 
+Put another way, we claim that the current error variance is a weighted average of some long-term constant and the last few variances. By setting the weights $a_0, a_1, \ldots, a_q$ differently, we can prioritize the long-term constant ($a_0$), or the last few variances $a_1, \ldots, a_q$. 
 
 If you recall our discussion of [autoregressive (AR) models](ar.qmd) and [ARIMA models](arima.qmd), you'll not be surprised to know that an ARCH process will only have a finite variance if all the roots of the characteristic polynomial defined by $a_1, \ldots, a_q$ lie outside the unit circle. Otherwise, the compounding effect of the autoregresive terms will push the error variance to infinity.
 
@@ -130,7 +130,7 @@ $$(N \cdot R^2) \sim \chi^2_{q}$$
 
 It's really as simple as this: a GARCH model is useful when the size of past residuals is predictive of the size of the current residuals.^[Here we follow convention and define "size" using the square of the residual. However, in some applications it may be more convenient to use the absolute magnitude of the residual, or even (less commonly) the exponentiation of the residuals. I would not recommend picking these alternatives unless you have a solid reason for doing so.]
 
-## An example of a GARCH model
+## An example of an ARCH model
 
 Consider the returns on a large stock, such as IBM. Single stocks are influenced not just by market volatility, but also by information specific to their sector and to their company, such as news stories, earnings surprises, the success of their competitors, *etc.* and this information is sometimes spread out over multiple days giving rise to both brief and longer periods of high volatility.
 
