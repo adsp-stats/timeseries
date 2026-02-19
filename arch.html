@@ -406,7 +406,7 @@ window.Quarto = {
   <li><a href="#concept-and-definition-of-an-arch-model" id="toc-concept-and-definition-of-an-arch-model" class="nav-link active" data-scroll-target="#concept-and-definition-of-an-arch-model">Concept and definition of an ARCH model</a></li>
   <li><a href="#fitting-and-describing-an-arch-model" id="toc-fitting-and-describing-an-arch-model" class="nav-link" data-scroll-target="#fitting-and-describing-an-arch-model">Fitting and describing an ARCH model</a></li>
   <li><a href="#testing-for-an-arch-model" id="toc-testing-for-an-arch-model" class="nav-link" data-scroll-target="#testing-for-an-arch-model">Testing for an ARCH model</a></li>
-  <li><a href="#an-example-of-a-garch-model" id="toc-an-example-of-a-garch-model" class="nav-link" data-scroll-target="#an-example-of-a-garch-model">An example of a GARCH model</a></li>
+  <li><a href="#an-example-of-an-arch-model" id="toc-an-example-of-an-arch-model" class="nav-link" data-scroll-target="#an-example-of-an-arch-model">An example of an ARCH model</a></li>
   </ul>
 </nav>
     </div>
@@ -491,7 +491,7 @@ Note
 <p>Then we say that <span class="math inline">\(\boldsymbol{Y}\)</span> displays <em>conditional heteroskedasticity</em> and that <span class="math inline">\(\sigma^2_t = \mathbb{E}[\varepsilon_t^2]\)</span> follows an <strong>autoregressive conditional heteroskedasticity (ARCH) model</strong> with order <em>q</em>.<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></p>
 </div>
 </div>
-<p>Put another way, we claim that the current error variance is a weighted average of some long-term constant and the last few variances. By setting the weights <span class="math inline">\(a_0, a_1, \ldots, a_q differently, we can prioritize the long-term constant (\)</span>a_0$), or the last few variances <span class="math inline">\(a_1, \ldots, a_q\)</span>.</p>
+<p>Put another way, we claim that the current error variance is a weighted average of some long-term constant and the last few variances. By setting the weights <span class="math inline">\(a_0, a_1, \ldots, a_q\)</span> differently, we can prioritize the long-term constant (<span class="math inline">\(a_0\)</span>), or the last few variances <span class="math inline">\(a_1, \ldots, a_q\)</span>.</p>
 <p>If you recall our discussion of <a href="./ar.html">autoregressive (AR) models</a> and <a href="./arima.html">ARIMA models</a>, you’ll not be surprised to know that an ARCH process will only have a finite variance if all the roots of the characteristic polynomial defined by <span class="math inline">\(a_1, \ldots, a_q\)</span> lie outside the unit circle. Otherwise, the compounding effect of the autoregresive terms will push the error variance to infinity.</p>
 <p>(For an ARCH(1) process, this simplifies to requiring that <span class="math inline">\(a_1 \lt 1\)</span>.)</p>
 <div class="cell">
@@ -558,8 +558,8 @@ Note
 <p><span class="math display">\[(N \cdot R^2) \sim \chi^2_{q}\]</span></p>
 <p>It’s really as simple as this: a GARCH model is useful when the size of past residuals is predictive of the size of the current residuals.<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a></p>
 </section>
-<section id="an-example-of-a-garch-model" class="level2">
-<h2 class="anchored" data-anchor-id="an-example-of-a-garch-model">An example of a GARCH model</h2>
+<section id="an-example-of-an-arch-model" class="level2">
+<h2 class="anchored" data-anchor-id="an-example-of-an-arch-model">An example of an ARCH model</h2>
 <p>Consider the returns on a large stock, such as IBM. Single stocks are influenced not just by market volatility, but also by information specific to their sector and to their company, such as news stories, earnings surprises, the success of their competitors, <em>etc.</em> and this information is sometimes spread out over multiple days giving rise to both brief and longer periods of high volatility.</p>
 <div class="cell">
 <details class="code-fold">

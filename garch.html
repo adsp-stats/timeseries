@@ -576,7 +576,7 @@ beta1      0.922       0.552    1.671    0.095</code></pre>
 <p>GARCH(1,1) is almost a default choice at this point when fitting ARCH/GARCH models to a new dataset. Its combination of short- and intermediate-term dependence usually provides an adequate fit to many datasets</p>
 <p>The short answer is to use it when it fits and don’t when it doesn’t. By this point we have our choice of information criteria, test statistics, residual analysis, <em>etc.</em> to help us make that decision. However, two generalities bear mention:</p>
 <ul>
-<li><p>A GARCH(q,2) process may fit large datasets better in cases where some information decays quickly and other information decays slowly, such short-term oil price/supply shocks and long-term demand volatility. The two different GARCH terms will allow for a mix of two different time-decaying signals.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p></li>
+<li><p>A GARCH(q,2) process may fit large datasets better in cases where some information decays quickly and other information decays slowly, such short-term oil price/supply shocks and long-term demand volatility. The two different GARCH terms will allow for a very complex decay of volatility information over time.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p></li>
 <li><p>A GARCH(q,0) process — <em>i.e.</em> an ARCH(q) process — may fit some datasets better in which the volatility is very abrupt, perhaps even captured fully by ARCH(1) or ARCH(2). In these cases, any GARCH terms will dilute the immediate volatility effects of the ARCH terms. Examples might include monthly index returns or weekly insurance claims.</p></li>
 </ul>
 </section>
@@ -614,7 +614,7 @@ beta2     0.5418      0.1420   3.8159   0.0001</code></pre>
 <li><p>A coefficient on the S&amp;P 500 index (the “beta” in finance), <code>mxreg</code> (for external regressor) suggesting that Exxon is strongly but not perfectly correlated to broader market movements.</p></li>
 <li><p>No discernible <code>omega</code>, suggesting that Exxon Mobil volatility is completely driven by recent behavior and not any long-term average volatility.</p></li>
 <li><p>Uncertain and insignificant <code>alpha1</code>, indicating that yesterday’s residual size is only weakly predictive of today’s residual size, if at all.</p></li>
-<li><p>Stronger <code>beta1</code> and especially <code>beta2</code>, indicating one or two decaying sets of weights on past volatility, one short-term (<code>beta1</code> decays to about 1% when compounded four times), and the other medium-term (<code>beta2</code> decays to about 1% when compounded ten times).</p></li>
+<li><p>Stronger <code>beta1</code> and especially <code>beta2</code>, indicating a long-memory process (similar to an AR(2) with the same weights) in which information persists and decays in a more complex fashion, instead of just exponentially damping to zero.</p></li>
 </ul>
 <p>We could forecast both the mean and the variance from here:</p>
 <div class="cell">
