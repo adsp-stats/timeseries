@@ -51,7 +51,6 @@ book:
       chapters:
         - statespace.qmd
         - kalmanfilter.qmd
-        - hmms.qmd
         - statespaceinr.qmd
 format:
   html:
