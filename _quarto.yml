@@ -47,6 +47,12 @@ book:
         - arch.qmd
         - garch.qmd
         - archgarchinr.qmd
+    - part: "8. State-space representations"
+      chapters:
+        - statespace.qmd
+        - kalmanfilter.qmd
+        - hmms.qmd
+        - statespaceinr.qmd
 format:
   html:
     toc: true

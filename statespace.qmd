@@ -1,0 +1,173 @@
+# State space representations
+
+Although this topic is sometimes described as "state space models" (and I will occasionally do the same), it would be more accurate to say that state space isn't a model class at all but rather *a new way to represent and describe models.* Several of the models we have already studied can be rewritten using state space terminology. When we choose to represent a time series model using state space ideas, we gain a new set of tools for estimation and forecasting.
+
+## The components of the model
+
+State space representations involve some new terms and new notation, so we will introduce them one at a time and then stitch them together.
+
+### The state (***x***~*t*~)
+
+Assume that we imperfectly observe a system of information over time. The system has a true "state" at every time index, which can be thought of as a vector of one or more random variables.^[State space representations can be either continuous-time or discrete-time, but we will only consider regularly-observed discrete-time cases here.] For example:
+
+ * If we observe a car, its state might include: its position, its velocity, and its direction.
+ 
+ * If we observe a labor market, its state might include: the average hourly wage and the total amount of employment.
+ 
+ * If we observe a nursery, its state might include: the air concentration of carbon monoxide.
+ 
+We call this truth of the system its **state**, which is usually hidden from us. Although the state might be just a single variable, I will represent it as a possible vector of variables, and we will denote the current state of the system as $\boldsymbol{x_t}$.
+
+### Evolving the state (**F**)
+
+A system in motion tends to stay in motion, to paraphrase Newton. If we knew the current period's state, we could a good guess as to the next period's state, assuming no new outside forces or information. For example,
+
+ * We might expect the car's state in the next second to continue with the same direction and velocity as this second, and a new position which differs from the current position by combining the direction and speed information together with the time between observations.
+ 
+ * We might expect next week's labor market to keep the same minimum wage and employment totals, perhaps multiplied by inflation and population exponents, perhaps with seasonal effects.
+ 
+ * We might expect next minute's carbon monoxide levels to be 80\% as large as this minute's levels, due to dispersion, unless there were an active emission source.
+ 
+These expectations often reflect a "rules-based" or "physics-informed" view of the system. Mathematically, they take the form of a matrix which we use to evolve the current state into the next one. We may call it the state **transition model**, and denote it by the matrix $\mathbf{F}$. 
+ 
+### Changing the state (**B** ***u***~*t*~)
+ 
+Newton's first law, of course, ends "... unless acted upon by an outside force." We can include such outside forces in our model:
+
+ * The driver of the car might steer in a new direction, or brake/accelerate to a new velocity.
+ 
+ * New minimum wage laws might directly and permanently change the wage in future periods, which in turn will likely have consequences for total employment numbers.
+ 
+ * The owner of the house might (partially) open or shut a window in the nursery, allowing any CO in the house to more quickly or more slowly disperse.
+ 
+These outside forces are distinct from errors (we will cover those later). They are not stochastic, and they may create a "lever" by which we (or actors within in the system) can create a more desirable set of states. We refer to this as the **control input** or the **external force** term, which includes a matrix describing the *shape* of such a change, $\mathbf{B}$, as well as a vector representing the *degree* of change for the current period, $\boldsymbol{u}_t$.
+
+### The process noise (***w***~*t*~)
+
+In most realistic systems, the state never evolves *quite* the way we expect. Some stochastic error process often distorts our linear, deterministic prediction:
+
+ * The driver of a car may be unable to hold exactly the same direction or velocity, even if they wanted to, or they may have to swerve to avoid oncoming traffic.
+ 
+ * Employment numbers might unexpectedly dip if a Fortune 500 company with many employees suddenly went out of business.
+ 
+ * Carbon monoxide levels might vary stochastically with the passing of cars and trucks on the street outside.
+ 
+This **process error** is not in any way false or distortive: it is a new and unpredicted component to the truth which helps to create the new state. ("Innovation" might be a better term.) Without this term, our universe would be completely determinative. We will denote the current process error as $\boldsymbol{omega}_t$.
+ 
+### The observation (***y***~*t*~)
+
+We observe the system by taking measurements. Due to the complexity of the system, the limits of our observational technology, how rapidly the system changes, the presence of "noise" which obscures the state, and other sources, our measurements are not equal to the state. For example,
+
+ * When we observe a car, we measure its position (and infer its speed and direction) from a GPS satellite reading. Each reading is only accurate to within about 5 meters. Within less than a second, all of this information might have changed.
+ 
+ * When we observe a labor market, we measure unemployment and wages from records provided by employers. Some records are poorly kept, and some are fradulent. Some of the labor force is illicit (*e.g.* by nature of the job, or their age, or their immigration status) and not recorded. It's impossible to collect a national snapshot with total precision because of the time it takes to collect each week's records and the variety of ways in which different states or industries track their workforce.
+ 
+ * When we observe a nursery, we measure carbon monoxide concentration from a sensor on the wall or ceiling. The air by the sensor may not reflect the true room average, and the sensor itself may have a low accuracy or may be prone to confuse carbon monoxide with other, less deadly air contaminants.
+ 
+The **observation** is *our only real data* about the system. Although the observation might be just a single variable, I will represent it as a possible vector of variables, and we will denote the current observation as $\boldsymbol{y_t}$.
+
+### The measurement device (**A**)
+
+Even if we had no measurement error, our observation would not always exactly be the same as the state. For example,
+
+ * The GPS measurement of a car might simply be a grid coordinate. From these two numbers we would identify a latitude and longitude using some math and a geospatial reference system. We might never know the height/altitude of the car. We would have to do some more math to determine the velocity and direction of the car, perhaps using the prior observation.
+ 
+ * The weekly employment totals for a labor market might need to be grossed up to account for known underreporting, or seasonally adjusted.
+ 
+ * The carbon monoxide detector might work by measuring resistance in an electric current. The resistance in ohms would need to be converted to a CO2 concentration through some formula.
+ 
+The difference between our observation and the state is not just a matter of units or business rules; sometimes entire dimensions of the state space are never observed directly and must be estimated. We call the matrix which defines the gap between state and observation the **measurement model**, and denote it as $\mathbf{A}$.
+
+### The observation noise (***v***~*t*~)
+
+Our measurement device rarely makes the observation without some error. This error is not an innovation or a stochastic updating of the truth, it is simply a "wrong" result which hides information about the true state from us. For example:
+
+ * The GPS measurements of a car might have an effective accuracy to within about 5 meters of the true position, which creates spillover effects when estimating velocity and direction.
+ 
+ * The weekly jobs report be biased up or down each week by which employers respond to a governmental survey form.
+ 
+ * The carbon monoxide detector's circuitry might "hallucinate" a certain background level of electrical resistance depending upon other appliances being run on the same household electrical circuit.
+ 
+These errors are called the **observation noise** and we will denote them in each time period with the vector $\boldsymbol{\nu}_t$.
+
+## Bringing the pieces together
+
+State space models take these different parts and reduce them into two iterative equations:
+
+$$\begin{aligned} \textrm{State}: \quad \boldsymbol{x}_t &= \overbrace{\mathbf{A} \boldsymbol{x}_{t-1}}^\textrm{Evolve} + \overbrace{\mathbf{B} \boldsymbol{u}_t}^\textrm{Force} + \boldsymbol{\omega}_t\\ \\ \textrm{Observation}: \quad \boldsymbol{y}_t &= \underbrace{\mathbf{F} \boldsymbol{x}_t}_\textrm{Measure} + \boldsymbol{\nu}_t \end{aligned}$$
+
+Our *state* updates in every period by using its universe's ruleset to evolve in a predictable way. On top of this prediction we add any outside force (in some models, this term disappears completely), as well as the unpredictable innovation/noise.
+
+Our *observation* updates as well, not as a direct function of the past, but simply as a function of the current state, to which we add more stochastic error.
+
+```{r}
+#| code-fold: true
+#| fig-cap: "Illustration of a state space process (without control vectors)"
+par(mar=c(0,0,0,0)+0.3)
+plot(x=c(0,12),y=c(1,7),type='n',xaxt='n',yaxt='n',xlab=NA,ylab=NA,bty='n',asp=1)
+rect(c(0,0),c(1,3),c(12,12),c(3,7),col=c('#0000001f','#0000ff3f'),density=-1,lwd=0)
+rect(c(1.5,5.5,9.5),rep(1.5,3),c(2.5,6.5,10.5),rep(2.5,3),lwd=2)
+rect(c(1.5,5.5,9.5),rep(4.5,3),c(2.5,6.5,10.5),rep(5.5,3),lwd=2,border='#00007f')
+symbols(x=c(0.5,3.5,4.5,7.5,8.5,11.5),y=rep(c(6.5,3.5),times=3),circles=rep(0.375,6),
+        add=TRUE,fg=rep(c('#00007f','#000000'),times=3),inches=FALSE)
+arrows(x0=0.5+sqrt(2)/2*0.375+c(0,4,8),y0=7-0.5-sqrt(2)/2*0.375,
+       x1=1.5+c(0,4,8),y1=5.5,length=0.125,col='#00007f')
+arrows(x0=3.5-sqrt(2)/2*0.375+c(0,4,8),y0=7-3.5-sqrt(2)/2*0.375,
+       x1=2.5+c(0,4,8),y1=2.5,length=0.125)
+arrows(x0=2.5+c(-4,0,4,8),y0=5,x1=5.5+c(-4,0,4,8),lwd=2,length=0.125,col='#00007f')
+arrows(x0=2+c(-4,0,4,8),y0=4.5,y1=2.5,lwd=2,length=0.125)
+text(x=0.5+c(0,4,8),y=6.5,labels=c(expression(bold(omega)[italic(t-1)]),expression(bold(omega)[italic(t)]),expression(bold(omega)[italic(t+1)])),col='#00007f',cex=1.25)
+text(x=2+c(0,4,8),y=5,labels=c(expression(bold(x)[italic(t-1)]),expression(bold(x)[italic(t)]),expression(bold(x)[italic(t+1)])),col='#00007f',cex=1.5)
+text(x=3.5+c(0,4,8),y=3.5,labels=c(expression(bold(nu)[italic(t-1)]),expression(bold(nu)[italic(t)]),expression(bold(nu)[italic(t+1)])),cex=1.25)
+text(x=2+c(0,4,8),y=2,labels=c(expression(bold(y)[italic(t-1)]),expression(bold(y)[italic(t)]),expression(bold(y)[italic(t+1)])),cex=1.5)
+text(x=0.5+c(0,4,8),y=5,labels=expression(bold(F)),pos=3,col='#7f0000',cex=1.25)
+text(x=2+c(0,4,8),y=3.5,labels=expression(bold(A)),pos=2,col='#7f0000',cex=1.25)
+text(0.2,1.2,labels='Observed',adj=c(0,0))
+text(11.8,6.8,labels='Hidden',adj=c(1,1),col='#00007f')
+```
+
+### Example 1: AR(1) model
+
+This is one of the very first models we considered:
+
+$$y_t = \phi y_{t-1} + \omega_t$$
+
+We could say:
+
+ * $\mathbf{A} = [\phi]$
+ * $\mathbf{B} = [0]$ (and so $u_t$ no longer matters)
+ * $\mathbf{F} = [1]$ (nothing about state is hidden)
+ * $\mathbb{V}[\nu_t] = 0$ (no measurement error)
+ 
+And then write the AR(1) with state space representation:
+
+$$\begin{aligned} x_t &= \phi x_{t-1} + \omega_t \\ y_t &= x_t \end{aligned}$$
+
+If you wanted to move up a notch in complexity, we could take this from an abstraction to any real-world set of observations. Say we are measuring temperature minute by minute inside a hot piece of machinery, such as an engine. The temperature at each reading is strongly predicted by the previous reading, but tends toward a long-term constant --- AR(1). However, the temperature is taken by a thermometer with a margin-of-error of 1 degree Celsius. Then we would reintroduce measurement error:
+
+$$\begin{aligned} x_t &= \phi x_{t-1} + \omega_t \\ y_t &= x_t + \nu_t \end{aligned}$$
+
+### Example 2: Exponential smoothing models
+
+When [first introducing ETS models](ets.qmd), I noted that they had somewhat recently been fully synthesized with state space representations. Rob Hyndman even has [a book](https://robjhyndman.com/expsmooth/) on the topic, for those interested in a full treatment.
+
+To understand their state space representation, I find it useful to invert my sense of which terms capture "truth" and which capture "approximation". We introduced the basic ETS model with a level as follows:
+
+$$\begin{aligned} \textrm{Level}: &\quad \ell_t = \alpha y_t + (1 - \alpha) \ell_{t-1} \\ \textrm{Forecast}: &\quad \hat{y}_{t+h|t} = \ell_t \end{aligned}$$
+And in this notation the level $\ell_t$ is an approximation; a smoothing function we apply to fit a line between our "real" observations $y_1, \ldots, y_t$.
+
+What if we turned that around? What if the level was a hidden truth and our data are "messy" or error-prone observations of the level? Setting aside the forecasting part for the moment, we could write:
+
+$$\begin{aligned} \textrm{State}: &\quad \ell_t = \ell_{t-1} + \omega_t \\ \textrm{Observation}: &\quad y_t = \ell_t + \epsilon_t \end{aligned}$$
+
+Or, going a step further to incorporate a linear trend into our state in addition to the level, we could write:
+
+$$x_t = \left[\begin{array}{c} \ell_t \\ b_t \end{array} \right]$$
+
+In which case the state space representation would be:
+
+$$\begin{aligned} \textrm{State}: &\quad x_t = \left[\begin{array}{cc} 1 & 1 \\ 0 & 1 \end{array} \right] x_{t-1} + \omega_t \\ \textrm{Observation}: &\quad y_t = \left[\begin{array}{c} 1 & 0 \end{array} \right] x_t + \epsilon_t \end{aligned}$$
+
+The matrix in the state equation implies that the level will update to a new amount incremented by the trend, while the trend will not update (though it will be affected by the noise term $\omega$.) The row vector in the observation equation implies that our observation (messily) observes the level of the series, but we do not explicitly observe the trend ($\boldsymbol{y}$ is a univariate sample, after all!)
+
+Readers may notice that the exponential smoothing parameter $\alpha$ has vanished, and that while the original ETS formulation had no error terms, now we have *two* error terms. These two mysteries are connected, but we must wait until [the next page](kalmanfilter.qmd) to see their correspondence.
