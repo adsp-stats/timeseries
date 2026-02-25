@@ -65,6 +65,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
+<link href="./statespace.html" rel="next">
 <link href="./garch.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -359,6 +360,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./archgarchinr.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">ARCH/GARCH in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">8. State-space representations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./statespace.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">State space representations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./kalmanfilter.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">The Kalman filter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./hmms.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Hidden Markov models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./statespaceinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">State space analysis in R</span></a>
   </div>
 </li>
       </ul>
@@ -664,13 +696,13 @@ omega  -803221.5863
 alpha1 -402755.4115
 beta1  -480647.1975
 attr(,"time")
-Time difference of 0.01960206 secs
+Time difference of 0.01912594 secs
 
 --- END OF TRACE ---
 
 
 Time to Estimate Parameters:
- Time difference of 0.1587191 secs</code></pre>
+ Time difference of 0.1539989 secs</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fgarch.armagarch)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -683,7 +715,7 @@ Call:
 
 Mean and Variance Equation:
  data ~ arma(1, 1) + garch(1, 1)
-&lt;environment: 0x14bf9d238&gt;
+&lt;environment: 0x14d9263b8&gt;
  [data = SP500]
 
 Conditional Distribution:
@@ -711,7 +743,7 @@ Log Likelihood:
  -3477.526    normalized:  -1.250908 
 
 Description:
- Thu Feb 19 17:35:04 2026 by user:  
+ Wed Feb 25 16:52:23 2026 by user:  
 
 
 
@@ -870,7 +902,7 @@ Adjusted Pearson Goodness-of-Fit Test:
 4    50    114.50    3.680e-07
 
 
-Elapsed time : 0.072083 </code></pre>
+Elapsed time : 0.07599711 </code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimates of iid normal errors omega_t</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>(rugarch.omega <span class="ot">&lt;-</span> <span class="fu">head</span>(<span class="fu">residuals</span>(rugarch.armagarch,<span class="at">standardize=</span><span class="cn">TRUE</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1428,6 +1460,9 @@ T+6   1.578224</code></pre>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="./statespace.html" class="pagination-link" aria-label="State space representations">
+        <span class="nav-page-text"><span class="chapter-title">State space representations</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->

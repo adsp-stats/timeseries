@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>MA models – Forecasting Essentials and Notes: Online Resource</title>
+<title>State space representations – Forecasting Essentials and Notes: Online Resource</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -65,8 +65,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./backshift.html" rel="next">
-<link href="./ar.html" rel="prev">
+<link href="./kalmanfilter.html" rel="next">
+<link href="./archgarchinr.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -148,7 +148,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ar.html">2. ARIMA models</a></li><li class="breadcrumb-item"><a href="./ma.html"><span class="chapter-title">MA models</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./statespace.html">8. State-space representations</a></li><li class="breadcrumb-item"><a href="./statespace.html"><span class="chapter-title">State space representations</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -238,7 +238,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ma.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">MA models</span></a>
+  <a href="./ma.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">MA models</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -404,7 +404,7 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./statespace.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">State space representations</span></a>
+  <a href="./statespace.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">State space representations</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -434,20 +434,30 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#ma1-process" id="toc-ma1-process" class="nav-link active" data-scroll-target="#ma1-process">MA(1) process</a></li>
-  <li><a href="#generalizing-to-maq" id="toc-generalizing-to-maq" class="nav-link" data-scroll-target="#generalizing-to-maq">Generalizing to MA(<em>q</em>)</a></li>
-  <li><a href="#recognizing-a-ma-process-from-its-acf-plot" id="toc-recognizing-a-ma-process-from-its-acf-plot" class="nav-link" data-scroll-target="#recognizing-a-ma-process-from-its-acf-plot">Recognizing a MA process from its ACF plot</a></li>
-  <li><a href="#all-ma-processes-are-stationary" id="toc-all-ma-processes-are-stationary" class="nav-link" data-scroll-target="#all-ma-processes-are-stationary">All MA processes are stationary</a></li>
-  <li><a href="#ma-model-responses-to-system-shocks" id="toc-ma-model-responses-to-system-shocks" class="nav-link" data-scroll-target="#ma-model-responses-to-system-shocks">MA model responses to system shocks</a></li>
+  <li><a href="#the-components-of-the-model" id="toc-the-components-of-the-model" class="nav-link active" data-scroll-target="#the-components-of-the-model">The components of the model</a>
+  <ul class="collapse">
+  <li><a href="#the-state-xt" id="toc-the-state-xt" class="nav-link" data-scroll-target="#the-state-xt">The state (<strong><em>x</em></strong><sub><em>t</em></sub>)</a></li>
+  <li><a href="#evolving-the-state-f" id="toc-evolving-the-state-f" class="nav-link" data-scroll-target="#evolving-the-state-f">Evolving the state (<strong>F</strong>)</a></li>
+  <li><a href="#changing-the-state-b-ut" id="toc-changing-the-state-b-ut" class="nav-link" data-scroll-target="#changing-the-state-b-ut">Changing the state (<strong>B</strong> <strong><em>u</em></strong><sub><em>t</em></sub>)</a></li>
+  <li><a href="#the-process-noise-wt" id="toc-the-process-noise-wt" class="nav-link" data-scroll-target="#the-process-noise-wt">The process noise (<strong><em>w</em></strong><sub><em>t</em></sub>)</a></li>
+  <li><a href="#the-observation-yt" id="toc-the-observation-yt" class="nav-link" data-scroll-target="#the-observation-yt">The observation (<strong><em>y</em></strong><sub><em>t</em></sub>)</a></li>
+  <li><a href="#the-measurement-device-a" id="toc-the-measurement-device-a" class="nav-link" data-scroll-target="#the-measurement-device-a">The measurement device (<strong>A</strong>)</a></li>
+  <li><a href="#the-observation-noise-vt" id="toc-the-observation-noise-vt" class="nav-link" data-scroll-target="#the-observation-noise-vt">The observation noise (<strong><em>v</em></strong><sub><em>t</em></sub>)</a></li>
+  </ul></li>
+  <li><a href="#bringing-the-pieces-together" id="toc-bringing-the-pieces-together" class="nav-link" data-scroll-target="#bringing-the-pieces-together">Bringing the pieces together</a>
+  <ul class="collapse">
+  <li><a href="#example-1-ar1-model" id="toc-example-1-ar1-model" class="nav-link" data-scroll-target="#example-1-ar1-model">Example 1: AR(1) model</a></li>
+  <li><a href="#example-2-exponential-smoothing-models" id="toc-example-2-exponential-smoothing-models" class="nav-link" data-scroll-target="#example-2-exponential-smoothing-models">Example 2: Exponential smoothing models</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content column-body" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ar.html">2. ARIMA models</a></li><li class="breadcrumb-item"><a href="./ma.html"><span class="chapter-title">MA models</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./statespace.html">8. State-space representations</a></li><li class="breadcrumb-item"><a href="./statespace.html"><span class="chapter-title">State space representations</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-title">MA models</span></h1>
+<h1 class="title"><span class="chapter-title">State space representations</span></h1>
 </div>
 
 
@@ -464,159 +474,159 @@ window.Quarto = {
 </header>
 
 
-<p>A second building block of statistical time series analysis is the <em>moving average (MA) model</em>. Moving average models are not well-named: rather than predicting <span class="math inline">\(Y_t\)</span> as a weighted average of its past values (which is what AR models can do), MA models predict <span class="math inline">\(Y_t\)</span> using a weighted average of <em>the unobserved innovations</em>:</p>
-<p><span class="math display">\[Y_t = \beta_0 + \beta_1 \varepsilon_{t-1} + \beta_2 \varepsilon_{t-2} + \ldots + \varepsilon_t\]</span></p>
-<p>Once again I have sketched this idea using the terminology familiar to us from linear regression, but below I will redefine this idea using our new time series notation.</p>
-<section id="ma1-process" class="level2">
-<h2 class="anchored" data-anchor-id="ma1-process">MA(1) process</h2>
-<p>Let’s take the simplest case, where each value of the series averages only the current and immediate previous innovation. We would name this an <em>moving average model with order 1</em> or <em>MA(1) model</em>.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>. Let <span class="math inline">\(\boldsymbol{\omega}\)</span> be a white noise process observed at the same time periods. If,</p>
-<p><span class="math display">\[Y_t = \omega_t + \theta \omega_{t-1}\]</span></p>
-<p>For some <span class="math inline">\(\theta \in \mathbb{R}\)</span> and all <span class="math inline">\(t \in T\)</span>, then we say that <span class="math inline">\(\boldsymbol{Y}\)</span> is an <strong>moving average process with order 1</strong></p>
-</div>
-</div>
-<p>In theory, the exact properties of a MA(1) process depend on both the moving average parameter <span class="math inline">\(\theta\)</span> as well as the specific type of white noise process denoted by <span class="math inline">\(\boldsymbol{\omega}\)</span>. In practice, we often assume <span class="math inline">\(\boldsymbol{\omega}\)</span> to be Gaussian white noise, leaving <span class="math inline">\(\theta\)</span> as the only input which needs estimation.</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">1.1</span>))</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0106</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">20</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>thetavec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="sc">-</span>.<span class="dv">6</span>,<span class="sc">-</span>.<span class="dv">3</span>,<span class="dv">0</span>,.<span class="dv">3</span>,.<span class="dv">6</span>,<span class="dv">1</span>,<span class="dv">2</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">rep</span>(w[<span class="dv">1</span>],<span class="dv">9</span>))</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">20</span>){Y <span class="ot">&lt;-</span> <span class="fu">rbind</span>(Y, <span class="fu">t</span>(<span class="fu">rep</span>(w[i],<span class="dv">9</span>)<span class="sc">+</span>thetavec<span class="sc">*</span>w[i<span class="dv">-1</span>]))}</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {<span class="fu">plot</span>(Y[,j],<span class="at">main=</span><span class="fu">bquote</span>(theta<span class="sc">==</span>.(thetavec[j])),</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                     <span class="at">type=</span><span class="st">'l'</span>,<span class="at">xlab=</span><span class="cn">NA</span>,<span class="at">ylab=</span><span class="cn">NA</span>,<span class="at">sub=</span><span class="cn">NA</span>)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lines</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>,Y[,<span class="dv">5</span>],<span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">lty=</span><span class="dv">2</span>)}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="ma_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Nine MA(1) processes with the same innovations</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p>In the plots above, we see that MA processes are a little more subtle than AR processes:</p>
+<p>Although this topic is sometimes described as “state space models” (and I will occasionally do the same), it would be more accurate to say that state space isn’t a model class at all but rather <em>a new way to represent and describe models.</em> Several of the models we have already studied can be rewritten using state space terminology. When we choose to represent a time series model using state space ideas, we gain a new set of tools for estimation and forecasting.</p>
+<section id="the-components-of-the-model" class="level2">
+<h2 class="anchored" data-anchor-id="the-components-of-the-model">The components of the model</h2>
+<p>State space representations involve some new terms and new notation, so we will introduce them one at a time and then stitch them together.</p>
+<section id="the-state-xt" class="level3">
+<h3 class="anchored" data-anchor-id="the-state-xt">The state (<strong><em>x</em></strong><sub><em>t</em></sub>)</h3>
+<p>Assume that we imperfectly observe a system of information over time. The system has a true “state” at every time index, which can be thought of as a vector of one or more random variables.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> For example:</p>
 <ul>
-<li><p>MA(1) processes remain stationary for any finite value of <span class="math inline">\(\theta\)</span>, even large positive or negative values. (The weighted sum of any two zero-mean random variables still has a mean of zero.)</p></li>
-<li><p>Positive and negative values of <span class="math inline">\(\theta\)</span> produce similar patterns, with no parameter choice creating the alternating series seen in the AR(1) models.</p></li>
+<li><p>If we observe a car, its state might include: its position, its velocity, and its direction.</p></li>
+<li><p>If we observe a labor market, its state might include: the average hourly wage and the total amount of employment.</p></li>
+<li><p>If we observe a nursery, its state might include: the air concentration of carbon monoxide.</p></li>
 </ul>
-<p>The properties and utility of MA models are perhaps better described with higher-order processes.</p>
+<p>We call this truth of the system its <strong>state</strong>, which is usually hidden from us. Although the state might be just a single variable, I will represent it as a possible vector of variables, and we will denote the current state of the system as <span class="math inline">\(\boldsymbol{x_t}\)</span>.</p>
 </section>
-<section id="generalizing-to-maq" class="level2">
-<h2 class="anchored" data-anchor-id="generalizing-to-maq">Generalizing to MA(<em>q</em>)</h2>
-<p>Now we may complicate the scenario, by allowing the current value <span class="math inline">\(Y_t\)</span> to average <em>several, different</em> past innovations of the series.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>. Let <span class="math inline">\(\boldsymbol{\omega}\)</span> be a white noise process observed at the same time periods. If,</p>
-<p><span class="math display">\[Y_t = \omega_t + \theta_1 \omega_{t-1} + \theta_2 \omega_{t-2} + \ldots + \theta_q \omega_{t-q}\]</span></p>
-<p>For some <span class="math inline">\((\theta_1, \theta_2, \ldots, \theta_q) \in \mathbb{R}^q\)</span> and all <span class="math inline">\(t \in T\)</span>, then we say that <span class="math inline">\(\boldsymbol{Y}\)</span> is an <strong>moving average model with order</strong> <strong><em>q</em></strong>.</p>
-</div>
-</div>
-<p>MA(<em>q</em>) effects tend to become more pronounced at higher orders. For many combinations of parameters <span class="math inline">\(\theta_1, \ldots, \theta_q\)</span>, the general effect is a smoothing filter which highlights consecutive large innovations but minimizes single innovations, and preserves no memory of the past beyond its averaging:</p>
+<section id="evolving-the-state-f" class="level3">
+<h3 class="anchored" data-anchor-id="evolving-the-state-f">Evolving the state (<strong>F</strong>)</h3>
+<p>A system in motion tends to stay in motion, to paraphrase Newton. If we knew the current period’s state, we could a good guess as to the next period’s state, assuming no new outside forces or information. For example,</p>
+<ul>
+<li><p>We might expect the car’s state in the next second to continue with the same direction and velocity as this second, and a new position which differs from the current position by combining the direction and speed information together with the time between observations.</p></li>
+<li><p>We might expect next week’s labor market to keep the same minimum wage and employment totals, perhaps multiplied by inflation and population exponents, perhaps with seasonal effects.</p></li>
+<li><p>We might expect next minute’s carbon monoxide levels to be 80% as large as this minute’s levels, due to dispersion, unless there were an active emission source.</p></li>
+</ul>
+<p>These expectations often reflect a “rules-based” or “physics-informed” view of the system. Mathematically, they take the form of a matrix which we use to evolve the current state into the next one. We may call it the state <strong>transition model</strong>, and denote it by the matrix <span class="math inline">\(\mathbf{F}\)</span>.</p>
+</section>
+<section id="changing-the-state-b-ut" class="level3">
+<h3 class="anchored" data-anchor-id="changing-the-state-b-ut">Changing the state (<strong>B</strong> <strong><em>u</em></strong><sub><em>t</em></sub>)</h3>
+<p>Newton’s first law, of course, ends “… unless acted upon by an outside force.” We can include such outside forces in our model:</p>
+<ul>
+<li><p>The driver of the car might steer in a new direction, or brake/accelerate to a new velocity.</p></li>
+<li><p>New minimum wage laws might directly and permanently change the wage in future periods, which in turn will likely have consequences for total employment numbers.</p></li>
+<li><p>The owner of the house might (partially) open or shut a window in the nursery, allowing any CO in the house to more quickly or more slowly disperse.</p></li>
+</ul>
+<p>These outside forces are distinct from errors (we will cover those later). They are not stochastic, and they may create a “lever” by which we (or actors within in the system) can create a more desirable set of states. We refer to this as the <strong>control input</strong> or the <strong>external force</strong> term, which includes a matrix describing the <em>shape</em> of such a change, <span class="math inline">\(\mathbf{B}\)</span>, as well as a vector representing the <em>degree</em> of change for the current period, <span class="math inline">\(\boldsymbol{u}_t\)</span>.</p>
+</section>
+<section id="the-process-noise-wt" class="level3">
+<h3 class="anchored" data-anchor-id="the-process-noise-wt">The process noise (<strong><em>w</em></strong><sub><em>t</em></sub>)</h3>
+<p>In most realistic systems, the state never evolves <em>quite</em> the way we expect. Some stochastic error process often distorts our linear, deterministic prediction:</p>
+<ul>
+<li><p>The driver of a car may be unable to hold exactly the same direction or velocity, even if they wanted to, or they may have to swerve to avoid oncoming traffic.</p></li>
+<li><p>Employment numbers might unexpectedly dip if a Fortune 500 company with many employees suddenly went out of business.</p></li>
+<li><p>Carbon monoxide levels might vary stochastically with the passing of cars and trucks on the street outside.</p></li>
+</ul>
+<p>This <strong>process error</strong> is not in any way false or distortive: it is a new and unpredicted component to the truth which helps to create the new state. (“Innovation” might be a better term.) Without this term, our universe would be completely determinative. We will denote the current process error as <span class="math inline">\(\boldsymbol{omega}_t\)</span>.</p>
+</section>
+<section id="the-observation-yt" class="level3">
+<h3 class="anchored" data-anchor-id="the-observation-yt">The observation (<strong><em>y</em></strong><sub><em>t</em></sub>)</h3>
+<p>We observe the system by taking measurements. Due to the complexity of the system, the limits of our observational technology, how rapidly the system changes, the presence of “noise” which obscures the state, and other sources, our measurements are not equal to the state. For example,</p>
+<ul>
+<li><p>When we observe a car, we measure its position (and infer its speed and direction) from a GPS satellite reading. Each reading is only accurate to within about 5 meters. Within less than a second, all of this information might have changed.</p></li>
+<li><p>When we observe a labor market, we measure unemployment and wages from records provided by employers. Some records are poorly kept, and some are fradulent. Some of the labor force is illicit (<em>e.g.</em> by nature of the job, or their age, or their immigration status) and not recorded. It’s impossible to collect a national snapshot with total precision because of the time it takes to collect each week’s records and the variety of ways in which different states or industries track their workforce.</p></li>
+<li><p>When we observe a nursery, we measure carbon monoxide concentration from a sensor on the wall or ceiling. The air by the sensor may not reflect the true room average, and the sensor itself may have a low accuracy or may be prone to confuse carbon monoxide with other, less deadly air contaminants.</p></li>
+</ul>
+<p>The <strong>observation</strong> is <em>our only real data</em> about the system. Although the observation might be just a single variable, I will represent it as a possible vector of variables, and we will denote the current observation as <span class="math inline">\(\boldsymbol{y_t}\)</span>.</p>
+</section>
+<section id="the-measurement-device-a" class="level3">
+<h3 class="anchored" data-anchor-id="the-measurement-device-a">The measurement device (<strong>A</strong>)</h3>
+<p>Even if we had no measurement error, our observation would not always exactly be the same as the state. For example,</p>
+<ul>
+<li><p>The GPS measurement of a car might simply be a grid coordinate. From these two numbers we would identify a latitude and longitude using some math and a geospatial reference system. We might never know the height/altitude of the car. We would have to do some more math to determine the velocity and direction of the car, perhaps using the prior observation.</p></li>
+<li><p>The weekly employment totals for a labor market might need to be grossed up to account for known underreporting, or seasonally adjusted.</p></li>
+<li><p>The carbon monoxide detector might work by measuring resistance in an electric current. The resistance in ohms would need to be converted to a CO2 concentration through some formula.</p></li>
+</ul>
+<p>The difference between our observation and the state is not just a matter of units or business rules; sometimes entire dimensions of the state space are never observed directly and must be estimated. We call the matrix which defines the gap between state and observation the <strong>measurement model</strong>, and denote it as <span class="math inline">\(\mathbf{A}\)</span>.</p>
+</section>
+<section id="the-observation-noise-vt" class="level3">
+<h3 class="anchored" data-anchor-id="the-observation-noise-vt">The observation noise (<strong><em>v</em></strong><sub><em>t</em></sub>)</h3>
+<p>Our measurement device rarely makes the observation without some error. This error is not an innovation or a stochastic updating of the truth, it is simply a “wrong” result which hides information about the true state from us. For example:</p>
+<ul>
+<li><p>The GPS measurements of a car might have an effective accuracy to within about 5 meters of the true position, which creates spillover effects when estimating velocity and direction.</p></li>
+<li><p>The weekly jobs report be biased up or down each week by which employers respond to a governmental survey form.</p></li>
+<li><p>The carbon monoxide detector’s circuitry might “hallucinate” a certain background level of electrical resistance depending upon other appliances being run on the same household electrical circuit.</p></li>
+</ul>
+<p>These errors are called the <strong>observation noise</strong> and we will denote them in each time period with the vector <span class="math inline">\(\boldsymbol{\nu}_t\)</span>.</p>
+</section>
+</section>
+<section id="bringing-the-pieces-together" class="level2">
+<h2 class="anchored" data-anchor-id="bringing-the-pieces-together">Bringing the pieces together</h2>
+<p>State space models take these different parts and reduce them into two iterative equations:</p>
+<p><span class="math display">\[\begin{aligned} \textrm{State}: \quad \boldsymbol{x}_t &amp;= \overbrace{\mathbf{A} \boldsymbol{x}_{t-1}}^\textrm{Evolve} + \overbrace{\mathbf{B} \boldsymbol{u}_t}^\textrm{Force} + \boldsymbol{\omega}_t\\ \\ \textrm{Observation}: \quad \boldsymbol{y}_t &amp;= \underbrace{\mathbf{F} \boldsymbol{x}_t}_\textrm{Measure} + \boldsymbol{\nu}_t \end{aligned}\]</span></p>
+<p>Our <em>state</em> updates in every period by using its universe’s ruleset to evolve in a predictable way. On top of this prediction we add any outside force (in some models, this term disappears completely), as well as the unpredictable innovation/noise.</p>
+<p>Our <em>observation</em> updates as well, not as a direct function of the past, but simply as a function of the current state, to which we add more stochastic error.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">1.1</span>))</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0107</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">50</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>theta <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>),<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>),<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>),</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(<span class="fl">0.8</span>,<span class="fl">0.6</span>,<span class="fl">0.4</span>,<span class="fl">0.2</span>),<span class="fu">c</span>(<span class="fl">0.4</span>,<span class="fl">0.3</span>,<span class="fl">0.2</span>,<span class="fl">0.1</span>),<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>),</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">4</span>,<span class="dv">2</span>,<span class="dv">1</span>),<span class="fu">c</span>(<span class="dv">0</span>,<span class="sc">-</span><span class="dv">1</span>),<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>))</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow=</span><span class="dv">50</span>,<span class="at">ncol=</span><span class="dv">9</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) Y[,i] <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ma=</span>theta[[i]]),<span class="at">n=</span><span class="dv">50</span>,<span class="at">innov=</span>w)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) <span class="fu">plot</span>(Y[,j],<span class="at">main=</span><span class="fu">bquote</span>(theta<span class="sc">==</span>.(<span class="fu">paste</span>(theta[[j]],<span class="at">collapse=</span><span class="st">','</span>))),</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">type=</span><span class="st">'l'</span>,<span class="at">xlab=</span><span class="cn">NA</span>,<span class="at">ylab=</span><span class="cn">NA</span>,<span class="at">sub=</span><span class="cn">NA</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>)<span class="sc">+</span><span class="fl">0.3</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">12</span>),<span class="at">y=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">7</span>),<span class="at">type=</span><span class="st">'n'</span>,<span class="at">xaxt=</span><span class="st">'n'</span>,<span class="at">yaxt=</span><span class="st">'n'</span>,<span class="at">xlab=</span><span class="cn">NA</span>,<span class="at">ylab=</span><span class="cn">NA</span>,<span class="at">bty=</span><span class="st">'n'</span>,<span class="at">asp=</span><span class="dv">1</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rect</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>),<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>),<span class="fu">c</span>(<span class="dv">12</span>,<span class="dv">12</span>),<span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">7</span>),<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#0000001f'</span>,<span class="st">'#0000ff3f'</span>),<span class="at">density=</span><span class="sc">-</span><span class="dv">1</span>,<span class="at">lwd=</span><span class="dv">0</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rect</span>(<span class="fu">c</span>(<span class="fl">1.5</span>,<span class="fl">5.5</span>,<span class="fl">9.5</span>),<span class="fu">rep</span>(<span class="fl">1.5</span>,<span class="dv">3</span>),<span class="fu">c</span>(<span class="fl">2.5</span>,<span class="fl">6.5</span>,<span class="fl">10.5</span>),<span class="fu">rep</span>(<span class="fl">2.5</span>,<span class="dv">3</span>),<span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">rect</span>(<span class="fu">c</span>(<span class="fl">1.5</span>,<span class="fl">5.5</span>,<span class="fl">9.5</span>),<span class="fu">rep</span>(<span class="fl">4.5</span>,<span class="dv">3</span>),<span class="fu">c</span>(<span class="fl">2.5</span>,<span class="fl">6.5</span>,<span class="fl">10.5</span>),<span class="fu">rep</span>(<span class="fl">5.5</span>,<span class="dv">3</span>),<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">border=</span><span class="st">'#00007f'</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">symbols</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="fl">0.5</span>,<span class="fl">3.5</span>,<span class="fl">4.5</span>,<span class="fl">7.5</span>,<span class="fl">8.5</span>,<span class="fl">11.5</span>),<span class="at">y=</span><span class="fu">rep</span>(<span class="fu">c</span>(<span class="fl">6.5</span>,<span class="fl">3.5</span>),<span class="at">times=</span><span class="dv">3</span>),<span class="at">circles=</span><span class="fu">rep</span>(<span class="fl">0.375</span>,<span class="dv">6</span>),</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">add=</span><span class="cn">TRUE</span>,<span class="at">fg=</span><span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">'#00007f'</span>,<span class="st">'#000000'</span>),<span class="at">times=</span><span class="dv">3</span>),<span class="at">inches=</span><span class="cn">FALSE</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">arrows</span>(<span class="at">x0=</span><span class="fl">0.5</span><span class="sc">+</span><span class="fu">sqrt</span>(<span class="dv">2</span>)<span class="sc">/</span><span class="dv">2</span><span class="sc">*</span><span class="fl">0.375</span><span class="sc">+</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">4</span>,<span class="dv">8</span>),<span class="at">y0=</span><span class="dv">7</span><span class="fl">-0.5</span><span class="sc">-</span><span class="fu">sqrt</span>(<span class="dv">2</span>)<span class="sc">/</span><span class="dv">2</span><span class="sc">*</span><span class="fl">0.375</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">x1=</span><span class="fl">1.5</span><span class="sc">+</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">4</span>,<span class="dv">8</span>),<span class="at">y1=</span><span class="fl">5.5</span>,<span class="at">length=</span><span class="fl">0.125</span>,<span class="at">col=</span><span class="st">'#00007f'</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">arrows</span>(<span class="at">x0=</span><span class="fl">3.5</span><span class="sc">-</span><span class="fu">sqrt</span>(<span class="dv">2</span>)<span class="sc">/</span><span class="dv">2</span><span class="sc">*</span><span class="fl">0.375</span><span class="sc">+</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">4</span>,<span class="dv">8</span>),<span class="at">y0=</span><span class="dv">7</span><span class="fl">-3.5</span><span class="sc">-</span><span class="fu">sqrt</span>(<span class="dv">2</span>)<span class="sc">/</span><span class="dv">2</span><span class="sc">*</span><span class="fl">0.375</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">x1=</span><span class="fl">2.5</span><span class="sc">+</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">4</span>,<span class="dv">8</span>),<span class="at">y1=</span><span class="fl">2.5</span>,<span class="at">length=</span><span class="fl">0.125</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">arrows</span>(<span class="at">x0=</span><span class="fl">2.5</span><span class="sc">+</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">4</span>,<span class="dv">0</span>,<span class="dv">4</span>,<span class="dv">8</span>),<span class="at">y0=</span><span class="dv">5</span>,<span class="at">x1=</span><span class="fl">5.5</span><span class="sc">+</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">4</span>,<span class="dv">0</span>,<span class="dv">4</span>,<span class="dv">8</span>),<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">length=</span><span class="fl">0.125</span>,<span class="at">col=</span><span class="st">'#00007f'</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">arrows</span>(<span class="at">x0=</span><span class="dv">2</span><span class="sc">+</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">4</span>,<span class="dv">0</span>,<span class="dv">4</span>,<span class="dv">8</span>),<span class="at">y0=</span><span class="fl">4.5</span>,<span class="at">y1=</span><span class="fl">2.5</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">length=</span><span class="fl">0.125</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="fl">0.5</span><span class="sc">+</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">4</span>,<span class="dv">8</span>),<span class="at">y=</span><span class="fl">6.5</span>,<span class="at">labels=</span><span class="fu">c</span>(<span class="fu">expression</span>(<span class="fu">bold</span>(omega)[<span class="fu">italic</span>(t<span class="dv">-1</span>)]),<span class="fu">expression</span>(<span class="fu">bold</span>(omega)[<span class="fu">italic</span>(t)]),<span class="fu">expression</span>(<span class="fu">bold</span>(omega)[<span class="fu">italic</span>(t<span class="sc">+</span><span class="dv">1</span>)])),<span class="at">col=</span><span class="st">'#00007f'</span>,<span class="at">cex=</span><span class="fl">1.25</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="dv">2</span><span class="sc">+</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">4</span>,<span class="dv">8</span>),<span class="at">y=</span><span class="dv">5</span>,<span class="at">labels=</span><span class="fu">c</span>(<span class="fu">expression</span>(<span class="fu">bold</span>(x)[<span class="fu">italic</span>(t<span class="dv">-1</span>)]),<span class="fu">expression</span>(<span class="fu">bold</span>(x)[<span class="fu">italic</span>(t)]),<span class="fu">expression</span>(<span class="fu">bold</span>(x)[<span class="fu">italic</span>(t<span class="sc">+</span><span class="dv">1</span>)])),<span class="at">col=</span><span class="st">'#00007f'</span>,<span class="at">cex=</span><span class="fl">1.5</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="fl">3.5</span><span class="sc">+</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">4</span>,<span class="dv">8</span>),<span class="at">y=</span><span class="fl">3.5</span>,<span class="at">labels=</span><span class="fu">c</span>(<span class="fu">expression</span>(<span class="fu">bold</span>(nu)[<span class="fu">italic</span>(t<span class="dv">-1</span>)]),<span class="fu">expression</span>(<span class="fu">bold</span>(nu)[<span class="fu">italic</span>(t)]),<span class="fu">expression</span>(<span class="fu">bold</span>(nu)[<span class="fu">italic</span>(t<span class="sc">+</span><span class="dv">1</span>)])),<span class="at">cex=</span><span class="fl">1.25</span>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="dv">2</span><span class="sc">+</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">4</span>,<span class="dv">8</span>),<span class="at">y=</span><span class="dv">2</span>,<span class="at">labels=</span><span class="fu">c</span>(<span class="fu">expression</span>(<span class="fu">bold</span>(y)[<span class="fu">italic</span>(t<span class="dv">-1</span>)]),<span class="fu">expression</span>(<span class="fu">bold</span>(y)[<span class="fu">italic</span>(t)]),<span class="fu">expression</span>(<span class="fu">bold</span>(y)[<span class="fu">italic</span>(t<span class="sc">+</span><span class="dv">1</span>)])),<span class="at">cex=</span><span class="fl">1.5</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="fl">0.5</span><span class="sc">+</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">4</span>,<span class="dv">8</span>),<span class="at">y=</span><span class="dv">5</span>,<span class="at">labels=</span><span class="fu">expression</span>(<span class="fu">bold</span>(F)),<span class="at">pos=</span><span class="dv">3</span>,<span class="at">col=</span><span class="st">'#7f0000'</span>,<span class="at">cex=</span><span class="fl">1.25</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x=</span><span class="dv">2</span><span class="sc">+</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">4</span>,<span class="dv">8</span>),<span class="at">y=</span><span class="fl">3.5</span>,<span class="at">labels=</span><span class="fu">expression</span>(<span class="fu">bold</span>(A)),<span class="at">pos=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'#7f0000'</span>,<span class="at">cex=</span><span class="fl">1.25</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="fl">0.2</span>,<span class="fl">1.2</span>,<span class="at">labels=</span><span class="st">'Observed'</span>,<span class="at">adj=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>))</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="fl">11.8</span>,<span class="fl">6.8</span>,<span class="at">labels=</span><span class="st">'Hidden'</span>,<span class="at">adj=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>),<span class="at">col=</span><span class="st">'#00007f'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="ma_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Nine MA processes with the same innovations</figcaption>
+<p><img src="statespace_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Illustration of a state space process (without control vectors)</figcaption>
 </figure>
 </div>
 </div>
 </div>
+<section id="example-1-ar1-model" class="level3">
+<h3 class="anchored" data-anchor-id="example-1-ar1-model">Example 1: AR(1) model</h3>
+<p>This is one of the very first models we considered:</p>
+<p><span class="math display">\[y_t = \phi y_{t-1} + \omega_t\]</span></p>
+<p>We could say:</p>
+<ul>
+<li><span class="math inline">\(\mathbf{A} = [\phi]\)</span></li>
+<li><span class="math inline">\(\mathbf{B} = [0]\)</span> (and so <span class="math inline">\(u_t\)</span> no longer matters)</li>
+<li><span class="math inline">\(\mathbf{F} = [1]\)</span> (nothing about state is hidden)</li>
+<li><span class="math inline">\(\mathbb{V}[\nu_t] = 0\)</span> (no measurement error)</li>
+</ul>
+<p>And then write the AR(1) with state space representation:</p>
+<p><span class="math display">\[\begin{aligned} x_t &amp;= \phi x_{t-1} + \omega_t \\ y_t &amp;= x_t \end{aligned}\]</span></p>
+<p>If you wanted to move up a notch in complexity, we could take this from an abstraction to any real-world set of observations. Say we are measuring temperature minute by minute inside a hot piece of machinery, such as an engine. The temperature at each reading is strongly predicted by the previous reading, but tends toward a long-term constant — AR(1). However, the temperature is taken by a thermometer with a margin-of-error of 1 degree Celsius. Then we would reintroduce measurement error:</p>
+<p><span class="math display">\[\begin{aligned} x_t &amp;= \phi x_{t-1} + \omega_t \\ y_t &amp;= x_t + \nu_t \end{aligned}\]</span></p>
 </section>
-<section id="recognizing-a-ma-process-from-its-acf-plot" class="level2">
-<h2 class="anchored" data-anchor-id="recognizing-a-ma-process-from-its-acf-plot">Recognizing a MA process from its ACF plot</h2>
-<p>An autocorrelation function (ACF) plot will always provide helpful summary or diagnostic information about a MA(<em>q</em>) model. In the simplest case of MA(1), the height of the ACF plot at the first lag will be equal to <span class="math inline">\(q/(1+q^2)\)</span>, and the remaining lags will show <em>little or no autocorrelation at all</em>. For example, when <span class="math inline">\(p=0.8\)</span>, the first lag will have an autocorrelation of roughly <span class="math inline">\(0.8/(1+0.64) \approx 0.49\)</span>, and all other lags will show only minimal autocorrelation:</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">1.1</span>))</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0108</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>ma08 <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ma=</span><span class="fl">0.8</span>),<span class="at">n=</span><span class="dv">1000</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>ma080706 <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ma=</span><span class="fu">c</span>(<span class="fl">0.8</span>,<span class="fl">0.7</span>,<span class="fl">0.6</span>)),<span class="at">n=</span><span class="dv">1000</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(ma08,<span class="at">main=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'ACF when '</span>,theta <span class="sc">==</span> <span class="fl">0.8</span>)),<span class="at">lag.max=</span><span class="dv">15</span>)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(ma080706,<span class="at">main=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'ACF when '</span>,theta <span class="sc">==</span> <span class="fu">list</span>(<span class="fl">0.8</span>,<span class="fl">0.7</span>,<span class="fl">0.6</span>))),<span class="at">lag.max=</span><span class="dv">15</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="ma_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Two MA processes and their ACF plots, 1000 obs each</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p>The key feature here is that for values <span class="math inline">\(s \lt (t - q)\)</span>, <span class="math inline">\(Y_t\)</span> and <span class="math inline">\(Y_s\)</span> have <em>no elements in common</em> and are completely independent. Any small sample autocorrelation is purely spurious.</p>
-</section>
-<section id="all-ma-processes-are-stationary" class="level2">
-<h2 class="anchored" data-anchor-id="all-ma-processes-are-stationary">All MA processes are stationary</h2>
-<p>Since MA processes are simply weighted sums of zero-mean white noise, they themselves are zero-mean and meet all the requirements for weak stationarity, no matter the choice(s) of <span class="math inline">\(\boldsymbol{\theta}\)</span>. In the equations which follow, assume that <span class="math inline">\(\mathbb{E}[\omega_t] = 0\)</span> and <span class="math inline">\(\mathbb{V}[\omega_t] = \sigma^2\)</span>:</p>
-<p><span class="math display">\[\begin{aligned} (1) \qquad \mathbb{E}[Y_t] &amp;= \mathbb{E}[\omega_t + \sum_{i=1}^q \theta_i \omega_{t-i}] = 0 + \sum_{i=1}^q \theta_i \mathbb{E}[\omega_{t-i}] = 0 + \sum_{i=1}^q 0 = 0 \\  \\ (2) \qquad \mathbb{V}[Y_t] &amp;= \mathbb{V}[\omega_t + \sum_{i=1}^q \theta_i \omega_{t-i}] = \sigma^2 + \sum_{i=1}^q \theta^2_i \mathbb{V}[\omega_{t-i}] = \left(1 + \sum_i \theta_i^2 \right) \sigma^2 \\ \\ (3) \qquad \gamma_{st} &amp;= \textrm{Cov}\left(\omega_s + \sum_{i=1}^q \theta_i \omega_{s-i},\, \omega_t + \sum_{i=1}^q \theta_i \omega_{t-i} \right) \\ &amp;= \left\{ \begin{array}{ll} 0 &amp; \textrm{if} \; |s - t| \gt q \\ \theta_q \sigma^2 &amp; \textrm{if} \; |s - t| = q \\ (\theta_{q-1} + \theta_2 \theta_q) \sigma^2 &amp; \textrm{if} \; |s - t| = q - 1 \\ \cdots &amp; \cdots \end{array} \right\}\end{aligned}\]</span></p>
-<p>We can see from the above that the mean and variance are constant and that the autocovariance of two entries depends only on the lag between them, which are the requirements of weak stationarity.</p>
-</section>
-<section id="ma-model-responses-to-system-shocks" class="level2">
-<h2 class="anchored" data-anchor-id="ma-model-responses-to-system-shocks">MA model responses to system shocks</h2>
-<p>MA models dampen one-time system shocks by averaging them among the other innovations, and after the moving average window has passed, the system shock disappears entirely from the series. Consider a MA(3) model which processes a fairly quiet series of innovations, interrupted irregularly by a much larger signal:</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0110</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">100</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>w[<span class="dv">8</span>] <span class="ot">&lt;-</span> <span class="dv">10</span>; w[<span class="dv">15</span>] <span class="ot">&lt;-</span> <span class="dv">10</span>; w[<span class="dv">25</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">10</span>; w[<span class="dv">45</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">10</span>;</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>ma <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ma=</span><span class="fu">c</span>(<span class="fl">0.9</span>,<span class="fl">0.6</span>,<span class="fl">0.3</span>)),<span class="at">n=</span><span class="dv">100</span>,<span class="at">innov=</span>w)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">15</span><span class="sc">+</span>ma,<span class="at">type=</span><span class="st">'s'</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">10</span>,<span class="dv">27</span>),<span class="at">ylab=</span><span class="cn">NA</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(w,<span class="at">type=</span><span class="st">'h'</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">lwd=</span><span class="dv">2</span>)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="dv">15</span>,<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'#7f7f7f'</span>)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topright'</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#0000ff'</span>),<span class="at">bty=</span><span class="st">'n'</span>,</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend=</span><span class="fu">c</span>(<span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'Time series '</span>,Y[t])),</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>                <span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'Innovations '</span>,omega[t]))))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="ma_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Persistence and decay in an MA(0.9,0.6,0.3) model</figcaption>
-</figure>
-</div>
-</div>
-</div>
+<section id="example-2-exponential-smoothing-models" class="level3">
+<h3 class="anchored" data-anchor-id="example-2-exponential-smoothing-models">Example 2: Exponential smoothing models</h3>
+<p>When <a href="./ets.html">first introducing ETS models</a>, I noted that they had somewhat recently been fully synthesized with state space representations. Rob Hyndman even has <a href="https://robjhyndman.com/expsmooth/">a book</a> on the topic, for those interested in a full treatment.</p>
+<p>To understand their state space representation, I find it useful to invert my sense of which terms capture “truth” and which capture “approximation”. We introduced the basic ETS model with a level as follows:</p>
+<p><span class="math display">\[\begin{aligned} \textrm{Level}: &amp;\quad \ell_t = \alpha y_t + (1 - \alpha) \ell_{t-1} \\ \textrm{Forecast}: &amp;\quad \hat{y}_{t+h|t} = \ell_t \end{aligned}\]</span> And in this notation the level <span class="math inline">\(\ell_t\)</span> is an approximation; a smoothing function we apply to fit a line between our “real” observations <span class="math inline">\(y_1, \ldots, y_t\)</span>.</p>
+<p>What if we turned that around? What if the level was a hidden truth and our data are “messy” or error-prone observations of the level? Setting aside the forecasting part for the moment, we could write:</p>
+<p><span class="math display">\[\begin{aligned} \textrm{State}: &amp;\quad \ell_t = \ell_{t-1} + \omega_t \\ \textrm{Observation}: &amp;\quad y_t = \ell_t + \epsilon_t \end{aligned}\]</span></p>
+<p>Or, going a step further to incorporate a linear trend into our state in addition to the level, we could write:</p>
+<p><span class="math display">\[x_t = \left[\begin{array}{c} \ell_t \\ b_t \end{array} \right]\]</span></p>
+<p>In which case the state space representation would be:</p>
+<p><span class="math display">\[\begin{aligned} \textrm{State}: &amp;\quad x_t = \left[\begin{array}{cc} 1 &amp; 1 \\ 0 &amp; 1 \end{array} \right] x_{t-1} + \omega_t \\ \textrm{Observation}: &amp;\quad y_t = \left[\begin{array}{c} 1 &amp; 0 \end{array} \right] x_t + \epsilon_t \end{aligned}\]</span></p>
+<p>The matrix in the state equation implies that the level will update to a new amount incremented by the trend, while the trend will not update (though it will be affected by the noise term <span class="math inline">\(\omega\)</span>.) The row vector in the observation equation implies that our observation (messily) observes the level of the series, but we do not explicitly observe the trend (<span class="math inline">\(\boldsymbol{y}\)</span> is a univariate sample, after all!)</p>
+<p>Readers may notice that the exponential smoothing parameter <span class="math inline">\(\alpha\)</span> has vanished, and that while the original ETS formulation had no error terms, now we have <em>two</em> error terms. These two mysteries are connected, but we must wait until <a href="./kalmanfilter.html">the next page</a> to see their correspondence.</p>
 
 
+</section>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>State space representations can be either continuous-time or discrete-time, but we will only consider regularly-observed discrete-time cases here.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
 </section>
 
 </main> <!-- /main -->
@@ -1061,13 +1071,13 @@ Note
   </script>
 <nav class="page-navigation column-body">
   <div class="nav-page nav-page-previous">
-      <a href="./ar.html" class="pagination-link" aria-label="AR models">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">AR models</span></span>
+      <a href="./archgarchinr.html" class="pagination-link" aria-label="ARCH/GARCH in R">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">ARCH/GARCH in R</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./backshift.html" class="pagination-link" aria-label="Backshift notation">
-        <span class="nav-page-text"><span class="chapter-title">Backshift notation</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./kalmanfilter.html" class="pagination-link" aria-label="The Kalman filter">
+        <span class="nav-page-text"><span class="chapter-title">The Kalman filter</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

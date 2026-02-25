@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>MA models – Forecasting Essentials and Notes: Online Resource</title>
+<title>State space analysis in R – Forecasting Essentials and Notes: Online Resource</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -65,8 +65,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./backshift.html" rel="next">
-<link href="./ar.html" rel="prev">
+<link href="./hmms.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -148,7 +147,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ar.html">2. ARIMA models</a></li><li class="breadcrumb-item"><a href="./ma.html"><span class="chapter-title">MA models</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./statespace.html">8. State-space representations</a></li><li class="breadcrumb-item"><a href="./statespaceinr.html"><span class="chapter-title">State space analysis in R</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -238,7 +237,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ma.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">MA models</span></a>
+  <a href="./ma.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">MA models</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -419,7 +418,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./statespaceinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">State space analysis in R</span></a>
+  <a href="./statespaceinr.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">State space analysis in R</span></a>
   </div>
 </li>
       </ul>
@@ -434,20 +433,19 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#ma1-process" id="toc-ma1-process" class="nav-link active" data-scroll-target="#ma1-process">MA(1) process</a></li>
-  <li><a href="#generalizing-to-maq" id="toc-generalizing-to-maq" class="nav-link" data-scroll-target="#generalizing-to-maq">Generalizing to MA(<em>q</em>)</a></li>
-  <li><a href="#recognizing-a-ma-process-from-its-acf-plot" id="toc-recognizing-a-ma-process-from-its-acf-plot" class="nav-link" data-scroll-target="#recognizing-a-ma-process-from-its-acf-plot">Recognizing a MA process from its ACF plot</a></li>
-  <li><a href="#all-ma-processes-are-stationary" id="toc-all-ma-processes-are-stationary" class="nav-link" data-scroll-target="#all-ma-processes-are-stationary">All MA processes are stationary</a></li>
-  <li><a href="#ma-model-responses-to-system-shocks" id="toc-ma-model-responses-to-system-shocks" class="nav-link" data-scroll-target="#ma-model-responses-to-system-shocks">MA model responses to system shocks</a></li>
+  <li><a href="#problem-caterpillar-market-sensitivity" id="toc-problem-caterpillar-market-sensitivity" class="nav-link active" data-scroll-target="#problem-caterpillar-market-sensitivity">Problem: Caterpillar market sensitivity</a></li>
+  <li><a href="#defining-the-state-space-representation" id="toc-defining-the-state-space-representation" class="nav-link" data-scroll-target="#defining-the-state-space-representation">Defining the state space representation</a></li>
+  <li><a href="#getting-it-to-work" id="toc-getting-it-to-work" class="nav-link" data-scroll-target="#getting-it-to-work">Getting it to work</a></li>
+  <li><a href="#discussing-the-results" id="toc-discussing-the-results" class="nav-link" data-scroll-target="#discussing-the-results">Discussing the results</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content column-body" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ar.html">2. ARIMA models</a></li><li class="breadcrumb-item"><a href="./ma.html"><span class="chapter-title">MA models</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./statespace.html">8. State-space representations</a></li><li class="breadcrumb-item"><a href="./statespaceinr.html"><span class="chapter-title">State space analysis in R</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-title">MA models</span></h1>
+<h1 class="title"><span class="chapter-title">State space analysis in R</span></h1>
 </div>
 
 
@@ -464,159 +462,207 @@ window.Quarto = {
 </header>
 
 
-<p>A second building block of statistical time series analysis is the <em>moving average (MA) model</em>. Moving average models are not well-named: rather than predicting <span class="math inline">\(Y_t\)</span> as a weighted average of its past values (which is what AR models can do), MA models predict <span class="math inline">\(Y_t\)</span> using a weighted average of <em>the unobserved innovations</em>:</p>
-<p><span class="math display">\[Y_t = \beta_0 + \beta_1 \varepsilon_{t-1} + \beta_2 \varepsilon_{t-2} + \ldots + \varepsilon_t\]</span></p>
-<p>Once again I have sketched this idea using the terminology familiar to us from linear regression, but below I will redefine this idea using our new time series notation.</p>
-<section id="ma1-process" class="level2">
-<h2 class="anchored" data-anchor-id="ma1-process">MA(1) process</h2>
-<p>Let’s take the simplest case, where each value of the series averages only the current and immediate previous innovation. We would name this an <em>moving average model with order 1</em> or <em>MA(1) model</em>.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>. Let <span class="math inline">\(\boldsymbol{\omega}\)</span> be a white noise process observed at the same time periods. If,</p>
-<p><span class="math display">\[Y_t = \omega_t + \theta \omega_{t-1}\]</span></p>
-<p>For some <span class="math inline">\(\theta \in \mathbb{R}\)</span> and all <span class="math inline">\(t \in T\)</span>, then we say that <span class="math inline">\(\boldsymbol{Y}\)</span> is an <strong>moving average process with order 1</strong></p>
-</div>
-</div>
-<p>In theory, the exact properties of a MA(1) process depend on both the moving average parameter <span class="math inline">\(\theta\)</span> as well as the specific type of white noise process denoted by <span class="math inline">\(\boldsymbol{\omega}\)</span>. In practice, we often assume <span class="math inline">\(\boldsymbol{\omega}\)</span> to be Gaussian white noise, leaving <span class="math inline">\(\theta\)</span> as the only input which needs estimation.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">1.1</span>))</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0106</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">20</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>thetavec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="sc">-</span>.<span class="dv">6</span>,<span class="sc">-</span>.<span class="dv">3</span>,<span class="dv">0</span>,.<span class="dv">3</span>,.<span class="dv">6</span>,<span class="dv">1</span>,<span class="dv">2</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">rep</span>(w[<span class="dv">1</span>],<span class="dv">9</span>))</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">20</span>){Y <span class="ot">&lt;-</span> <span class="fu">rbind</span>(Y, <span class="fu">t</span>(<span class="fu">rep</span>(w[i],<span class="dv">9</span>)<span class="sc">+</span>thetavec<span class="sc">*</span>w[i<span class="dv">-1</span>]))}</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {<span class="fu">plot</span>(Y[,j],<span class="at">main=</span><span class="fu">bquote</span>(theta<span class="sc">==</span>.(thetavec[j])),</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                     <span class="at">type=</span><span class="st">'l'</span>,<span class="at">xlab=</span><span class="cn">NA</span>,<span class="at">ylab=</span><span class="cn">NA</span>,<span class="at">sub=</span><span class="cn">NA</span>)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lines</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>,Y[,<span class="dv">5</span>],<span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">lty=</span><span class="dv">2</span>)}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="ma_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Nine MA(1) processes with the same innovations</figcaption>
-</figure>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages('KFAS')</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages('rugarch') #only used to bring in data</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(KFAS)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rugarch)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</div>
-</div>
-<p>In the plots above, we see that MA processes are a little more subtle than AR processes:</p>
+<p>R users have their choice of several different packages for state space modeling. Two popular choices are <code>KFAS</code> (“Kalman filter and smoothing”) and <code>bsts</code> (“Bayesian structural time series”).</p>
 <ul>
-<li><p>MA(1) processes remain stationary for any finite value of <span class="math inline">\(\theta\)</span>, even large positive or negative values. (The weighted sum of any two zero-mean random variables still has a mean of zero.)</p></li>
-<li><p>Positive and negative values of <span class="math inline">\(\theta\)</span> produce similar patterns, with no parameter choice creating the alternating series seen in the AR(1) models.</p></li>
+<li><p><code>KFAS</code> focuses on frequentist probability interpretations and performs model estimation and forecasting using maximum likelihood methods.</p></li>
+<li><p><code>bsts</code> leverages the close correspondence between the Kalman filter and Bayesian methods. Users supply prior distributions and the package calculates state estimates and forecasts using MCMC (Markov chain Monte Carlo) methods.</p></li>
 </ul>
-<p>The properties and utility of MA models are perhaps better described with higher-order processes.</p>
-</section>
-<section id="generalizing-to-maq" class="level2">
-<h2 class="anchored" data-anchor-id="generalizing-to-maq">Generalizing to MA(<em>q</em>)</h2>
-<p>Now we may complicate the scenario, by allowing the current value <span class="math inline">\(Y_t\)</span> to average <em>several, different</em> past innovations of the series.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> be a time series random variable observed at regular time periods <span class="math inline">\(T = \{1, 2, \ldots, n\}\)</span>. Let <span class="math inline">\(\boldsymbol{\omega}\)</span> be a white noise process observed at the same time periods. If,</p>
-<p><span class="math display">\[Y_t = \omega_t + \theta_1 \omega_{t-1} + \theta_2 \omega_{t-2} + \ldots + \theta_q \omega_{t-q}\]</span></p>
-<p>For some <span class="math inline">\((\theta_1, \theta_2, \ldots, \theta_q) \in \mathbb{R}^q\)</span> and all <span class="math inline">\(t \in T\)</span>, then we say that <span class="math inline">\(\boldsymbol{Y}\)</span> is an <strong>moving average model with order</strong> <strong><em>q</em></strong>.</p>
-</div>
-</div>
-<p>MA(<em>q</em>) effects tend to become more pronounced at higher orders. For many combinations of parameters <span class="math inline">\(\theta_1, \ldots, \theta_q\)</span>, the general effect is a smoothing filter which highlights consecutive large innovations but minimizes single innovations, and preserves no memory of the past beyond its averaging:</p>
+<p>Because I do not presume the reader’s familiarity/comfort with Bayesian models or MCMC methods, I will use the <code>KFAS</code> package here. However, the <code>bsts</code> package is certainly worth exploring and provides some additional functionality beyond the scope of <code>KFAS</code>.</p>
+<section id="problem-caterpillar-market-sensitivity" class="level2">
+<h2 class="anchored" data-anchor-id="problem-caterpillar-market-sensitivity">Problem: Caterpillar market sensitivity</h2>
+<p>Caterpillar Inc.&nbsp;is the largest manufacturer of construction equipment in the world, and has been a mainstay of the Dow Jones Industrial Average (DJIA) for several decades. Although Caterpillar is a large and successful company, construction manufacturing has good years and bad years, and is not consistently cyclical or countercyclical with respect to the broader market:</p>
+<ul>
+<li><p>When the economy is doing well, and corporate and household wealth and income is high, then construction and infrastructure projects tend to be more common, boosting Caterpillar earnings. This effect is highest during “booms”, so Caterpillar leverages market sentiment.</p></li>
+<li><p>However, Caterpillar can be robust against certain economic downturns, since the federal government often responds by creating infrastructure projects and lowering interest rates, which incentivizes capital investments such as construction. Also, many construction projects take years to contract and complete, so short-term shocks don’t always affect Caterpillar strongly.</p></li>
+</ul>
+<p>These features can pose a challenge for classic econometric models for securities pricing. A <em>very</em> simplified version of the <a href="https://en.wikipedia.org/wiki/Capital_asset_pricing_model">capital asset pricing model (CAPM)</a> or the <a href="https://en.wikipedia.org/wiki/Fama–French_three-factor_model">Fama-French 3-factor model</a> might suggest:</p>
+<p><span class="math display">\[r_{\textrm{CAT},t} = \alpha + \beta r_{\textrm{SPX},t} + \varepsilon_t\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(r_{\textrm{CAT},t}\)</span> is the log-return of Caterpillar on day <em>t</em></li>
+<li><span class="math inline">\(\alpha\)</span> is the average daily amount by which Caterpillar over- or under-performs the market</li>
+<li><span class="math inline">\(\beta\)</span> is Caterpillar’s sensitivity to daily changes in the market</li>
+<li><span class="math inline">\(r_{\textrm{SPX},t}\)</span> is the log-return of the S&amp;P 500 index on day <em>t</em></li>
+<li><span class="math inline">\(\varepsilon_t\)</span> is an IID Normal error term<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></li>
+</ul>
+<p>And yet, if Caterpillar is very sensitive to the market in some years and very well protected against market movements in other years, we might draw the wrong conclusion by fitting this model to many years of Caterpillar returns.</p>
+<p>We could carve our training data up into many subsamples, but this seems both arbitrary and difficult to stitch back together (for example, consider the sharp discontinuities in <span class="math inline">\(\hat{\alpha}\)</span> and <span class="math inline">\(\hat{\beta}\)</span> and even <span class="math inline">\(\hat{\sigma}^2\)</span> at the break points.)</p>
+<p>Instead, let’s try a state space model that allows for <em>dynamic coefficients</em>: every day the intercept and slope are re-estimated and may change slightly throughout the sample:</p>
+<p><span class="math display">\[r_{\textrm{CAT},t} = \alpha_t + \beta_t r_{\textrm{SPX},t} + \varepsilon_t\]</span></p>
+<p>Before moving to the modeling part, let’s bring in the data</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">1.1</span>))</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0107</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">50</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>theta <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>),<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>),<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>),</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(<span class="fl">0.8</span>,<span class="fl">0.6</span>,<span class="fl">0.4</span>,<span class="fl">0.2</span>),<span class="fu">c</span>(<span class="fl">0.4</span>,<span class="fl">0.3</span>,<span class="fl">0.2</span>,<span class="fl">0.1</span>),<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>),</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">4</span>,<span class="dv">2</span>,<span class="dv">1</span>),<span class="fu">c</span>(<span class="dv">0</span>,<span class="sc">-</span><span class="dv">1</span>),<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="sc">-</span><span class="dv">1</span>))</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow=</span><span class="dv">50</span>,<span class="at">ncol=</span><span class="dv">9</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) Y[,i] <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ma=</span>theta[[i]]),<span class="at">n=</span><span class="dv">50</span>,<span class="at">innov=</span>w)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) <span class="fu">plot</span>(Y[,j],<span class="at">main=</span><span class="fu">bquote</span>(theta<span class="sc">==</span>.(<span class="fu">paste</span>(theta[[j]],<span class="at">collapse=</span><span class="st">','</span>))),</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">type=</span><span class="st">'l'</span>,<span class="at">xlab=</span><span class="cn">NA</span>,<span class="at">ylab=</span><span class="cn">NA</span>,<span class="at">sub=</span><span class="cn">NA</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(dji30ret)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(sp500ret)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>stocks <span class="ot">&lt;-</span> <span class="fu">merge</span>(sp500ret,dji30ret,<span class="at">by=</span><span class="dv">0</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(stocks) <span class="ot">&lt;-</span> stocks[,<span class="st">'Row.names'</span>]</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>stocks <span class="ot">&lt;-</span> stocks[,<span class="fu">c</span>(<span class="st">'SP500RET'</span>,<span class="st">'CAT'</span>)]</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>y    <span class="ot">&lt;-</span> stocks<span class="sc">$</span>CAT</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>xreg <span class="ot">&lt;-</span> stocks<span class="sc">$</span>SP500RET</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>n    <span class="ot">&lt;-</span> <span class="fu">length</span>(y)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="defining-the-state-space-representation" class="level2">
+<h2 class="anchored" data-anchor-id="defining-the-state-space-representation">Defining the state space representation</h2>
+<p>Let’s phrase these ideas using the state space representation explored more fully on <a href="./kalmanfilter.html">the Kalman filter page</a>:</p>
+<ul>
+<li><p><strong>State:</strong> The hidden state at each time step are the parameters <span class="math inline">\(\alpha_t\)</span> and <span class="math inline">\(\beta_t\)</span>. This suggests a two-dimensional state space: <span class="math inline">\(\boldsymbol{x}_t = [\alpha_t, \beta_t]^T\)</span></p></li>
+<li><p><strong>Observation:</strong> In each time period, we observe a new value of Caterpillar’s log-return as well as the broader market. This can be regarded as a one-dimensional <em>or</em> two-dimensional observation, depending on whether you see the market as a deterministic input: <span class="math inline">\(\boldsymbol{y}_t = r_{\textrm{CAT},t}\)</span></p></li>
+<li><p><strong>State transition matrix:</strong> We will assume that the “alpha” and “beta” (intercept and slope) for Caterpillar evolve over time as random walks, incremented by the innovation noise. Therefore the transition matrix does not itself evolve the previous state at all: <span class="math inline">\(\mathbf{F} = \mathbf{I}^2\)</span></p></li>
+<li><p><strong>Measurement matrix:</strong> We get a little fancy here. Instead of claiming a fixed matrix <span class="math inline">\(\mathbf{A}\)</span> used for every observation, we will allow the matrix to vary from one observation to the next, and define <span class="math inline">\(\mathbf{A}_t = [1, r_{\textrm{SPX},t}]\)</span>, such that <span class="math inline">\(\mathbf{A}_t \boldsymbol{x}_t = \hat{\boldsymbol{y}}_t\)</span></p></li>
+<li><p><strong>Innovation covariance matrix:</strong> In the interest of simplicity and easier algorithmic convergence, we will diagonalize the innovation covariance matrix, meaning that if <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> change over time, they do so independently. We pick simple starting values and let the fitting function finalize the estimates: <span class="math inline">\(\mathbf{Q}_\textrm{init} = \left[\begin{array}{cc} 0.001^2 &amp; 0 \\ 0 &amp; 0.001^2\end{array}\right]\)</span></p></li>
+<li><p><strong>Observation covariance matrix:</strong> Our “measurement error” is the amount by which Caterpillar stock can <em>not</em> be explained by our dynamic betas, <em>i.e.</em> the error term <span class="math inline">\(\varepsilon\)</span> of the regression. We will let a simple OLS regression give us a starting value and have the fitting function finalize it: <span class="math inline">\(\mathbf{R}_\textrm{init} = [0.02^2]\)</span></p></li>
+</ul>
+<p>All the rest of the parameters can be ignored or estimated by our fitting function without further input from us.</p>
+<p><span class="math display">\[\begin{aligned} \textrm{State}: \quad \left[\begin{array}{c} \alpha_t \\ \beta_t \end{array}\right] &amp;= \left[\begin{array}{c} \alpha_{t-1} \\ \beta_{t-1} \end{array}\right] + \boldsymbol{\omega}_t\\ \\ \textrm{Observation}: \quad r_{\textrm{CAT},t} &amp;= [1, r_{\textrm{SPX},t}] \left[\begin{array}{c} \alpha_t \\ \beta_t \end{array}\right] + \boldsymbol{\nu}_t \end{aligned}\]</span></p>
+</section>
+<section id="getting-it-to-work" class="level2">
+<h2 class="anchored" data-anchor-id="getting-it-to-work">Getting it to work</h2>
+<p>We have entered an algorithmic territory where experience, problem-solving skills, and a real understanding of both the model math as well as the convergence conditions might be needed to complete our analysis. This can discourage the novice practitioner, who may feel lacking in some or all of these attributes <em>Very few people can claim any real expertise in algorithmic convergence. Even very experienced practitioners often have to debug and explore new solutions in these situations.</em></p>
+<p>One simple way forward would be this:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>cat.mod <span class="ot">&lt;-</span> <span class="fu">SSModel</span>(y <span class="sc">~</span> <span class="sc">-</span><span class="dv">1</span> <span class="sc">+</span> </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">SSMregression</span>(<span class="sc">~</span> xreg, <span class="at">Q =</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="cn">NA</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="cn">NA</span>), <span class="at">nrow=</span><span class="dv">2</span>),</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">remove.intercept =</span> <span class="cn">FALSE</span>), <span class="at">H =</span> <span class="fu">matrix</span>(<span class="cn">NA</span>))</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>ols.s2  <span class="ot">&lt;-</span> <span class="fu">var</span>(<span class="fu">resid</span>(<span class="fu">lm</span>(y <span class="sc">~</span> xreg)))</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>cat.fit <span class="ot">&lt;-</span> <span class="fu">fitSSM</span>(cat.mod,<span class="at">inits=</span><span class="fu">c</span>(<span class="fl">1e-6</span>,<span class="fl">1e-6</span>,ols.s2))</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>cat.fit<span class="sc">$</span>model</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+SSModel(formula = y ~ -1 + SSMregression(~xreg, Q = matrix(c(NA, 
+    0, 0, NA), nrow = 2), remove.intercept = FALSE), H = matrix(NA))
+
+State space model object of class SSModel
+
+Dimensions:
+[1] Number of time points: 5519
+[1] Number of time series: 1
+[1] Number of disturbances: 2
+[1] Number of states: 2
+Names of the states:
+[1]  (Intercept)  xreg       
+Distributions of the time series:
+[1]  gaussian
+
+Object is a valid object of class SSModel.</code></pre>
+</div>
+</div>
+<p>We define a state space model (using <code>SSModel()</code>) containing a regression with dynamic coefficients (using <code>SSMregression()</code>). We remove the intercept from the fixed (deterministic) part of the model (<code>y ~ -1 + ...</code>), and <em>don’t</em> remove the intercept from the state space part of the model (<code>remove.intercept = FALSE</code>) or else only <span class="math inline">\(\beta\)</span> would be estimated dynamically. We supply initial guesses for the two covariances matrices as described above. Finally, having specified the model with <code>SSModel()</code>, we then fit the model using <code>fitSSM()</code>.</p>
+<p>This output text at bottom shows us that the model converged. However, depending on our data we might want to have implemented some more advanced tricks to help the convergence:</p>
+<ul>
+<li><p>Scale the log-returns of Caterpillar and the S&amp;P500 index by 100 for better numerical stability</p></li>
+<li><p>Have the fitting function (which is actually just a wrapper for the workhorse base R function <code>optim()</code>) solve for the <em>logs</em> of the variances in <span class="math inline">\(\mathbf{Q}\)</span> and <span class="math inline">\(\mathbf{R}\)</span>, which would constrain them to be positive, keep them on roughly the same numeric scale, and keep them from seeming to be exactly zero.</p></li>
+<li><p>Constrain the drift rate of <span class="math inline">\(\alpha\)</span> or even keep it constant, which would limit the freedom of the system and make wild “solutions” less possible.</p></li>
+</ul>
+<p>For a more thorough programming job, consider this code instead:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>y    <span class="ot">&lt;-</span> <span class="dv">100</span><span class="sc">*</span>stocks<span class="sc">$</span>CAT <span class="co">#scaling for stability</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>xreg <span class="ot">&lt;-</span> <span class="dv">100</span><span class="sc">*</span>stocks<span class="sc">$</span>SP500RET <span class="co">#scaling for stability</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>cat.mod <span class="ot">&lt;-</span> <span class="fu">SSModel</span>(y <span class="sc">~</span> <span class="sc">-</span><span class="dv">1</span> <span class="sc">+</span> </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">SSMregression</span>(<span class="sc">~</span> xreg, <span class="at">Q =</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="cn">NA</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="cn">NA</span>), <span class="at">nrow=</span><span class="dv">2</span>),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">remove.intercept =</span> <span class="cn">FALSE</span>), <span class="at">H =</span> <span class="fu">matrix</span>(<span class="cn">NA</span>))</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>update_fn <span class="ot">&lt;-</span> <span class="cf">function</span>(pars, model) {</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  model<span class="sc">$</span>Q[<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">exp</span>(pars[<span class="dv">1</span>])</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  model<span class="sc">$</span>Q[<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">exp</span>(pars[<span class="dv">2</span>])</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  model<span class="sc">$</span>H[<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">exp</span>(pars[<span class="dv">3</span>])</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  model}</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>ols.s2  <span class="ot">&lt;-</span> <span class="fu">var</span>(<span class="fu">resid</span>(<span class="fu">lm</span>(y <span class="sc">~</span> xreg)))</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>init_pars <span class="ot">&lt;-</span> <span class="fu">log</span>(<span class="fu">c</span>(<span class="fl">1e-6</span>, <span class="fl">1e-6</span>, ols.s2))</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>cat.fit2 <span class="ot">&lt;-</span> <span class="fu">fitSSM</span>(cat.mod, <span class="at">inits=</span>init_pars, <span class="at">updatefn=</span>update_fn, <span class="at">method=</span><span class="st">"BFGS"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="discussing-the-results" class="level2">
+<h2 class="anchored" data-anchor-id="discussing-the-results">Discussing the results</h2>
+<p>Now that we’ve succesfully programmed the state space model and tuned the inputs, we can apply the Kalman filter to retrieve our state estimates, <em>i.e.</em> the time-varying “alpha” and “beta” for Caterpillar.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>state.ests.raw <span class="ot">&lt;-</span> <span class="fu">KFS</span>(cat.fit2<span class="sc">$</span>model, <span class="at">smoothing =</span> <span class="st">'none'</span>)<span class="sc">$</span>att</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">2</span>)<span class="sc">+</span><span class="fl">0.1</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span><span class="fu">as.Date</span>(<span class="fu">rownames</span>(stocks)),<span class="at">y=</span>state.ests.raw[,<span class="dv">1</span>], <span class="at">type =</span> <span class="st">"l"</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">"Kalman filter estimates: "</span>,alpha[t])),</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"CAT Alpha"</span>,<span class="at">xlab=</span><span class="st">'Date'</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.5</span>))</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span><span class="fu">as.Date</span>(<span class="fu">rownames</span>(stocks)),<span class="at">y=</span>state.ests.raw[,<span class="dv">2</span>], <span class="at">type =</span> <span class="st">"l"</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">"Kalman filter estimates: "</span>,beta[t])),</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"CAT Beta"</span>,<span class="at">xlab=</span><span class="st">'Date'</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="fl">0.4</span>,<span class="fl">1.6</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure class="figure">
-<p><img src="ma_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Nine MA processes with the same innovations</figcaption>
+<p><img src="statespaceinr_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-</section>
-<section id="recognizing-a-ma-process-from-its-acf-plot" class="level2">
-<h2 class="anchored" data-anchor-id="recognizing-a-ma-process-from-its-acf-plot">Recognizing a MA process from its ACF plot</h2>
-<p>An autocorrelation function (ACF) plot will always provide helpful summary or diagnostic information about a MA(<em>q</em>) model. In the simplest case of MA(1), the height of the ACF plot at the first lag will be equal to <span class="math inline">\(q/(1+q^2)\)</span>, and the remaining lags will show <em>little or no autocorrelation at all</em>. For example, when <span class="math inline">\(p=0.8\)</span>, the first lag will have an autocorrelation of roughly <span class="math inline">\(0.8/(1+0.64) \approx 0.49\)</span>, and all other lags will show only minimal autocorrelation:</p>
+<p>These aren’t <em>bad</em> or uninformative, but they are a little noisy, especially at the beginning of the series as we initialized and started building our trust in the system. Happily, the Kalman filter also allows for <em>smoothing</em> functions. For example, once we have passed <em>forwards</em> through the data, we can then step <em>backwards</em> and reconcile past estimates with the future observations — letting the transition matrix work backward to recompute our estimated earlier states based on current residuals.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">3.1</span>,<span class="fl">1.1</span>))</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0108</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>ma08 <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ma=</span><span class="fl">0.8</span>),<span class="at">n=</span><span class="dv">1000</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>ma080706 <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ma=</span><span class="fu">c</span>(<span class="fl">0.8</span>,<span class="fl">0.7</span>,<span class="fl">0.6</span>)),<span class="at">n=</span><span class="dv">1000</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(ma08,<span class="at">main=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'ACF when '</span>,theta <span class="sc">==</span> <span class="fl">0.8</span>)),<span class="at">lag.max=</span><span class="dv">15</span>)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(ma080706,<span class="at">main=</span><span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'ACF when '</span>,theta <span class="sc">==</span> <span class="fu">list</span>(<span class="fl">0.8</span>,<span class="fl">0.7</span>,<span class="fl">0.6</span>))),<span class="at">lag.max=</span><span class="dv">15</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>state.ests.smooth <span class="ot">&lt;-</span> <span class="fu">KFS</span>(cat.fit2<span class="sc">$</span>model, <span class="at">smoothing =</span> <span class="fu">c</span>(<span class="st">'state'</span>,<span class="st">'mean'</span>))<span class="sc">$</span>alphahat</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">2</span>)<span class="sc">+</span><span class="fl">0.1</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span><span class="fu">as.Date</span>(<span class="fu">rownames</span>(stocks)),<span class="at">y=</span>state.ests.smooth[,<span class="dv">1</span>], <span class="at">type =</span> <span class="st">"l"</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">"Kalman smoothing estimates: "</span>,alpha[t])),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"CAT Alpha"</span>,<span class="at">xlab=</span><span class="st">'Date'</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="fl">0.01</span>,<span class="fl">0.02</span>))</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="fu">coef</span>(<span class="fu">lm</span>(y <span class="sc">~</span> xreg))[<span class="dv">1</span>], <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'bottomleft'</span>,<span class="at">bty=</span><span class="st">'n'</span>,<span class="at">legend=</span><span class="st">'OLS estimate'</span>,<span class="at">col=</span><span class="st">'red'</span>,<span class="at">lty=</span><span class="dv">2</span>,<span class="at">cex=</span><span class="fl">0.8</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span><span class="fu">as.Date</span>(<span class="fu">rownames</span>(stocks)),<span class="at">y=</span>state.ests.smooth[,<span class="dv">2</span>], <span class="at">type =</span> <span class="st">"l"</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">"Kalman smoothing estimates: "</span>,beta[t])),</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"CAT Beta"</span>,<span class="at">xlab=</span><span class="st">'Date'</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="fl">0.4</span>,<span class="fl">1.6</span>))</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="fu">coef</span>(<span class="fu">lm</span>(y <span class="sc">~</span> xreg))[<span class="dv">2</span>], <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'bottomleft'</span>,<span class="at">bty=</span><span class="st">'n'</span>,<span class="at">legend=</span><span class="st">'OLS estimate'</span>,<span class="at">col=</span><span class="st">'red'</span>,<span class="at">lty=</span><span class="dv">2</span>,<span class="at">cex=</span><span class="fl">0.8</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure class="figure">
-<p><img src="ma_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Two MA processes and their ACF plots, 1000 obs each</figcaption>
+<p><img src="statespaceinr_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>The key feature here is that for values <span class="math inline">\(s \lt (t - q)\)</span>, <span class="math inline">\(Y_t\)</span> and <span class="math inline">\(Y_s\)</span> have <em>no elements in common</em> and are completely independent. Any small sample autocorrelation is purely spurious.</p>
-</section>
-<section id="all-ma-processes-are-stationary" class="level2">
-<h2 class="anchored" data-anchor-id="all-ma-processes-are-stationary">All MA processes are stationary</h2>
-<p>Since MA processes are simply weighted sums of zero-mean white noise, they themselves are zero-mean and meet all the requirements for weak stationarity, no matter the choice(s) of <span class="math inline">\(\boldsymbol{\theta}\)</span>. In the equations which follow, assume that <span class="math inline">\(\mathbb{E}[\omega_t] = 0\)</span> and <span class="math inline">\(\mathbb{V}[\omega_t] = \sigma^2\)</span>:</p>
-<p><span class="math display">\[\begin{aligned} (1) \qquad \mathbb{E}[Y_t] &amp;= \mathbb{E}[\omega_t + \sum_{i=1}^q \theta_i \omega_{t-i}] = 0 + \sum_{i=1}^q \theta_i \mathbb{E}[\omega_{t-i}] = 0 + \sum_{i=1}^q 0 = 0 \\  \\ (2) \qquad \mathbb{V}[Y_t] &amp;= \mathbb{V}[\omega_t + \sum_{i=1}^q \theta_i \omega_{t-i}] = \sigma^2 + \sum_{i=1}^q \theta^2_i \mathbb{V}[\omega_{t-i}] = \left(1 + \sum_i \theta_i^2 \right) \sigma^2 \\ \\ (3) \qquad \gamma_{st} &amp;= \textrm{Cov}\left(\omega_s + \sum_{i=1}^q \theta_i \omega_{s-i},\, \omega_t + \sum_{i=1}^q \theta_i \omega_{t-i} \right) \\ &amp;= \left\{ \begin{array}{ll} 0 &amp; \textrm{if} \; |s - t| \gt q \\ \theta_q \sigma^2 &amp; \textrm{if} \; |s - t| = q \\ (\theta_{q-1} + \theta_2 \theta_q) \sigma^2 &amp; \textrm{if} \; |s - t| = q - 1 \\ \cdots &amp; \cdots \end{array} \right\}\end{aligned}\]</span></p>
-<p>We can see from the above that the mean and variance are constant and that the autocovariance of two entries depends only on the lag between them, which are the requirements of weak stationarity.</p>
-</section>
-<section id="ma-model-responses-to-system-shocks" class="level2">
-<h2 class="anchored" data-anchor-id="ma-model-responses-to-system-shocks">MA model responses to system shocks</h2>
-<p>MA models dampen one-time system shocks by averaging them among the other innovations, and after the moving average window has passed, the system shock disappears entirely from the series. Consider a MA(3) model which processes a fairly quiet series of innovations, interrupted irregularly by a much larger signal:</p>
+<p>These smoothed estimates are more credible and interpretable. We see that the stock “alpha” has been smoothed almost flat (the scale of the y-axis is <em>very</em> narrow and the line <em>still</em> looks flat), meaning that it does not seem to vary much over time.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> The “beta” now rises and falls smoothly, giving the impression of market cycles where Caterpillar returns were tied to or divorced from the broader market movements.</p>
+<p>If you want to consider the “value-add” of state space models over techniques we have already learned, consider the difference between these smoothed estimates and a more basic technique: rolling OLS regression. We could create a running estimate of the changing “alpha” and “beta” of Caterpillar stock by regressing a year’s returns against the S&amp;P500 index and rolling this regression forward one day at a time through the end of our sample. However,</p>
+<ul>
+<li><p>We would not have an estimate for the first year’s worth of data (the training sample for the first regression)</p></li>
+<li><p>The data would show jumps and “blips” as extreme observations entered and left the training sample</p></li>
+<li><p>The results would not be smoothed in any particular way</p></li>
+<li><p>No common-sense guidelines would constrain the amount of parameter drift from one day to the next.</p></li>
+</ul>
 <div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0110</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">100</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>w[<span class="dv">8</span>] <span class="ot">&lt;-</span> <span class="dv">10</span>; w[<span class="dv">15</span>] <span class="ot">&lt;-</span> <span class="dv">10</span>; w[<span class="dv">25</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">10</span>; w[<span class="dv">45</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">10</span>;</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>ma <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="fu">list</span>(<span class="at">ma=</span><span class="fu">c</span>(<span class="fl">0.9</span>,<span class="fl">0.6</span>,<span class="fl">0.3</span>)),<span class="at">n=</span><span class="dv">100</span>,<span class="at">innov=</span>w)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">15</span><span class="sc">+</span>ma,<span class="at">type=</span><span class="st">'s'</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">10</span>,<span class="dv">27</span>),<span class="at">ylab=</span><span class="cn">NA</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(w,<span class="at">type=</span><span class="st">'h'</span>,<span class="at">col=</span><span class="st">'#0000ff'</span>,<span class="at">lwd=</span><span class="dv">2</span>)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="dv">15</span>,<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'#7f7f7f'</span>)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topright'</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#000000'</span>,<span class="st">'#0000ff'</span>),<span class="at">bty=</span><span class="st">'n'</span>,</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend=</span><span class="fu">c</span>(<span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'Time series '</span>,Y[t])),</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>                <span class="fu">expression</span>(<span class="fu">paste</span>(<span class="st">'Innovations '</span>,omega[t]))))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>roll.ols <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">252</span><span class="sc">:</span><span class="dv">5519</span>,<span class="cf">function</span>(z) <span class="fu">lm</span>(y[(z<span class="dv">-251</span>)<span class="sc">:</span>z]<span class="sc">~</span>xreg[(z<span class="dv">-251</span>)<span class="sc">:</span>z])<span class="sc">$</span>coefficients[<span class="dv">2</span>])</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span><span class="fu">as.Date</span>(<span class="fu">rownames</span>(stocks)),<span class="at">y=</span>state.ests.smooth[,<span class="dv">2</span>], <span class="at">type =</span> <span class="st">"l"</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"State space model compared to roling regression"</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"CAT Beta"</span>,<span class="at">xlab=</span><span class="st">'Date'</span>,<span class="at">ylim=</span><span class="fu">c</span>(<span class="fl">0.4</span>,<span class="fl">1.6</span>),<span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">as.Date</span>(<span class="fu">rownames</span>(stocks))[<span class="sc">-</span><span class="dv">1</span><span class="sc">:-</span><span class="dv">251</span>],<span class="at">y=</span>roll.ols,<span class="at">col=</span><span class="st">'darkgreen'</span>,<span class="at">lty=</span><span class="dv">2</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'bottomleft'</span>,<span class="at">bty=</span><span class="st">'n'</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Smoothed StSp'</span>,<span class="st">'Rolling OLS'</span>),</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">col=</span><span class="fu">c</span>(<span class="st">'black'</span>,<span class="st">'darkgreen'</span>),<span class="at">lty=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">lwd=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>),<span class="at">cex=</span><span class="fl">0.8</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure class="figure">
-<p><img src="ma_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption>Persistence and decay in an MA(0.9,0.6,0.3) model</figcaption>
+<p><img src="statespaceinr_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 
 
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>A more professional-grade price analysis would subtract the risk free rate from both Caterpillar and the market, but we are skipping that for the sake of expediency.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>As a comment on algorithmic convergence, these results use the second (stabler) method. Under the first method, the stock alpha would be smoothed <em>completely</em> flat.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
 </section>
 
 </main> <!-- /main -->
@@ -1061,14 +1107,11 @@ Note
   </script>
 <nav class="page-navigation column-body">
   <div class="nav-page nav-page-previous">
-      <a href="./ar.html" class="pagination-link" aria-label="AR models">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">AR models</span></span>
+      <a href="./hmms.html" class="pagination-link" aria-label="Hidden Markov models">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Hidden Markov models</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./backshift.html" class="pagination-link" aria-label="Backshift notation">
-        <span class="nav-page-text"><span class="chapter-title">Backshift notation</span></span> <i class="bi bi-arrow-right-short"></i>
-      </a>
   </div>
 </nav>
 </div> <!-- /content -->
