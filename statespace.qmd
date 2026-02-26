@@ -134,9 +134,9 @@ $$y_t = \phi y_{t-1} + \omega_t$$
 
 We could say:
 
- * $\mathbf{A} = [\phi]$
+ * $\mathbf{F} = [\phi]$
  * $\mathbf{B} = [0]$ (and so $u_t$ no longer matters)
- * $\mathbf{F} = [1]$ (nothing about state is hidden)
+ * $\mathbf{A} = [1]$ (nothing about state is hidden)
  * $\mathbb{V}[\nu_t] = 0$ (no measurement error)
  
 And then write the AR(1) with state space representation:

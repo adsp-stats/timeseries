@@ -56,7 +56,6 @@ stocks <- stocks[,c('SP500RET','CAT')]
 
 y    <- stocks$CAT
 xreg <- stocks$SP500RET
-n    <- length(y)
 ```
 
 ## Defining the state space representation
@@ -108,11 +107,11 @@ This output text at bottom shows us that the model converged. However, depending
 For a more thorough programming job, consider this code instead:
 
 ```{r}
-y    <- 100*stocks$CAT #scaling for stability
-xreg <- 100*stocks$SP500RET #scaling for stability
+y2    <- 100*stocks$CAT #scaling for stability
+xreg2 <- 100*stocks$SP500RET #scaling for stability
 
-cat.mod <- SSModel(y ~ -1 + 
-  SSMregression(~ xreg, Q = matrix(c(NA,0,0,NA), nrow=2),
+cat.mod2 <- SSModel(y2 ~ -1 + 
+  SSMregression(~ xreg2, Q = matrix(c(NA,0,0,NA), nrow=2),
     remove.intercept = FALSE), H = matrix(NA))
 
 update_fn <- function(pars, model) {
@@ -124,7 +123,7 @@ update_fn <- function(pars, model) {
 ols.s2  <- var(resid(lm(y ~ xreg)))
 init_pars <- log(c(1e-6, 1e-6, ols.s2))
 
-cat.fit2 <- fitSSM(cat.mod, inits=init_pars, updatefn=update_fn, method="BFGS")
+cat.fit2 <- fitSSM(cat.mod2, inits=init_pars, updatefn=update_fn, method="BFGS")
 ```
 
 ## Discussing the results
@@ -179,7 +178,7 @@ If you want to consider the "value-add" of state space models over techniques we
 roll.ols <- sapply(252:5519,function(z) lm(y[(z-251):z]~xreg[(z-251):z])$coefficients[2])
 
 plot(x=as.Date(rownames(stocks)),y=state.ests.smooth[,2], type = "l",
-     main = "State space model compared to roling regression",
+     main = "State space model compared to rolling regression",
      ylab = "CAT Beta",xlab='Date',ylim=c(0.4,1.6),lwd=2)
 lines(as.Date(rownames(stocks))[-1:-251],y=roll.ols,col='darkgreen',lty=2)
 legend(x='bottomleft',bty='n',legend=c('Smoothed StSp','Rolling OLS'),
