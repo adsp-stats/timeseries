@@ -547,7 +547,7 @@ window.Quarto = {
 <section id="bringing-the-pieces-together" class="level2">
 <h2 class="anchored" data-anchor-id="bringing-the-pieces-together">Bringing the pieces together</h2>
 <p>State space models take these different parts and reduce them into two iterative equations:</p>
-<p><span class="math display">\[\begin{aligned} \textrm{State}: \quad \boldsymbol{x}_t &amp;= \overbrace{\mathbf{A} \boldsymbol{x}_{t-1}}^\textrm{Evolve} + \overbrace{\mathbf{B} \boldsymbol{u}_t}^\textrm{Force} + \boldsymbol{\omega}_t\\ \\ \textrm{Observation}: \quad \boldsymbol{y}_t &amp;= \underbrace{\mathbf{F} \boldsymbol{x}_t}_\textrm{Measure} + \boldsymbol{\nu}_t \end{aligned}\]</span></p>
+<p><span class="math display">\[\begin{aligned} \textrm{State}: \quad \boldsymbol{x}_t &amp;= \overbrace{\mathbf{F} \boldsymbol{x}_{t-1}}^\textrm{Evolve} + \overbrace{\mathbf{B} \boldsymbol{u}_t}^\textrm{Force} + \boldsymbol{\omega}_t\\ \\ \textrm{Observation}: \quad \boldsymbol{y}_t &amp;= \underbrace{\mathbf{A} \boldsymbol{x}_t}_\textrm{Measure} + \boldsymbol{\nu}_t \end{aligned}\]</span></p>
 <p>Our <em>state</em> updates in every period by using its universe’s ruleset to evolve in a predictable way. On top of this prediction we add any outside force (in some models, this term disappears completely), as well as the unpredictable innovation/noise.</p>
 <p>Our <em>observation</em> updates as well, not as a direct function of the past, but simply as a function of the current state, to which we add more stochastic error.</p>
 <div class="cell">
