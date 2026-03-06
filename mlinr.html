@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>ML case study in R – Forecasting Essentials and Notes: Online Resource</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./statespaceinr.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-635ebee939b5a5ef3c54ffc98530d095.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./mlinr.html">9. ML forecasting models</a></li><li class="breadcrumb-item"><a href="./mlinr.html"><span class="chapter-title">ML case study in R</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Forecasting Essentials and Notes: Online Resource</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Introduction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">1. Time series basics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./whatisatimeseries.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">What is a time series?</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./autocovariance.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Autocovariance and autocorrelation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./whitenoise.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">White noise</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./randomwalk.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Random walks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./stationarity.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Stationarity</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./basicsinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Time series basics in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">2. ARIMA models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ar.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">AR models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ma.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">MA models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./backshift.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Backshift notation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arima.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">ARIMA models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./identificationinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">ARIMA identification in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">3. ETS and SARIMA models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ets.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">ETS models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sarima.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">SARIMA models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./seasonalityinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Seasonal models in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">4. Forecasting and validation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./forecasts.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Forecast strategies</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./validation.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Model validation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./validationinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Validation in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">5. Incorporating external regressors</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cointegration.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Cointegration</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dynamicregression.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Dynamic regression and “ARIMAX” models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./harmonics.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Harmonic predictors and multiple seasonality</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dynamicregressioninr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Dynamic regression in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">6. Modeling systems of variables</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./vars.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Vector autoregressions (VARs)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./granger.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Granger causality</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./causalityinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">VARs in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">7. Conditional heteroskedasticity</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./arch.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">ARCH models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./garch.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">GARCH models and kin</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./archgarchinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">ARCH/GARCH in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">8. State-space representations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./statespace.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">State space representations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./kalmanfilter.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">The Kalman filter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./statespaceinr.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">State space analysis in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+ <span class="menu-text">9. ML forecasting models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mlinr.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">ML case study in R</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#case-study-goals-and-eda" id="toc-case-study-goals-and-eda" class="nav-link active" data-scroll-target="#case-study-goals-and-eda">Case study goals and EDA</a></li>
+  <li><a href="#preparing-for-deployable-forecasting" id="toc-preparing-for-deployable-forecasting" class="nav-link" data-scroll-target="#preparing-for-deployable-forecasting">Preparing for deployable forecasting</a></li>
+  <li><a href="#null-model" id="toc-null-model" class="nav-link" data-scroll-target="#null-model">Null model</a></li>
+  <li><a href="#autoregressive-distributed-lag-adl-model" id="toc-autoregressive-distributed-lag-adl-model" class="nav-link" data-scroll-target="#autoregressive-distributed-lag-adl-model">Autoregressive distributed lag (ADL) model</a></li>
+  <li><a href="#gradient-boosted-trees-gbt" id="toc-gradient-boosted-trees-gbt" class="nav-link" data-scroll-target="#gradient-boosted-trees-gbt">Gradient boosted trees (GBT)</a></li>
+  <li><a href="#long-short-term-memory-lstm-models" id="toc-long-short-term-memory-lstm-models" class="nav-link" data-scroll-target="#long-short-term-memory-lstm-models">Long-short term memory (LSTM) models</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content column-body" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./mlinr.html">9. ML forecasting models</a></li><li class="breadcrumb-item"><a href="./mlinr.html"><span class="chapter-title">ML case study in R</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-title">ML case study in R</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta column-body">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 0. SETUP AND INITIAL EDA</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 0.1 bring in data and packages</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages('tsibbledata') #for data</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages('zoo') #for rollapply function</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages('dplyr') #for lag function</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages('xgboost') #for gradient boosted trees</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages('keras3') #for lstms</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(tsibbledata)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(zoo)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(dplyr)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(xgboost)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(keras3)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The southern Australian state of Victoria is home to about 7 million people, including the greater Melbourne metropolitan area, somewhat similar in population to the Chicagoland area.</p>
+<p>After decades of privatization, Victoria is <a href="https://en.wikipedia.org/wiki/State_Electricity_Commission_of_Victoria#Revival_(2023–)">reasserting state control over their electrical grid</a>. Somewhere, someone is going to have to put together an operational plan for supplying power to the entire state, and that plan will have to involve a forecast of total energy demand: week by week, day by day, and hour by hour.</p>
+<p>If that person were <em>you</em>, how would you do it?</p>
+<section id="case-study-goals-and-eda" class="level2">
+<h2 class="anchored" data-anchor-id="case-study-goals-and-eda">Case study goals and EDA</h2>
+<p>This longer case study will try to present some real deployment challenges (and success strategies) as we try to imagine how <em>we</em> might forecast Victoria’s electricity demand, were it <em>our</em> job. I don’t have up-to-date demand numbers electrical grid, but a three-year dataset of half-hourly demand from 2012–2014 is available through the <code>tsibbledata</code> package:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(vic_elec)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(vic_elec)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      Time                         Demand      Temperature   
+ Min.   :2012-01-01 00:00:00   Min.   :2858   Min.   : 1.50  
+ 1st Qu.:2012-09-30 22:52:30   1st Qu.:3969   1st Qu.:12.30  
+ Median :2013-07-01 22:45:00   Median :4635   Median :15.40  
+ Mean   :2013-07-01 22:45:00   Mean   :4665   Mean   :16.27  
+ 3rd Qu.:2014-04-01 23:37:30   3rd Qu.:5244   3rd Qu.:19.40  
+ Max.   :2014-12-31 23:30:00   Max.   :9345   Max.   :43.20  
+      Date             Holiday       
+ Min.   :2012-01-01   Mode :logical  
+ 1st Qu.:2012-09-30   FALSE:51120    
+ Median :2013-07-01   TRUE :1488     
+ Mean   :2013-07-01                  
+ 3rd Qu.:2014-04-01                  
+ Max.   :2014-12-31                  
+# A tibble: 6 × 5
+  Time                Demand Temperature Date       Holiday
+  &lt;dttm&gt;               &lt;dbl&gt;       &lt;dbl&gt; &lt;date&gt;     &lt;lgl&gt;  
+1 2012-01-01 00:00:00  4383.        21.4 2012-01-01 TRUE   
+2 2012-01-01 00:30:00  4263.        21.0 2012-01-01 TRUE   
+3 2012-01-01 01:00:00  4049.        20.7 2012-01-01 TRUE   
+4 2012-01-01 01:30:00  3878.        20.6 2012-01-01 TRUE   
+5 2012-01-01 02:00:00  4036.        20.4 2012-01-01 TRUE   
+6 2012-01-01 02:30:00  3866.        20.2 2012-01-01 TRUE   </code></pre>
+</div>
+</div>
+<p><strong>Scenario:</strong> It’s December 31st, 2013. We have two years of pst historical demand data for Victoria’s electrical grid (2012 and 2013). We have been asked to provide daily estimates of electrical demand, at midnight, for each of the next 365 days.</p>
+<p><strong>Objectives:</strong> We want to ensure daily demand is well-understood so that power plants and other power-generating facilities know when to run and how much power to produce.</p>
+<ul>
+<li><p><em>Overestimating</em> demand generates waste (at least AUD 50 per megawatt-hour) in unnecessarily-produced electricity, as well as add-on effects such as employee wages, maintenance costs, equipment wear, opportunity costs, <em>etc.</em></p></li>
+<li><p><em>Underestimating</em> demand can be even worse: brownouts or blackouts might disrupt residential and commercial needs, and emergency power may need to be purchased from neighboring electrical grids at great expense (at least AUD 300 per MWh).</p></li>
+</ul>
+<p><strong>Sticking point:</strong> How can we know on December 31<sup>st</sup>, 2013, that we have a forecasting strategy which will be robust to whatever 2014 brings?</p>
+<p>Electrical demand shows clear daily seasonality <em>and</em> weekly seasonality. The daily seasonality comes both from temperature changes over the course of the day as well as changes in human use of electrical equipment throughout the day. The weekly seasonality comes from human use patterns as well, since office buildings and other employment sites are generally only lit and in use during the workweek:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>weekplot <span class="ot">&lt;-</span> <span class="cf">function</span>(w){</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="at">x=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">336</span>,<span class="at">y=</span>vic_elec<span class="sc">$</span>Demand[<span class="dv">336</span><span class="sc">*</span>w<span class="dv">-335</span><span class="sc">:</span><span class="dv">0</span>],</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">3400</span>,<span class="dv">8000</span>),<span class="at">xlab=</span><span class="cn">NA</span>,<span class="at">ylab=</span><span class="st">'MWh'</span>,<span class="at">xaxt=</span><span class="st">'n'</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">type=</span><span class="st">'l'</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">main=</span><span class="fu">paste</span>(<span class="st">'Demand in 2012 Week'</span>,w))</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">axis</span>(<span class="at">side=</span><span class="dv">1</span>,<span class="at">at=</span><span class="dv">1</span><span class="sc">+</span><span class="dv">48</span><span class="sc">*</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">6</span>),<span class="at">labels=</span><span class="fu">c</span>(<span class="st">'Su'</span>,<span class="st">'M'</span>,<span class="st">'T'</span>,<span class="st">'W'</span>,<span class="st">'Th'</span>,<span class="st">'F'</span>,<span class="st">'Sa'</span>))}</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">1</span>)<span class="sc">+</span><span class="fl">0.1</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>,weekplot)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mlinr_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>However, the graphs above (from early 2012) show that the demand pattern is not identical day-to-day or week-to-week. Week 2 shows a very regular pattern like we might expect, with Monday–Friday having very similar demand and both Sunday and Saturday showing somwehat less demand. But other weeks show a very different pattern. It might be difficult to forecast this series with a fixed set of daily or hourly coefficients.</p>
+<p>One of the largest factors affecting electricity demand is temperature. Cold days require the use of residential, commercial, and industrial heating equipment. Hot days require the use of residential, commercial, and industrial cooling equipment. Heating the indoor spaces for 7 million people from 5°C (42°F) to room temperature requires an enormous amount of power, as does cooling the indoor spaces for 7 million people from 33°C (92°F).<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(vic_elec<span class="sc">$</span>Demand<span class="sc">~</span><span class="fu">factor</span>(<span class="fu">round</span>(vic_elec<span class="sc">$</span>Temperature)),</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Degrees C'</span>,<span class="at">ylab=</span><span class="st">'Demand in MWh'</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'Power Demand vs Temperature, 2012-2014'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mlinr_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>(Here I should remind the reader: in Australia, January is a summer month and July is a winter month.)</p>
+<p>We’ll need to treat temperature carefully. The power needed to heat or cool Victoria is not linear with temperature; every extra degree away from a comfortable range takes <em>more</em> power to heat or cool away than the last one. Some amount of demand will <em>only</em> be seen when it’s hot, other types of demand will <em>only</em> be seen when it’s cool.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>monthlydemand <span class="ot">&lt;-</span> <span class="fu">tapply</span>(vic_elec<span class="sc">$</span>Demand,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="fu">format</span>(vic_elec<span class="sc">$</span>Time,<span class="st">'%H:%M'</span>),<span class="fu">format</span>(vic_elec<span class="sc">$</span>Date,<span class="st">'%b'</span>)),</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">FUN=</span>mean)[,<span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">4</span>,<span class="dv">8</span>,<span class="dv">1</span>,<span class="dv">9</span>,<span class="dv">7</span>,<span class="dv">6</span>,<span class="dv">2</span>,<span class="dv">12</span>,<span class="dv">11</span>,<span class="dv">10</span>,<span class="dv">3</span>)]</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">matplot</span>(<span class="at">x=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">48</span>,<span class="at">y=</span>monthlydemand,<span class="at">xaxt=</span><span class="st">'n'</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">type=</span><span class="st">'l'</span>,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">lty=</span><span class="dv">1</span>,<span class="at">pch=</span><span class="cn">NA</span>,<span class="at">ylab=</span><span class="st">'Demand (MWh)'</span>,<span class="at">xlab=</span><span class="st">'Hour'</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">main=</span><span class="st">'Half-hourly average demand by month'</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">col=</span><span class="fu">colorRampPalette</span>(<span class="fu">c</span>(<span class="st">'#ff0000'</span>,<span class="st">'#0000ff'</span>,<span class="st">'#ff0000'</span>))(<span class="dv">13</span>),)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="at">side=</span><span class="dv">1</span>,<span class="at">at=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">48</span>,<span class="at">labels=</span><span class="fu">format</span>(vic_elec<span class="sc">$</span>Time[<span class="dv">1</span><span class="sc">:</span><span class="dv">48</span>],<span class="st">'%H:%M'</span>))</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'bottomright'</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">'January'</span>,<span class="st">'July'</span>),</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="fu">c</span>(<span class="st">'#ff0000'</span>,<span class="st">'#0000ff'</span>),<span class="at">bty=</span><span class="st">'n'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mlinr_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="preparing-for-deployable-forecasting" class="level2">
+<h2 class="anchored" data-anchor-id="preparing-for-deployable-forecasting">Preparing for deployable forecasting</h2>
+<p>In school, we often approach data analyses as one-off assignments which will never be revisited, and which only need to be understood by ourselves and potentially a grader. Successful professional-level data analyses require a different set of skills and standards.</p>
+<p>One of those skills is templatizing your code into repeatable chunks which can be extended to multiple related problems. This could mean writing new object classes, or a library of helper functions, or entire scripts imported into new projects. Templatization brings several benefits:</p>
+<ol type="1">
+<li><p>In the long run, it should save you time.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p></li>
+<li><p>It should help others to better understand, run, and adapt your code.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p></li>
+<li><p>You will make fewer outright errors because once you develop working tools, you will stop rebuilding them, and thereby eliminate possibly erroneous labor.</p></li>
+<li><p>You will solve all similar problems in exactly the same way, meaning that their results will be more directly comprable, and less likely to introduce ambiguity through inconsistency (which is not necessarily error, but can create errors in use and interpretation).</p></li>
+</ol>
+<p>The actual code quality of the functions which follow is… not great. But it would be irresponsible to ever attempt something as serious as our scenario without taking this <em>approach</em> to building our codebase.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 0.2 add weekend feature</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>elec <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(vic_elec)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>elec<span class="sc">$</span>Weekend <span class="ot">&lt;-</span> <span class="fu">pmax</span>(<span class="dv">1</span><span class="sc">*</span>(<span class="fu">weekdays</span>(vic_elec<span class="sc">$</span>Date) <span class="sc">%in%</span> </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>            <span class="fu">c</span>(<span class="st">'Saturday'</span>,<span class="st">'Sunday'</span>)) <span class="sc">-</span> vic_elec<span class="sc">$</span>Holiday,<span class="dv">0</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 0.3 split into train (2012-13) and test (2014) and a stress-test</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> <span class="fu">which</span>(<span class="fu">strftime</span>(elec<span class="sc">$</span>Date,<span class="at">format=</span><span class="st">'%Y'</span>)<span class="sc">&lt;</span><span class="st">'2014'</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> <span class="fu">which</span>(<span class="fu">strftime</span>(elec<span class="sc">$</span>Date,<span class="at">format=</span><span class="st">'%Y'</span>)<span class="sc">==</span><span class="st">'2014'</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>T1 <span class="ot">&lt;-</span> <span class="fu">max</span>(train)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>T2 <span class="ot">&lt;-</span> <span class="fu">max</span>(test)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>n1 <span class="ot">&lt;-</span> <span class="fu">length</span>(train)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>n2 <span class="ot">&lt;-</span> <span class="fu">length</span>(test)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>maxtemps <span class="ot">&lt;-</span> <span class="fu">rollapply</span>(elec<span class="sc">$</span>Temperature[test],<span class="at">width=</span><span class="dv">48</span>,max,<span class="at">by=</span><span class="dv">48</span>)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>hotdays <span class="ot">&lt;-</span> <span class="fu">order</span>(maxtemps,<span class="at">decreasing=</span><span class="cn">TRUE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>hotobs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">sapply</span>(hotdays,<span class="cf">function</span>(z) test[<span class="dv">48</span><span class="sc">*</span>z<span class="sc">-</span>(<span class="dv">47</span><span class="sc">:</span><span class="dv">0</span>)]))</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co"># 0.4 helper functions</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co"># rmse -- calculates generic root mean squared error</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="co"># ins.rmse -- rmse for demand in train period</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="co"># oos.rmse -- rmse for demand in test period</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="co"># hot.rmse -- rmse for demand during hottest 10 test days</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>rmse <span class="ot">&lt;-</span> <span class="cf">function</span>(preds,actual){</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sqrt</span>(<span class="fu">mean</span>((actual<span class="sc">-</span>preds)<span class="sc">^</span><span class="dv">2</span>,<span class="at">na.rm=</span><span class="cn">TRUE</span>))}</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>ins.rmse <span class="ot">&lt;-</span> <span class="cf">function</span>(preds) <span class="fu">rmse</span>(preds,elec<span class="sc">$</span>Demand[train])</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>oos.rmse <span class="ot">&lt;-</span> <span class="cf">function</span>(preds) <span class="fu">rmse</span>(preds,elec<span class="sc">$</span>Demand[test])</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>hot.rmse <span class="ot">&lt;-</span> <span class="cf">function</span>(preds){</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rmse</span>(preds[hotobs<span class="sc">-</span>T1],elec<span class="sc">$</span>Demand[hotobs])}</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a><span class="co"># cost -- total cost in mispredicted demand for test period</span></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>cost <span class="ot">&lt;-</span> <span class="cf">function</span>(preds,<span class="at">actual=</span>elec<span class="sc">$</span>Demand[test]){</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>  e <span class="ot">&lt;-</span> actual<span class="sc">-</span>preds</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sum</span>(<span class="fu">ifelse</span>(e<span class="sc">&gt;</span><span class="dv">0</span>,<span class="dv">150</span><span class="sc">*</span>e,<span class="sc">-</span><span class="dv">25</span><span class="sc">*</span>e))}</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a><span class="co"># all.features -- creates lags and features from raw data</span></span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>all.features <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">Temp=</span>elec<span class="sc">$</span>Temperature,</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">Temp2=</span>elec<span class="sc">$</span>Temperature<span class="sc">^</span><span class="dv">2</span>,</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>  <span class="at">Weekend=</span>elec<span class="sc">$</span>Weekend,</span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>  <span class="at">Holiday=</span>elec<span class="sc">$</span>Holiday,</span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>  <span class="at">TempWarm=</span><span class="fu">pmax</span>(elec<span class="sc">$</span>Temperature<span class="dv">-20</span>,<span class="dv">0</span>),</span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>  <span class="at">TempCool=</span><span class="fu">pmax</span>(<span class="dv">20</span><span class="sc">-</span>elec<span class="sc">$</span>Temperature,<span class="dv">0</span>),</span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">TempXDemL48=</span>elec<span class="sc">$</span>Temperature<span class="sc">*</span><span class="fu">lag</span>(elec<span class="sc">$</span>Demand,<span class="dv">48</span>), <span class="co">#7</span></span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">Trend=</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(elec)[<span class="dv">1</span>])<span class="sc">/</span>(<span class="dv">365</span><span class="sc">*</span><span class="dv">48</span>),</span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>  <span class="at">TrigD1=</span><span class="fu">cos</span>(<span class="dv">2</span><span class="sc">*</span>pi<span class="sc">*</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(elec)[<span class="dv">1</span>])<span class="sc">/</span><span class="dv">48</span>),</span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>  <span class="at">TrigD2=</span><span class="fu">sin</span>(<span class="dv">2</span><span class="sc">*</span>pi<span class="sc">*</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(elec)[<span class="dv">1</span>])<span class="sc">/</span><span class="dv">48</span>),</span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>  <span class="at">TrigW1=</span><span class="fu">cos</span>(<span class="dv">2</span><span class="sc">*</span>pi<span class="sc">*</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(elec)[<span class="dv">1</span>])<span class="sc">/</span><span class="dv">336</span>),</span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>  <span class="at">TrigW2=</span><span class="fu">sin</span>(<span class="dv">2</span><span class="sc">*</span>pi<span class="sc">*</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(elec)[<span class="dv">1</span>])<span class="sc">/</span><span class="dv">336</span>), <span class="co">#12</span></span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>  <span class="at">Demand_L1=</span><span class="fu">lag</span>(elec<span class="sc">$</span>Demand),</span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a>  <span class="at">Demand_L2=</span><span class="fu">lag</span>(elec<span class="sc">$</span>Demand,<span class="dv">2</span>),</span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>  <span class="at">Demand_L48=</span><span class="fu">lag</span>(elec<span class="sc">$</span>Demand,<span class="dv">48</span>),</span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>  <span class="at">Demand_L49=</span><span class="fu">lag</span>(elec<span class="sc">$</span>Demand,<span class="dv">49</span>),</span>
+<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a>  <span class="at">Demand_L336=</span><span class="fu">lag</span>(elec<span class="sc">$</span>Demand,<span class="dv">336</span>),</span>
+<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a>  <span class="at">Demand_L337=</span><span class="fu">lag</span>(elec<span class="sc">$</span>Demand,<span class="dv">337</span>),</span>
+<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a>  <span class="at">Temp_L1=</span><span class="fu">lag</span>(elec<span class="sc">$</span>Temperature),</span>
+<span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a>  <span class="at">Temp_L48=</span><span class="fu">lag</span>(elec<span class="sc">$</span>Temperature,<span class="dv">48</span>),</span>
+<span id="cb7-58"><a href="#cb7-58" aria-hidden="true" tabindex="-1"></a>  <span class="at">Temp2_L1=</span><span class="fu">lag</span>(elec<span class="sc">$</span>Temperature<span class="sc">^</span><span class="dv">2</span>),</span>
+<span id="cb7-59"><a href="#cb7-59" aria-hidden="true" tabindex="-1"></a>  <span class="at">Temp2_L48=</span><span class="fu">lag</span>(elec<span class="sc">$</span>Temperature<span class="sc">^</span><span class="dv">2</span>,<span class="dv">48</span>), <span class="co">#22</span></span>
+<span id="cb7-60"><a href="#cb7-60" aria-hidden="true" tabindex="-1"></a>  <span class="at">FutureMin=</span><span class="fu">c</span>(<span class="fu">rollapply</span>(elec<span class="sc">$</span>Temperature,<span class="at">width=</span><span class="dv">48</span>,min)[<span class="sc">-</span><span class="dv">1</span>],<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">48</span>)),</span>
+<span id="cb7-61"><a href="#cb7-61" aria-hidden="true" tabindex="-1"></a>  <span class="at">FutureMax=</span><span class="fu">c</span>(<span class="fu">rollapply</span>(elec<span class="sc">$</span>Temperature,<span class="at">width=</span><span class="dv">48</span>,max)[<span class="sc">-</span><span class="dv">1</span>],<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">48</span>)),</span>
+<span id="cb7-62"><a href="#cb7-62" aria-hidden="true" tabindex="-1"></a>  <span class="at">FutureMean=</span><span class="fu">c</span>(<span class="fu">rollapply</span>(elec<span class="sc">$</span>Temperature,<span class="at">width=</span><span class="dv">48</span>,mean)[<span class="sc">-</span><span class="dv">1</span>],<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">48</span>)),</span>
+<span id="cb7-63"><a href="#cb7-63" aria-hidden="true" tabindex="-1"></a>  <span class="at">FutureSlope=</span><span class="fu">c</span>(<span class="fu">rollapply</span>(elec<span class="sc">$</span>Temperature,<span class="at">width=</span><span class="dv">48</span>,</span>
+<span id="cb7-64"><a href="#cb7-64" aria-hidden="true" tabindex="-1"></a>    <span class="cf">function</span>(z) <span class="fu">cov</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">48</span>,z)<span class="sc">/</span><span class="fu">var</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">48</span>))[<span class="sc">-</span><span class="dv">1</span>],<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">48</span>))) <span class="co">#26</span></span>
+<span id="cb7-65"><a href="#cb7-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-66"><a href="#cb7-66" aria-hidden="true" tabindex="-1"></a><span class="co"># year_test -- loops through weekly refitting and daily forecasting</span></span>
+<span id="cb7-67"><a href="#cb7-67" aria-hidden="true" tabindex="-1"></a>year_test <span class="ot">&lt;-</span> <span class="cf">function</span>(model.func,predict.func,<span class="at">h=</span><span class="dv">1</span>){</span>
+<span id="cb7-68"><a href="#cb7-68" aria-hidden="true" tabindex="-1"></a>  preds <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="at">mode=</span><span class="st">'numeric'</span>,<span class="at">length=</span><span class="dv">0</span>)</span>
+<span id="cb7-69"><a href="#cb7-69" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (w <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">53</span>){</span>
+<span id="cb7-70"><a href="#cb7-70" aria-hidden="true" tabindex="-1"></a>    idx <span class="ot">&lt;-</span> T1<span class="sc">+</span>(w<span class="dv">-1</span>)<span class="sc">*</span><span class="dv">336</span></span>
+<span id="cb7-71"><a href="#cb7-71" aria-hidden="true" tabindex="-1"></a>    model.obj <span class="ot">&lt;-</span> <span class="fu">model.func</span>(idx)</span>
+<span id="cb7-72"><a href="#cb7-72" aria-hidden="true" tabindex="-1"></a>    maxd <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(w<span class="sc">==</span><span class="dv">53</span>,<span class="dv">0</span>,<span class="dv">6</span>)</span>
+<span id="cb7-73"><a href="#cb7-73" aria-hidden="true" tabindex="-1"></a>    week.preds <span class="ot">&lt;-</span> <span class="fu">sapply</span>(idx<span class="sc">+</span><span class="dv">48</span><span class="sc">*</span>(<span class="dv">0</span><span class="sc">:</span>maxd),predict.func,<span class="at">model.obj=</span>model.obj)</span>
+<span id="cb7-74"><a href="#cb7-74" aria-hidden="true" tabindex="-1"></a>    preds <span class="ot">&lt;-</span> <span class="fu">c</span>(preds,<span class="fu">c</span>(week.preds))}</span>
+<span id="cb7-75"><a href="#cb7-75" aria-hidden="true" tabindex="-1"></a>  preds}</span>
+<span id="cb7-76"><a href="#cb7-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-77"><a href="#cb7-77" aria-hidden="true" tabindex="-1"></a><span class="do">## biasplot -- shows when predictions were too high or low</span></span>
+<span id="cb7-78"><a href="#cb7-78" aria-hidden="true" tabindex="-1"></a>biasplot <span class="ot">&lt;-</span> <span class="cf">function</span>(preds,label){</span>
+<span id="cb7-79"><a href="#cb7-79" aria-hidden="true" tabindex="-1"></a>  bias <span class="ot">&lt;-</span> elec<span class="sc">$</span>Demand[test]<span class="sc">-</span>preds</span>
+<span id="cb7-80"><a href="#cb7-80" aria-hidden="true" tabindex="-1"></a>  roll.bias.ma7 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>,</span>
+<span id="cb7-81"><a href="#cb7-81" aria-hidden="true" tabindex="-1"></a>                     <span class="fu">rollapply</span>(bias,<span class="at">width=</span><span class="dv">336</span>,<span class="at">by=</span><span class="dv">48</span>,mean,<span class="at">na.rm=</span><span class="cn">TRUE</span>),</span>
+<span id="cb7-82"><a href="#cb7-82" aria-hidden="true" tabindex="-1"></a>                     <span class="cn">NA</span>,<span class="cn">NA</span>,<span class="cn">NA</span>)</span>
+<span id="cb7-83"><a href="#cb7-83" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="fu">unique</span>(elec<span class="sc">$</span>Date[test]),roll.bias.ma7,<span class="at">type=</span><span class="st">'l'</span>,</span>
+<span id="cb7-84"><a href="#cb7-84" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab=</span><span class="st">'Date'</span>,<span class="at">ylab=</span><span class="st">'Bias (MWh)'</span>,</span>
+<span id="cb7-85"><a href="#cb7-85" aria-hidden="true" tabindex="-1"></a>       <span class="at">main=</span><span class="fu">paste</span>(<span class="st">'Rolling 7-day avg bias of'</span>,label))</span>
+<span id="cb7-86"><a href="#cb7-86" aria-hidden="true" tabindex="-1"></a>  <span class="fu">abline</span>(<span class="at">h=</span><span class="dv">0</span>,<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'grey50'</span>)}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>A more proper set of helper functions would come with their own documentation, but if you read between the lines of the <code>year_test</code> function, you’ll see that it expects two other types of function not listed here, which we will build separately for each model type:</p>
+<ul>
+<li><p>A <em>model-making function</em>, referred to here as the argument <code>model.func</code> (though of course the real function might be called anything), which takes in just one arguments, <code>idx</code> (the row number of the last training observation), and outputs a model object referred to here as <code>model.obj</code>.</p></li>
+<li><p>A <em>forecasting function</em>, referred to here as the argument <code>predict.func</code>, which takes in a fitted model object and the row number of the last observation before the forecasting window, and outputs a vector of demand predictions.<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></p></li>
+</ul>
+</section>
+<section id="null-model" class="level2">
+<h2 class="anchored" data-anchor-id="null-model">Null model</h2>
+<p>Before we begin with more sophisticated modeling, we should always keep a null model around as a benchmark. In this case, given the strong daily <em>and</em> weekly seasonality of the data, there’s an argument that both the naive model (<span class="math inline">\(\hat{y}_t = y_{t-1}\)</span>) <em>or</em> the seasonal naive model (<span class="math inline">\(\hat{y}_t = y_{t-48}\)</span>) could produce good results.</p>
+<p>However, in our scenario of forecasting power for a full 24-hour period, we will not be able to implement the naive model, since at midnight we would not know <span class="math inline">\(y_{00:30}\)</span> in order to predict <span class="math inline">\(y_{01:00}\)</span> and so on. So by default we will pick the seasonal naive model:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. NULL MODEL</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 1.1 compile model metrics and examine bias</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>naive.preds <span class="ot">&lt;-</span> <span class="fu">lag</span>(elec<span class="sc">$</span>Demand,<span class="dv">48</span>)[test]</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>(naive.metrics <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">c</span>(</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">ins.rmse=</span><span class="fu">ins.rmse</span>(<span class="fu">lag</span>(elec<span class="sc">$</span>Demand,<span class="dv">48</span>)[train]),</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">oos.rmse=</span><span class="fu">oos.rmse</span>(naive.preds),</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">hot.rmse=</span><span class="fu">hot.rmse</span>(naive.preds),</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">cost.mm=</span><span class="fu">cost</span>(naive.preds)<span class="sc">/</span><span class="fl">1e6</span>),<span class="dv">0</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>ins.rmse oos.rmse hot.rmse  cost.mm 
+     570      571     1106      563 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">biasplot</span>(naive.preds,<span class="st">'Null model'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mlinr_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We see here some of the economy offered by our helper functions. We also see that the seasonal naive model (which I will also call the null model) is an impressive start. Our out-of-sample RMSE is almost identical to our in-sample RMSE, meaning that there’s no overfitting. The bias plot shows that the model provides good-not-great predictions almost <em>everywhere</em>, though the performance is about twice as bad on the hottest days.</p>
+<p>If we had never taken a data science or statistics course in our life, we could reach this conclusion. Let’s stay humble as we try new approches, since our incremental value to the electric commission may be less than we thought.</p>
+</section>
+<section id="autoregressive-distributed-lag-adl-model" class="level2">
+<h2 class="anchored" data-anchor-id="autoregressive-distributed-lag-adl-model">Autoregressive distributed lag (ADL) model</h2>
+<p>Let’s add an earlier statistical model to the mix, as a parametric alternative to the machine learning models we might try next.</p>
+<p>An autoregressive distributed lag model might be a good fit to our data for several reasons:</p>
+<ul>
+<li><p>Our data has both time series properties as well as significant associations with external regressors (which rules out purely univariate techniques like ARIMA).</p></li>
+<li><p>Our data shows more “AR” than “MA” behavior, both conceptually and empirically (which suggests against (dynamic regression).</p></li>
+<li><p>The “AR” behavior in our data is not just a second-order residual disturbance, but rather structural changes in the true mean of our data (which also suggests against dynamic regression).</p></li>
+<li><p>The external regressors are not in themselves a target for forecasting and are viewed as exogenous or deterministic influences (which rules out VARs).</p></li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 2 AUTOREGRESSIVE DISTRIBUTED LAG (ADL) MODEL</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 2.1 create model and prediction functions</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>adl.fit <span class="ot">&lt;-</span> <span class="cf">function</span>(idx,<span class="at">days=</span><span class="dv">365</span>){</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  training.ids <span class="ot">&lt;-</span> (idx<span class="sc">-</span>days<span class="sc">*</span><span class="dv">48</span><span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>idx</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> all.features[training.ids,<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>,<span class="dv">13</span><span class="sc">:</span><span class="dv">22</span>)]</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> elec<span class="sc">$</span>Demand[training.ids]</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lm</span>(y <span class="sc">~</span> ., <span class="at">data=</span>x)}</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>adl.pred <span class="ot">&lt;-</span> <span class="cf">function</span>(idx,model.obj){</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  xtest <span class="ot">&lt;-</span> all.features[idx<span class="sc">+</span><span class="dv">1</span><span class="sc">:</span><span class="dv">48</span>,<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>,<span class="dv">13</span><span class="sc">:</span><span class="dv">22</span>)]</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  preds <span class="ot">&lt;-</span> <span class="fu">predict.lm</span>(model.obj,<span class="at">newdata=</span>xtest[<span class="dv">1</span>,])</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">48</span>){</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    xtest<span class="sc">$</span>Demand_L1[i] <span class="ot">&lt;-</span> preds[i<span class="dv">-1</span>]</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (i<span class="sc">&gt;</span><span class="dv">2</span>) {xtest<span class="sc">$</span>Demand_L2[i] <span class="ot">&lt;-</span> preds[i<span class="dv">-2</span>]}</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    preds[i] <span class="ot">&lt;-</span> <span class="fu">predict.lm</span>(model.obj,<span class="at">newdata=</span>xtest[i,])}</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  preds}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We will make a modeling function which uses only a subset of the total feature list:</p>
+<ul>
+<li>Current Temperature</li>
+<li>Lags 1 and 48 of Temperature</li>
+<li>Current Temperature<sup>2</sup> (to approximate nonlinear effects)</li>
+<li>Lags 1 and 48 of Temperature<sup>2</sup></li>
+<li>Lags 1, 2, 48, 49, 336, and 337 of Demand (to capture AR and multiseasonal AR behavior)</li>
+</ul>
+<p>Our prediction function will make a single lookahead prediction for the 00:30 time slot, and then use this prediction to modify the 01:00 time slot’s “Lag 1 Temperature” feature, and continue on in this way to forecast the entire day.</p>
+<p>One tweak which would be more honest to our scenario would be to add noise/error to the future temperature data… I have not done so here because 24 hour forecasts of weather are now quite accurate, generally to within 1–1.5°C. If we make this modeling choice for all models or no models, then it should not greatly affect our assessment of their relative performance.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 2.2 train on historical data and examine residuals</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>adl.train.mod <span class="ot">&lt;-</span> <span class="fu">adl.fit</span>(<span class="at">idx=</span>T1,<span class="at">days=</span>(<span class="dv">366</span><span class="sc">+</span><span class="dv">365</span>))</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(adl.train.mod)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = y ~ ., data = x)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-320.16  -23.66   -0.39   23.45  406.35 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  53.562750   2.845093   18.83   &lt;2e-16 ***
+Temp        -48.698693   1.212975  -40.15   &lt;2e-16 ***
+Temp2         1.369955   0.029818   45.94   &lt;2e-16 ***
+Weekend     -10.302870   0.641129  -16.07   &lt;2e-16 ***
+HolidayTRUE -17.770021   1.582242  -11.23   &lt;2e-16 ***
+Demand_L1     1.154831   0.002388  483.51   &lt;2e-16 ***
+Demand_L2    -0.174324   0.002324  -75.00   &lt;2e-16 ***
+Demand_L48    0.346041   0.003350  103.28   &lt;2e-16 ***
+Demand_L49   -0.339991   0.003335 -101.94   &lt;2e-16 ***
+Demand_L336   0.493842   0.003456  142.91   &lt;2e-16 ***
+Demand_L337  -0.489245   0.003470 -141.01   &lt;2e-16 ***
+Temp_L1      44.514617   1.220875   36.46   &lt;2e-16 ***
+Temp_L48      2.854446   0.253379   11.27   &lt;2e-16 ***
+Temp2_L1     -1.236025   0.030057  -41.12   &lt;2e-16 ***
+Temp2_L48    -0.090157   0.006342  -14.21   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 44.25 on 34736 degrees of freedom
+  (337 observations deleted due to missingness)
+Multiple R-squared:  0.9974,    Adjusted R-squared:  0.9974 
+F-statistic: 9.575e+05 on 14 and 34736 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>),<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">4</span>,<span class="dv">3</span>,<span class="dv">2</span>)<span class="sc">+</span><span class="fl">0.1</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(elec<span class="sc">$</span>Date[train][<span class="sc">-</span><span class="dv">1</span><span class="sc">:-</span><span class="dv">337</span>],adl.train.mod<span class="sc">$</span>residuals,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'Training residuals over time'</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Date'</span>,<span class="at">ylab=</span><span class="st">'Residual (MWh)'</span>,<span class="at">cex.main=</span><span class="fl">0.75</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(adl.train.mod<span class="sc">$</span>residuals),</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'Estimated density of training residuals'</span>,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Residual (MWh)'</span>,<span class="at">cex.main=</span><span class="fl">0.75</span>)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(elec<span class="sc">$</span>Temperature[train][<span class="sc">-</span><span class="dv">1</span><span class="sc">:-</span><span class="dv">337</span>],adl.train.mod<span class="sc">$</span>residuals,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'Training residuals vs. temperatures'</span>,</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Temperature (C)'</span>,<span class="at">ylab=</span><span class="st">'Residual (MWh)'</span>,<span class="at">cex.main=</span><span class="fl">0.75</span>)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(adl.train.mod<span class="sc">$</span>residuals,</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">main=</span><span class="st">'ACF plot of training residuals'</span>,</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab=</span><span class="st">'Residual (MWh)'</span>,<span class="at">cex.main=</span><span class="fl">0.75</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mlinr_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This is as good a result as we could have hoped for! R<sup>2</sup> of 99.74%, all predictors found to be highly significant, mostly clean-looking residuals… honestly, the fit surprises me.</p>
+<p>However, in our scenario what counts is not our in-sample explanatory power, but our out-of-sample forecasting strength:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3.3 compile model metrics and examine bias</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>adl.preds <span class="ot">&lt;-</span> <span class="fu">year_test</span>(adl.fit,adl.pred) <span class="co">#15s</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>adl.metrics <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">c</span>(</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">ins.rmse=</span><span class="fu">ins.rmse</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">337</span>),<span class="fu">predict</span>(adl.train.mod))), </span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">oos.rmse=</span><span class="fu">oos.rmse</span>(adl.preds), </span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">hot.rmse=</span><span class="fu">hot.rmse</span>(adl.preds), </span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">cost.mm=</span><span class="fu">cost</span>(adl.preds)<span class="sc">/</span><span class="fl">1e6</span>),<span class="dv">0</span>)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(<span class="at">naive=</span>naive.metrics,<span class="at">adl=</span>adl.metrics)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      ins.rmse oos.rmse hot.rmse cost.mm
+naive      570      571     1106     563
+adl         44      337      725     301</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">biasplot</span>(adl.preds,<span class="st">'ADL model'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mlinr_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Our ADL model <em>does</em> indeed beat the null model for our 2014 test scenario. The in-sample RMSE is ridiculously low, but as mentioned before, that hardly matters. Much more importantly, the out-of-sample RMSE, the stress-test RMSE, and the actual estimated organizational cost are all about 30% lower when using our ADL model than when using the null model. (Perhaps our degrees really <em>do</em> count for something?)</p>
+</section>
+<section id="gradient-boosted-trees-gbt" class="level2">
+<h2 class="anchored" data-anchor-id="gradient-boosted-trees-gbt">Gradient boosted trees (GBT)</h2>
+<p>Let’s say we had not learned about ADL models, or let’s say that we prefer instead to use machine learning models for this problem. One model type we could explore is a <em>gradient-boosted tree</em>.</p>
+<p>I presume the reader’s familiarity with gradient-boosted trees, but <a href="https://xgboost.readthedocs.io/en/release_3.2.0/tutorials/model.html">this introduction</a> from the <code>xgboost</code> package documentation might provide a helpful review.</p>
+<p>GBTs might be another good fit for our data. Instead of one or two seasonal patterns, and one or two temperature relationships, it looks like our data have many different patterns and relationships with the regressors which are used in a specific settings (<em>e.g.</em> a heat wave in winter produces different effects than a heat wave in summer, and not every holiday produces the same demand pattern.)</p>
+<p>We will start by creating a fitting function and a forecasting function, just as we did for ADL models. One major change is that we will adopt a <em>direct</em> forecasting strategy rather than recursive strategy:</p>
+<ul>
+<li><p>Each week, we will train 48 different models based on the past year’s worth of demand data. The first model will use the historical sample to optimize 1-ahead prediction, the second model will optimize 2-ahead prediction, and so on.</p></li>
+<li><p>On each day of the week, we will apply the 48 pre-trained models to the most recent observation (from 23:30 the previous night). Together, they will examine the <em>same</em> data point and produce 48 separate estimates, one for each of the next 48 half-hourly periods.</p></li>
+<li><p>Because we will <em>not</em> be going forward in time, we normally would lose all the information about future temperatures which was used by the recursive ADL predictions. However, we can add summary information about the predicted temperature forecast to each observation, which will now carry a mix of past, present, and future (forecasted) information.</p></li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 4 GRADIENT BOOSTED TREES</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0302</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 4.1 create model and prediction functions</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>gbt.fit <span class="ot">&lt;-</span> <span class="cf">function</span>(idx,<span class="at">days=</span><span class="dv">365</span>,</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">max.depth=</span><span class="dv">6</span>,<span class="at">learning_rate=</span><span class="fl">0.05</span>,<span class="at">min_child_weight=</span><span class="dv">5</span>){ </span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  training.ids <span class="ot">&lt;-</span> (idx<span class="sc">-</span>(days<span class="sc">+</span><span class="dv">1</span>)<span class="sc">*</span><span class="dv">48</span><span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>(idx<span class="dv">-48</span>)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> all.features[training.ids,]</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">48</span>,<span class="at">FUN=</span><span class="cf">function</span>(z) </span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xgboost</span>(<span class="at">x=</span>x,<span class="at">y=</span>elec<span class="sc">$</span>Demand[training.ids<span class="sc">+</span>z],</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">max_depth=</span>max.depth,<span class="at">learning_rate=</span>learning_rate,</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">min_child_weight=</span>min_child_weight,</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">subsample=</span><span class="fl">0.8</span>,<span class="at">colsample_bytree=</span><span class="fl">0.8</span>,<span class="at">reg_lambda=</span><span class="dv">1</span>,</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">reg_alpha=</span><span class="fl">0.5</span>,<span class="at">nrounds=</span><span class="dv">500</span>,<span class="at">early_stopping_rounds=</span><span class="dv">50</span>))}</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>gbt.pred <span class="ot">&lt;-</span> <span class="cf">function</span>(idx,model.obj){</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>  xtest <span class="ot">&lt;-</span> all.features[idx,]</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unlist</span>(<span class="fu">lapply</span>(model.obj,<span class="cf">function</span>(z) <span class="fu">predict</span>(z,<span class="at">newdata=</span>xtest)))}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The GBT model-fitting function above uses the popular <code>xgboost</code> package (similar to its corresponding Python library). We face an immediate dilemma: none of these models are likely to work very well using only their default settings, but we do not have the time to optimize 15 different parameters. We may compromise by performing a simple grid search over three of the most important hyperparameters:</p>
+<ul>
+<li><p><code>max.depth</code>, which controls how deep any tree can get (4, 6, or 8 nodes). Higher values learn richer local behavior but often overfit.</p></li>
+<li><p><code>learning_rate</code>, which assigns a weight to the residual in each tree’s gradient “boost” (0.03, 0.05, or 0.10). Higher values learn faster and more accurately but often overfit.</p></li>
+<li><p><code>min_child_weight</code>, which controls how many observations are needed in each “leaf” of a tree (1 or 5). Higher values result in less localization and possibly less overfitting.</p></li>
+</ul>
+<p>Since these parameters are chosen to minimize overfitting, we cannot judge the best values from an in-sample prediction. We will reduce the training set to January 2012 – June 2013, and use the July 2013 – December 2013 dates as a validation set for our hyperparameter tuning. All choices here involve tradeoffs, but this validation set at least contains both summer and winter days in equal measure.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 4.1 tune hyperparameters for 24h-predictions in H2 2013</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>hyperparams <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">expand.grid</span>(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_depth=</span><span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">6</span>,<span class="dv">8</span>),</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">learning_rate=</span><span class="fu">c</span>(<span class="fl">0.03</span>,<span class="fl">0.05</span>,<span class="fl">0.10</span>),</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">min_child_weight=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">5</span>)))</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>gbt.tune <span class="ot">&lt;-</span> <span class="cf">function</span>(pars){</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  model <span class="ot">&lt;-</span> <span class="fu">gbt.fit</span>(<span class="at">idx=</span>T1<span class="dv">-180</span><span class="sc">*</span><span class="dv">48</span>,<span class="at">days=</span>(<span class="dv">185</span><span class="sc">+</span><span class="dv">366-7</span>),</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">max.depth=</span>pars[<span class="dv">1</span>],<span class="at">learning_rate=</span>pars[<span class="dv">2</span>],<span class="at">min_child_weight=</span>pars[<span class="dv">3</span>])</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  test.ids <span class="ot">&lt;-</span> T1<span class="sc">-</span><span class="fu">seq</span>(<span class="dv">180</span>,<span class="dv">6</span>,<span class="sc">-</span><span class="dv">6</span>)<span class="sc">*</span><span class="dv">48</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  preds <span class="ot">&lt;-</span> <span class="fu">gbt.pred</span>(test.ids,model)</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rmse</span>(preds,elec<span class="sc">$</span>Demand[<span class="fu">c</span>(<span class="fu">sapply</span>(test.ids,<span class="cf">function</span>(z){z<span class="sc">+</span><span class="dv">1</span><span class="sc">:</span><span class="dv">48</span>}))])}</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="co">#tuning.results &lt;- apply(hyperparams,1,gbt.tune) #!CAREFUL! about 30m</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="co">#saveRDS(tuning.results,'gbttuning.RDS')</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(hyperparams,<span class="at">val.rmse=</span><span class="fu">readRDS</span>(<span class="st">'gbttuning.RDS'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      max_depth learning_rate min_child_weight val.rmse
+ [1,]         4          0.03                1 1211.644
+ [2,]         6          0.03                1 1204.345
+ [3,]         8          0.03                1 1199.285
+ [4,]         4          0.05                1 1216.495
+ [5,]         6          0.05                1 1205.487
+ [6,]         8          0.05                1 1200.707
+ [7,]         4          0.10                1 1217.782
+ [8,]         6          0.10                1 1206.522
+ [9,]         8          0.10                1 1201.532
+[10,]         4          0.03                5 1210.175
+[11,]         6          0.03                5 1206.693
+[12,]         8          0.03                5 1200.039
+[13,]         4          0.05                5 1214.473
+[14,]         6          0.05                5 1202.782
+[15,]         8          0.05                5 1199.811
+[16,]         4          0.10                5 1218.471
+[17,]         6          0.10                5 1204.358
+[18,]         8          0.10                5 1198.028</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>gbt.train.mod <span class="ot">&lt;-</span> <span class="fu">gbt.fit</span>(<span class="at">idx=</span>T1, <span class="at">days=</span>(<span class="dv">365</span><span class="sc">+</span><span class="dv">366-7</span>))</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>gbt.train.preds <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">seq</span>(<span class="dv">7</span><span class="sc">*</span><span class="dv">48</span>,T1,<span class="dv">48</span>),</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  gbt.pred,<span class="at">model.obj=</span>gbt.train.mod)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 4.2 forecast 2014 in direct 24-hour blocks</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co">#gbt.preds &lt;- year_test(gbt.fit,gbt.pred) #!</span><span class="al">WARNING</span><span class="co">! 2r30m runtime</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="co">#saveRDS(gbt.preds,'gbtpreds.RDS')</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>gbt.preds <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">'gbtpreds.RDS'</span>)</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 4.3 compile model metrics and examine bias</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>gbt.metrics <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">c</span>(</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">ins.rmse=</span><span class="fu">ins.rmse</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">6</span><span class="sc">*</span><span class="dv">48</span>),gbt.train.preds)),</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">oos.rmse=</span><span class="fu">oos.rmse</span>(gbt.preds),</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">hot.rmse=</span><span class="fu">hot.rmse</span>(gbt.preds),</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">cost.mm=</span><span class="fu">cost</span>(gbt.preds)<span class="sc">/</span><span class="fl">1e6</span>),<span class="dv">0</span>)</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(<span class="at">naive=</span>naive.metrics,</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">adl=</span>adl.metrics,</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">gbt=</span>gbt.metrics)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      ins.rmse oos.rmse hot.rmse cost.mm
+naive      570      571     1106     563
+adl         44      337      725     301
+gbt        552      299      807     290</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">biasplot</span>(gbt.preds,<span class="st">'GBT model'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mlinr_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="long-short-term-memory-lstm-models" class="level2">
+<h2 class="anchored" data-anchor-id="long-short-term-memory-lstm-models">Long-short term memory (LSTM) models</h2>
+<p>Let’s add a fourth model to the mix: long-short term memory (LSTM) model. LSTMs are a form of recurrant neural network (RNN), and they allow us to capture certain signals from the past “states” of the system and allow them to be fed into future states with little or no signal attenuation (weakening). RNNs themselves allow current information to be passed to future periods, and LSTMs take this further by allowing for explicit “gate” controls which determine how mcuh signal to forget, how much signal to pass on, and how much signal to process in the current step.</p>
+<p>Basic feed-forward neural networks such as multilayer perceptrons (MLP) are not often used in time series analysis because they have no concept of the sequencing of the data. Lags are passed as features to predict a current state, but little to no model architecture links the prediction of one current state to the prediction for the next.</p>
+<p>RNNs offer a major upgrade by passing the processed signal from one state prediction into the inputs of the next. However, the fitting algorithms for these RNNs often damp the signal significantly after only a few states, meaning that vanilla RNNs would be particularly unsuited for our electricity demand data, where information from 48, 96, or even 336 prior states can be richly informative of the current state.</p>
+<p>The LSTM architecture is perhaps even more complex than that of gradient-boosted trees, but in some ways it actually requires <em>less</em> tuning. This is partly due to the excellent work that the authors of the <code>keras3</code> package have done to embed validation procedures directly into the model-fitting functions, but also results from the nature of neural networks themselves. Neural nets “break” less easily than gradient-boosted trees, because they cannot hyperlocalize the estimates in the same way. In general, with some sensible default choices you can expect an LSTM to improve with more and more computing resources (more epochs, smaller blocks, more units, more layers), but you may hit your resource limit before the network has reached its full potential.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 5 LSTM</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 5.1 initialize params and seeds</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0303</span>)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>L <span class="ot">&lt;-</span> <span class="dv">168</span> <span class="co">#lookback period</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>H <span class="ot">&lt;-</span> <span class="dv">48</span> <span class="co">#lookahead (forecasting) period</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="dv">12</span> <span class="co">#columns of predictive features</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>dropout_rate <span class="ot">&lt;-</span> <span class="fl">0.2</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>learning_rate <span class="ot">&lt;-</span> <span class="fl">0.002</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>batch_size <span class="ot">&lt;-</span> <span class="dv">64</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>epochs <span class="ot">&lt;-</span> <span class="dv">15</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>idx<span class="fl">.2013</span> <span class="ot">&lt;-</span> (<span class="dv">366</span><span class="sc">*</span><span class="dv">48</span><span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>((<span class="dv">366</span><span class="sc">+</span><span class="dv">365</span>)<span class="sc">*</span><span class="dv">48</span>)</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>lstm.data <span class="ot">&lt;-</span> <span class="fu">cbind</span>(elec<span class="sc">$</span>Demand,all.features[,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">9</span><span class="sc">:</span><span class="dv">12</span>,<span class="dv">23</span><span class="sc">:</span><span class="dv">26</span>)])</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>lstm.means <span class="ot">&lt;-</span> <span class="fu">apply</span>(lstm.data[idx<span class="fl">.2013</span>,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">9</span><span class="sc">:</span><span class="dv">12</span>)],<span class="dv">2</span>,mean)</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>lstm.sds <span class="ot">&lt;-</span> <span class="fu">apply</span>(lstm.data[idx<span class="fl">.2013</span>,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">9</span><span class="sc">:</span><span class="dv">12</span>)],<span class="dv">2</span>,sd)</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>lstm.data[,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">9</span><span class="sc">:</span><span class="dv">12</span>)] <span class="ot">&lt;-</span> <span class="fu">scale</span>(lstm.data[,<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">9</span><span class="sc">:</span><span class="dv">12</span>)],</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">center=</span>lstm.means,<span class="at">scale=</span>lstm.sds)</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>lstm.data <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(lstm.data)</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>lstm.fit <span class="ot">&lt;-</span> <span class="cf">function</span>(idx,<span class="at">days=</span><span class="dv">365</span>){</span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(elec<span class="sc">$</span>Date[idx])</span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>  model <span class="ot">&lt;-</span> <span class="fu">keras_model_sequential</span>()</span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>  model<span class="sc">$</span><span class="fu">add</span>(<span class="fu">layer_input</span>(<span class="at">shape =</span> <span class="fu">c</span>(L, p)))</span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>  model<span class="sc">$</span><span class="fu">add</span>(<span class="fu">layer_lstm</span>(<span class="at">units=</span><span class="dv">32</span>))</span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>  model<span class="sc">$</span><span class="fu">add</span>(<span class="fu">layer_dense</span>(<span class="at">units=</span><span class="dv">32</span>,<span class="at">activation=</span><span class="st">'relu'</span>))</span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>  model<span class="sc">$</span><span class="fu">add</span>(<span class="fu">layer_dense</span>(<span class="at">units=</span>H))</span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>  model<span class="sc">$</span><span class="fu">compile</span>(</span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">optimizer =</span> <span class="fu">optimizer_adam</span>(),</span>
+<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">loss =</span> <span class="st">"mse"</span>,</span>
+<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">metrics =</span> <span class="fu">list</span>(<span class="st">"mae"</span>))</span>
+<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a>  X <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="cn">NA</span>, <span class="at">dim =</span> <span class="fu">c</span>(days<span class="sc">*</span><span class="dv">48</span>, L, p))</span>
+<span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a>  Y <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow =</span> days<span class="sc">*</span><span class="dv">48</span>, <span class="at">ncol =</span> H)</span>
+<span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a>  startindex <span class="ot">&lt;-</span> idx<span class="sc">-</span>H<span class="sc">-</span>L<span class="sc">-</span>days<span class="sc">*</span><span class="dv">48</span></span>
+<span id="cb24-36"><a href="#cb24-36" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(days<span class="sc">*</span><span class="dv">48</span>)){</span>
+<span id="cb24-37"><a href="#cb24-37" aria-hidden="true" tabindex="-1"></a>    X[i, , ] <span class="ot">&lt;-</span> lstm.data[startindex<span class="sc">+</span>i<span class="sc">+</span><span class="dv">0</span><span class="sc">:</span>(L<span class="dv">-1</span>),]</span>
+<span id="cb24-38"><a href="#cb24-38" aria-hidden="true" tabindex="-1"></a>    Y[i, ] <span class="ot">&lt;-</span> lstm.data[startindex<span class="sc">+</span>i<span class="sc">+</span>L<span class="sc">+</span><span class="dv">0</span><span class="sc">:</span>(H<span class="dv">-1</span>),<span class="dv">1</span>]}</span>
+<span id="cb24-39"><a href="#cb24-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(model, <span class="at">x =</span> X, <span class="at">y =</span> Y,</span>
+<span id="cb24-40"><a href="#cb24-40" aria-hidden="true" tabindex="-1"></a>      <span class="at">epochs =</span> epochs,<span class="at">batch_size =</span> batch_size,</span>
+<span id="cb24-41"><a href="#cb24-41" aria-hidden="true" tabindex="-1"></a>      <span class="at">validation_split =</span> <span class="fl">0.2</span>,<span class="at">callbacks =</span> <span class="fu">list</span>(</span>
+<span id="cb24-42"><a href="#cb24-42" aria-hidden="true" tabindex="-1"></a>        <span class="fu">callback_early_stopping</span>(</span>
+<span id="cb24-43"><a href="#cb24-43" aria-hidden="true" tabindex="-1"></a>          <span class="at">patience =</span> <span class="dv">3</span>,</span>
+<span id="cb24-44"><a href="#cb24-44" aria-hidden="true" tabindex="-1"></a>          <span class="at">restore_best_weights =</span> <span class="cn">TRUE</span>)))</span>
+<span id="cb24-45"><a href="#cb24-45" aria-hidden="true" tabindex="-1"></a>  model}</span>
+<span id="cb24-46"><a href="#cb24-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-47"><a href="#cb24-47" aria-hidden="true" tabindex="-1"></a>lstm.pred <span class="ot">&lt;-</span> <span class="cf">function</span>(idx,model.obj){</span>
+<span id="cb24-48"><a href="#cb24-48" aria-hidden="true" tabindex="-1"></a>  xtest <span class="ot">&lt;-</span>  <span class="fu">array</span>(<span class="cn">NA</span>, <span class="at">dim =</span> <span class="fu">c</span>(<span class="dv">1</span>, L, p))</span>
+<span id="cb24-49"><a href="#cb24-49" aria-hidden="true" tabindex="-1"></a>  xtest[<span class="dv">1</span>, , ] <span class="ot">&lt;-</span> lstm.data[(idx<span class="sc">-</span>L<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>idx,]</span>
+<span id="cb24-50"><a href="#cb24-50" aria-hidden="true" tabindex="-1"></a>  rawpreds <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">t</span>(<span class="fu">predict</span>(model.obj, xtest)))</span>
+<span id="cb24-51"><a href="#cb24-51" aria-hidden="true" tabindex="-1"></a>  rawpreds<span class="sc">*</span>lstm.sds[<span class="dv">1</span>]<span class="sc">+</span>lstm.means[<span class="dv">1</span>]}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The code above describes a MIMO forecasting strategy for the neural network which exploits structures in the data we have not yet used. Until now, we have approached each 24-hour (48 observation day) as its own entity, whether we were forecasting recursively or directly.</p>
+<p>But with this LSTM, we will pass 3.5-day long (168 half-hours) “panes” of data to the algorithm. Each 3.5-day “pane” will count as one training observation. The inputs to this MIMO forecast are the most recent 168 half-hours of demand activity, and the outputs are a vector of 48 forecasted electrical demands.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">528</span>),<span class="at">y=</span><span class="fu">c</span>(<span class="fl">0.5</span>,<span class="fl">7.5</span>),<span class="at">type=</span><span class="st">'n'</span>,<span class="at">xaxt=</span><span class="st">'n'</span>,<span class="at">yaxt=</span><span class="st">'n'</span>,</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">'Diagram of LSTM rolling MIMO structure'</span>,</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">'Original data row indices'</span>,<span class="at">ylab=</span><span class="st">'LSTM observation'</span>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="at">side=</span><span class="dv">1</span>,<span class="at">at=</span><span class="fu">seq</span>(<span class="dv">48</span>,<span class="dv">528</span>,<span class="dv">48</span>))</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="at">side=</span><span class="dv">2</span>,<span class="at">at=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>,<span class="at">labels=</span><span class="dv">7</span><span class="sc">:</span><span class="dv">1</span>)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fu">seq</span>(<span class="dv">48</span>,<span class="dv">480</span>,<span class="dv">48</span>),<span class="at">lty=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">'#7f7f7f'</span>)</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="fu">rect</span>(<span class="dv">48</span><span class="sc">*</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">6</span>)<span class="sc">+</span><span class="fl">24.5</span>,<span class="dv">7</span><span class="sc">:</span><span class="dv">1</span><span class="fl">-0.4</span>,<span class="dv">48</span><span class="sc">*</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">6</span>)<span class="sc">+</span><span class="fl">192.5</span>,<span class="dv">7</span><span class="sc">:</span><span class="dv">1</span><span class="fl">+0.4</span>,<span class="at">density=</span><span class="sc">-</span><span class="dv">1</span>,</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">col=</span><span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">'#0000003f'</span>,<span class="dv">5</span>),<span class="fu">rep</span>(<span class="st">'#7f00ff3f'</span>,<span class="dv">2</span>)),</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">border=</span><span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">'#000000'</span>,<span class="dv">5</span>),<span class="fu">rep</span>(<span class="st">'#7f00ff'</span>,<span class="dv">2</span>)))</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a><span class="fu">rect</span>(<span class="dv">48</span><span class="sc">*</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">6</span>)<span class="sc">+</span><span class="fl">192.5</span>,<span class="dv">7</span><span class="sc">:</span><span class="dv">1</span><span class="fl">-0.4</span>,<span class="dv">48</span><span class="sc">*</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">6</span>)<span class="sc">+</span><span class="fl">240.5</span>,<span class="dv">7</span><span class="sc">:</span><span class="dv">1</span><span class="fl">+0.4</span>,<span class="at">density=</span><span class="sc">-</span><span class="dv">1</span>,</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">col=</span><span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">'#0000ff3f'</span>,<span class="dv">5</span>),<span class="fu">rep</span>(<span class="st">'#bf00003f'</span>,<span class="dv">2</span>)),</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">border=</span><span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">'#0000ff'</span>,<span class="dv">5</span>),<span class="fu">rep</span>(<span class="st">'#bf0000'</span>,<span class="dv">2</span>)))</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="at">x=</span><span class="st">'topright'</span>,<span class="at">horiz=</span><span class="cn">TRUE</span>,<span class="at">bty=</span><span class="st">'n'</span>,<span class="at">pch=</span><span class="dv">15</span>,<span class="at">xjust=</span><span class="dv">1</span>,<span class="at">cex=</span><span class="fl">0.5</span>,<span class="at">pt.cex=</span><span class="dv">1</span>,</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">col=</span><span class="fu">c</span>(<span class="st">'#0000003f'</span>,<span class="st">'#0000ff3f'</span>,<span class="st">'#7f00ff3f'</span>,<span class="st">'#bf00003f'</span>),</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">legend=</span><span class="fu">c</span>(<span class="st">'Training X'</span>,<span class="st">'Training Y'</span>,<span class="st">'Test X'</span>,<span class="st">'Test Y'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mlinr_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 5.3 compile model metrics and examine bias</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="co">#lstm.preds &lt;- year_test(lstm.fit,lstm.pred) #!</span><span class="al">WARNING</span><span class="co">! 2hr15m runtime</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co">#saveRDS(lstm.preds,'lstmpreds.RDS')</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>lstm.preds <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">'lstmpreds.RDS'</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>lstm.metrics <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">c</span>(</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">ins.rmse=</span><span class="cn">NA</span>,</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">oos.rmse=</span><span class="fu">oos.rmse</span>(lstm.preds),</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">hot.rmse=</span><span class="fu">hot.rmse</span>(lstm.preds),</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">cost.mm=</span><span class="fu">cost</span>(lstm.preds)<span class="sc">/</span><span class="fl">1e6</span>),<span class="dv">0</span>)</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(<span class="at">naive=</span>naive.metrics,</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">adl=</span>adl.metrics,</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">gbt=</span>gbt.metrics,</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">lstm=</span>lstm.metrics)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      ins.rmse oos.rmse hot.rmse cost.mm
+naive      570      571     1106     563
+adl         44      337      725     301
+gbt        552      299      807     290
+lstm        NA      275      719     304</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">biasplot</span>(lstm.preds,<span class="st">'LSTM model'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="mlinr_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+
+
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>These are roughly the 1<sup>st</sup> and 99<sup>th</sup> percentile temperatures in the historical data<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>If you templatize reflexively and without thinking of the shape of future problems, the time savings may never materialize.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>If you code only for yourself, as I am prone to do, you may still be unreadable to your peers. But at least they can quarantine your madness more easily.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Although the forecasting function itself can forecast for any arbitrary time horizon, the weekly/daily loops will only work if the output has length 48.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        const annoteTargets = window.document.querySelectorAll('.code-annotation-anchor');
+        for (let i=0; i<annoteTargets.length; i++) {
+          const annoteTarget = annoteTargets[i];
+          const targetCell = annoteTarget.getAttribute("data-target-cell");
+          const targetAnnotation = annoteTarget.getAttribute("data-target-annotation");
+          const contentFn = () => {
+            const content = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+            if (content) {
+              const tipContent = content.cloneNode(true);
+              tipContent.classList.add("code-annotation-tip-content");
+              return tipContent.outerHTML;
+            }
+          }
+          const config = {
+            allowHTML: true,
+            content: contentFn,
+            onShow: (instance) => {
+              selectCodeLines(instance.reference);
+              instance.reference.classList.add('code-annotation-active');
+              window.tippy.hideAll();
+            },
+            onHide: (instance) => {
+              unselectCodeLines();
+              instance.reference.classList.remove('code-annotation-active');
+            },
+            maxWidth: 300,
+            delay: [50, 0],
+            duration: [200, 0],
+            offset: [5, 10],
+            arrow: true,
+            appendTo: function(el) {
+              return el.parentElement.parentElement.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'quarto',
+            placement: 'right',
+            popperOptions: {
+              modifiers: [
+              {
+                name: 'flip',
+                options: {
+                  flipVariations: false, // true by default
+                  allowedAutoPlacements: ['right'],
+                  fallbackPlacements: ['right', 'top', 'top-start', 'top-end', 'bottom', 'bottom-start', 'bottom-end', 'left'],
+                },
+              },
+              {
+                name: 'preventOverflow',
+                options: {
+                  mainAxis: false,
+                  altAxis: false
+                }
+              }
+              ]        
+            }      
+          };
+          window.tippy(annoteTarget, config); 
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation column-body">
+  <div class="nav-page nav-page-previous">
+      <a href="./statespaceinr.html" class="pagination-link" aria-label="State space analysis in R">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">State space analysis in R</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
