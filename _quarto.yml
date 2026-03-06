@@ -52,6 +52,9 @@ book:
         - statespace.qmd
         - kalmanfilter.qmd
         - statespaceinr.qmd
+    - part: "9. ML forecasting models"
+      chapters:
+        - mlinr.qmd
 format:
   html:
     toc: true
