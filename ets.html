@@ -571,7 +571,7 @@ Note
 <p><span class="math display">\[e_t = y_t - \hat{y}_{t|t-1}; \qquad \textrm{SSE} = \sum_{t=1}^n e_t^2\]</span></p>
 <p>The two parameters which control this sum of squared errors are <span class="math inline">\(\alpha\)</span>, the smoothing parameter, and <span class="math inline">\(\ell_0\)</span>, the choice of the initial level (recall that each <span class="math inline">\(\ell_i\)</span> is defined iteratively, and so there is no definition for <span class="math inline">\(\ell_0\)</span>). Therefore, using a Least Squares solution method, we may estimate:</p>
 <p><span class="math display">\[\hat{\alpha}, \hat{\ell}_0 = \mathop{\textrm{argmin}}_{\alpha \in (0,1); \ell \in \mathbb{R}} \textrm{SSE}\]</span></p>
-<p>Although this optimization cannot be solved as easily as OLS equations (we do not have a closed form solution which works for every dataset, such as <span class="math inline">\(\hat{\boldsymbol{\beta}} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^t\boldsymbol{y}\)</span>), we can still solve easily enough with algorithmic techniques.</p>
+<p>Although this optimization cannot be solved as easily as OLS equations (we do not have a closed form solution which works for every dataset, such as <span class="math inline">\(\hat{\boldsymbol{\beta}} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\boldsymbol{y}\)</span>), we can still solve easily enough with algorithmic techniques.</p>
 </section>
 <section id="adding-a-trend-component" class="level2">
 <h2 class="anchored" data-anchor-id="adding-a-trend-component">Adding a trend component</h2>
