@@ -73,7 +73,7 @@ for (j in 1:9) plot(Y[,j],main=bquote(theta==.(paste(theta[[j]],collapse=','))),
 
 ## Recognizing a MA process from its ACF plot
 
-An autocorrelation function (ACF) plot will always provide helpful summary or diagnostic information about a MA(*q*) model. In the simplest case of MA(1), the height of the ACF plot at the first lag will be equal to $q/(1+q^2)$, and the remaining lags will show *little or no autocorrelation at all*. For example, when $p=0.8$, the first lag will have an autocorrelation of roughly $0.8/(1+0.64) \approx 0.49$, and all other lags will show only minimal autocorrelation:
+An autocorrelation function (ACF) plot will always provide helpful summary or diagnostic information about a MA(*q*) model. In the simplest case of MA(1), the height of the ACF plot at the first lag will be equal to $q/(1+q^2)$, and the remaining lags will show *little or no autocorrelation at all*. For example, when $\theta=0.8$, the first lag will have an autocorrelation of roughly $0.8/(1+0.64) \approx 0.49$, and all other lags will show only minimal autocorrelation:
 
 ```{r}
 #| code-fold: true

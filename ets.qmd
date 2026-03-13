@@ -91,7 +91,7 @@ The two parameters which control this sum of squared errors are $\alpha$, the sm
 
 $$\hat{\alpha}, \hat{\ell}_0 = \mathop{\textrm{argmin}}_{\alpha \in (0,1); \ell \in \mathbb{R}} \textrm{SSE}$$
 
-Although this optimization cannot be solved as easily as OLS equations (we do not have a closed form solution which works for every dataset, such as $\hat{\boldsymbol{\beta}} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^t\boldsymbol{y}$), we can still solve easily enough with algorithmic techniques.
+Although this optimization cannot be solved as easily as OLS equations (we do not have a closed form solution which works for every dataset, such as $\hat{\boldsymbol{\beta}} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\boldsymbol{y}$), we can still solve easily enough with algorithmic techniques.
 
 ## Adding a trend component
 

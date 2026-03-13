@@ -26,7 +26,7 @@ $$Y_t = c + \delta t + \omega_t + \sum_{i=1}^{p}\phi_i Y_{t-i} + \sum_{j=1}^q \t
 
 Using [the notation developed earlier](backshift.qmd), we can represent this ARMA model using the characteristic polynomials for the AR and MA components:
 
-$$\begin{aligned} Y_t &= \omega_t + \sum_{i=1}^{p}\phi_{t-i} Y_i + \sum_{j=1}^q \theta_j \omega_{t-j} \Longrightarrow \\ \\ Y_t - \sum_{i=1}^{p}\phi_i Y_{t-i} &= \omega_t + \sum_{j=1}^q \theta_j \omega_{t-j} \Longrightarrow \\ \\ Y_t \left(1 - \sum_{i=1}^{p}\phi_i B^i \right) &= \omega_t \left(1 + \sum_{j=1}^{q}\theta_j B^j \right) \Longrightarrow \\ \\ Y_t \Phi(B) &= \omega_t \Theta(B) \end{aligned}$$
+$$\begin{aligned} Y_t &= \omega_t + \sum_{i=1}^{p}\phi_i Y_{t-i} + \sum_{j=1}^q \theta_j \omega_{t-j} \Longrightarrow \\ \\ Y_t - \sum_{i=1}^{p}\phi_i Y_{t-i} &= \omega_t + \sum_{j=1}^q \theta_j \omega_{t-j} \Longrightarrow \\ \\ Y_t \left(1 - \sum_{i=1}^{p}\phi_i B^i \right) &= \omega_t \left(1 + \sum_{j=1}^{q}\theta_j B^j \right) \Longrightarrow \\ \\ Y_t \Phi(B) &= \omega_t \Theta(B) \end{aligned}$$
 Each of these two polynomials, $\Phi(B)$ and $\Theta(B)$, have real, imaginary, or complex roots. The location of these roots determines the properties of the ARMA series.
 
 Sometimes, we find it mathematically convenient to work with the characteristic polynomials, and other times we find it useful to factor them in a specific way. Consider the AR equation:
@@ -96,13 +96,13 @@ Because the first and second moments are the same, *any sample of data will supp
 
 Not to hold you in suspense: yes. We do prefer one over the other. If we adopt the first model, we would write:
 
-$$\begin{aligned} Y_t &= \omega_t + 2\omega_{t-1} \Longrightarrow \\ \omega_t &= Y_t - 2\omega_{t-1} \\ &= Y_t - 2(Y_{t-1} - 2\omega_{t-2}) \\ &= Y_t - 2(Y_{t-1} - 2(Y_{t-1} - 2\omega_{t-3})) \\ & = Y_t - 2Y_{t-1} + 4Y_{t-2} - 8Y_{t-2} + 16Y_{t-4} - \ldots \end{aligned}$$
+$$\begin{aligned} Y_t &= \omega_t + 2\omega_{t-1} \Longrightarrow \\ \omega_t &= Y_t - 2\omega_{t-1} \\ &= Y_t - 2(Y_{t-1} - 2\omega_{t-2}) \\ &= Y_t - 2(Y_{t-1} - 2(Y_{t-2} - 2\omega_{t-3})) \\ & = Y_t - 2Y_{t-1} + 4Y_{t-2} - 8Y_{t-3} + 16Y_{t-4} - \ldots \end{aligned}$$
 
 In other words, each current innovation would be dependent upon an explosive series of the past observations of $\boldsymbol{Y}$. Any small amount of past error (measurement error, misspecification, etc.) would compound to the point where the current values of the series would be effectively arbitrary.
 
 However, if we use the second model --- which fits the data equally well --- we see that:
 
-$$\begin{aligned} Y_t &= \omega_t + 0.5\omega_{t-1} \Longrightarrow \\ \omega_t &= Y_t - 0.5\omega_{t-1} \\ &= Y_t - 0.5(Y_{t-1} - 0.5\omega_{t-2}) \\ &= Y_t - 0.5(Y_{t-1} - 0.5(Y_{t-1} - 0.5\omega_{t-3})) \\ & = Y_t - 0.5Y_{t-1} + 0.25Y_{t-2} - 0.125Y_{t-2} + 0.0625Y_{t-4} - \ldots \end{aligned}$$
+$$\begin{aligned} Y_t &= \omega_t + 0.5\omega_{t-1} \Longrightarrow \\ \omega_t &= Y_t - 0.5\omega_{t-1} \\ &= Y_t - 0.5(Y_{t-1} - 0.5\omega_{t-2}) \\ &= Y_t - 0.5(Y_{t-1} - 0.5(Y_{t-2} - 0.5\omega_{t-3})) \\ & = Y_t - 0.5Y_{t-1} + 0.25Y_{t-2} - 0.125Y_{t-2} + 0.0625Y_{t-4} - \ldots \end{aligned}$$
 
 Now we see that the current innovation can be estimated as a finite, converging sum of all the past values of the series, which soon have vanishingly small effects on the present. Our ability to recover this dampened trend relies upon the roots of the MA characteristic polynomial:
 

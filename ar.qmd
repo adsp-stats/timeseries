@@ -76,7 +76,7 @@ for (j in 1:9) plot(Y[,j],main=bquote(
 
 ## Recognizing an AR process from its ACF plot
 
-An autocorrelation function (ACF) plot will sometimes provide helpful summary or diagnostic information about an AR(*p*) model. In the simplest case of AR(1), the height of the ACF plot at the first lag will be equal to *p*, and the remaining lags will scale geometrically downward. For example, when $p=0.8$, the second lag will have an autocorrelation of roughly 0.64, and the third lag will have autocorrelation of roughly 0.512
+An autocorrelation function (ACF) plot will sometimes provide helpful summary or diagnostic information about an AR(*p*) model. In the simplest case of AR(1), the height of the ACF plot at the first lag will be equal to *p*, and the remaining lags will scale geometrically downward. For example, when $\phi=0.8$, the second lag will have an autocorrelation of roughly 0.64, and the third lag will have autocorrelation of roughly 0.512
 
 ```{r}
 #| code-fold: true
